@@ -13,10 +13,35 @@ import 'package:mapa_app/pages/cronometro_page.dart';
 import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
 import 'package:mapa_app/pages/mapa_page.dart';
+import 'package:mapa_app/pages/push_notificaciones_page.dart';
+import 'package:mapa_app/services/push_notification_provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey =
+      new GlobalKey<NavigatorState>();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final pushProvider = new PushNotificationsProvider();
+
+    pushProvider.initNotifictions();
+
+    pushProvider.mensajesStream.listen((argumento) {
+      navigatorKey.currentState
+          .pushReplacementNamed('notificacion', arguments: argumento);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     config();
@@ -30,6 +55,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Material App',
         debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey,
         // home: TaxistaPerfil(),
         home: LoginPage(),
         routes: {
@@ -39,6 +65,7 @@ class MyApp extends StatelessWidget {
           'cronometro': (_) => CronometroPage(),
           'acceso_gps': (_) => AccesoGpsPage(),
           'cobro': (_) => CobroPage(),
+          'notificacion': (_) => PushNotificacionesPage(),
         },
       ),
     );

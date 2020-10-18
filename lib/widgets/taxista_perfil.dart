@@ -8,7 +8,6 @@ class TaxistaPerfil extends StatefulWidget {
 class _TaxistaPerfilState extends State<TaxistaPerfil> {
   @override
   Widget build(BuildContext context) {
-    final cronometro = context.bloc<TaximetroBloc>().state.stoptimetoDisplay;
     return SafeArea(
       child: Align(
         alignment: Alignment.centerRight,

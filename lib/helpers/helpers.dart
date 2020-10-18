@@ -12,3 +12,5 @@ part 'navegar_fadein.dart';
 part 'calculando_alerta.dart';
 part 'custom_image_markers.dart';
 part 'widgets_to_marker.dart';
+part 'confirmacion.dart';
+part 'cotizando_helper.dart';

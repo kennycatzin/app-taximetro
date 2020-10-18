@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa_app/helpers/helpers.dart';
 import 'package:meta/meta.dart';
 
 part 'taximetro_event.dart';
@@ -74,9 +75,16 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     if (!state.startIsPressed) {
       // swatch.start();
       // startTimer();
+      yield state.copyWith(
+          startIsPressed: !state.startIsPressed,
+          stoptimetoDisplay: stoptimetoDisplay,
+          inicio: event.centroMapa,
+          pago: double.parse(pagoInicio));
     } else {
       // swatch.reset();
       // stopstopwatch();
+      print('=== para viajesin! ===');
+      yield state.copyWith(startIsPressed: !state.startIsPressed);
     }
     print(event.centroMapa);
     print(state.stoptimetoDisplay);
@@ -85,11 +93,11 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     //   stoptimetoDisplay = "00:00:00";
     // }
 
-    yield state.copyWith(
-        startIsPressed: !state.startIsPressed,
-        stoptimetoDisplay: stoptimetoDisplay,
-        inicio: event.centroMapa,
-        pago: double.parse(pagoInicio));
+    // yield state.copyWith(
+    //     startIsPressed: !state.startIsPressed,
+    //     stoptimetoDisplay: stoptimetoDisplay,
+    //     inicio: event.centroMapa,
+    //     pago: double.parse(pagoInicio));
   }
 
   Stream<TaximetroState> _onCotizarPrecio(OnCotizarPrecio event) async* {
@@ -111,22 +119,17 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
   }
 
   Stream<TaximetroState> _onCorreTaximetro(OnCorreTaximetro event) async* {
-    final minutos = (event.duracion / 60).floor();
-    double kilometros = event.km / 1000;
-    double totalViaje = state.pago + (kilometros * 9.5).toDouble();
-    print(totalViaje);
-    String totalReal = '';
-    // if (totalViaje < 25) {
-    //   totalViaje = 25.00;
-    // }
-    totalReal = totalViaje.toStringAsFixed(1);
-    kilometros = (kilometros * 100).floor().toDouble();
-    kilometros = kilometros / 100;
+    CotizandoHelper cotizaController =
+        new CotizandoHelper(kilometraje: event.km, tiempo: event.duracion);
+
+    final minutos = cotizaController.calculaTiempoEnMinutos();
+    final kilometros = cotizaController.calculaDistancia();
+    final totalViaje = cotizaController.calculaPrecio();
 
     yield state.copyWith(
         km: state.km + kilometros,
         stoptimetoDisplay: '$minutos minutos',
-        pago: double.parse(totalReal),
+        pago: double.parse(totalViaje),
         inicio: event.inicio);
   }
 }

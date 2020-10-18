@@ -5,7 +5,6 @@ class SearchBar extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
-    final taximetroState = context.bloc<TaximetroBloc>().state;
     // : implement build
     return BlocBuilder<BusquedaBloc, BusquedaState>(
       builder: (context, state) {
