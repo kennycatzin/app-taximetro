@@ -14,9 +14,13 @@ import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
 import 'package:mapa_app/pages/mapa_page.dart';
 import 'package:mapa_app/pages/push_notificaciones_page.dart';
+import 'package:mapa_app/services/preference_usuario.dart';
 import 'package:mapa_app/services/push_notification_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = new PreferenciasUsuario();
+  await prefs.initPrefs();
   runApp(MyApp());
 }
 
@@ -44,7 +48,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    config();
+    final prefs = new PreferenciasUsuario();
+    // config();
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => MiUbicacionBloc()),
@@ -56,6 +61,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Material App',
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,
+        initialRoute: prefs.ultimaPagina,
         // home: TaxistaPerfil(),
         home: LoginPage(),
         routes: {

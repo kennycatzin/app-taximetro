@@ -37,6 +37,9 @@ dependencies:
   polyline: ^1.0.2
   modal_bottom_sheet: ^0.2.2
   firebase_messaging: ^7.0.3
+  shared_preferences: ^0.5.12
+  intl: ^0.16.1
+  wakelock: ^0.2.0+1
 
 dev_dependencies:
   flutter_test:

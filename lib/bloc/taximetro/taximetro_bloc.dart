@@ -67,6 +67,12 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       yield* this._onCotizarPrecio(event);
     } else if (event is OnCorreTaximetro) {
       yield* this._onCorreTaximetro(event);
+    } else if (event is OnIniciarValores) {
+      yield* this._onIniciarValores(event);
+    } else if (event is OnHoraInicio) {
+      yield state.copyWith(horaInicio: event.hora);
+    } else if (event is OnHoraFinal) {
+      yield state.copyWith(horaFinal: event.hora);
     }
   }
 
@@ -100,6 +106,10 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     //     pago: double.parse(pagoInicio));
   }
 
+  Stream<TaximetroState> _onIniciarValores(OnIniciarValores event) async* {
+    yield state.copyWith(km: 0.0, stoptimetoDisplay: '00:00:00', pago: 0.0);
+  }
+
   Stream<TaximetroState> _onCotizarPrecio(OnCotizarPrecio event) async* {
     final minutos = (double.parse(event.duracion) / 60).floor();
     double kilometros = double.parse(event.km) / 1000;
@@ -126,10 +136,18 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     final kilometros = cotizaController.calculaDistancia();
     final totalViaje = cotizaController.calculaPrecio();
 
+    double pagoReal = state.pago + totalViaje;
+
+    if (event.estado) {
+      if (pagoReal < 25) {
+        pagoReal = 25.00;
+      }
+    }
+
     yield state.copyWith(
         km: state.km + kilometros,
-        stoptimetoDisplay: '$minutos minutos',
-        pago: double.parse(totalViaje),
+        stoptimetoDisplay: '00:00:00',
+        pago: pagoReal,
         inicio: event.inicio);
   }
 }

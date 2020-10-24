@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 
 class PushNotificacionesPage extends StatelessWidget {
+  static final String routeName = 'notificacion';
+
   @override
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context).settings.arguments;

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:mapa_app/services/preference_usuario.dart';
 
 // cbCyu2qKSGywdWyXGObZSe:APA91bFAlFJPvzaFoZLhgwAA4OuBJlUG2kr6jtKi6KTCxFVMynkELTO-I0AQPVdj-OIuyE5naidlOP1w9x59nECp2wVezdCpDLueZbkkiUEp_Es8EEu9QOqotKdhSTiZewfIbpGYzagM
 class PushNotificationsProvider {
@@ -26,9 +27,11 @@ class PushNotificationsProvider {
   initNotifictions() async {
     await _firebaseMessaging.requestNotificationPermissions();
     final token = await _firebaseMessaging.getToken();
+    final prefs = new PreferenciasUsuario();
 
     print('=== FCM Token ====');
     print('125-  $token');
+    prefs.tokenPushNotify = token;
 
     _firebaseMessaging.configure(
         onMessage: onMessage,

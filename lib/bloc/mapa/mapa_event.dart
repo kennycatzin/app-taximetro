@@ -5,6 +5,8 @@ abstract class MapaEvent {}
 
 class OnMapaListo extends MapaEvent {}
 
+class OnMapaCrea extends MapaEvent {}
+
 class OnMarcarRecorrido extends MapaEvent {}
 
 class OnSeguirUbicacion extends MapaEvent {}
@@ -40,3 +42,5 @@ class OnCrearMarcadorFinal extends MapaEvent {
 }
 
 class OnQuitarPoliline extends MapaEvent {}
+
+class OnQuitarMarcadores extends MapaEvent {}

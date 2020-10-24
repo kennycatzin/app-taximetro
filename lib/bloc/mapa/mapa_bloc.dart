@@ -25,7 +25,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   Polyline _miRutaDestino = new Polyline(
       polylineId: PolylineId('mi_ruta_destino'),
       width: 4,
-      color: Colors.black87);
+      color: Colors.redAccent);
 
   void initMapa(GoogleMapController controller) {
     if (!state.mapaListo) {
@@ -53,7 +53,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       yield* this._onSeguirUbicacion(event);
     } else if (event is OnMovioMapa) {
       print(event.centroMapa);
-      yield state.copyWith(ubicacionCentral: event.centroMapa);
+      yield* this._onMovioMapa(event);
     } else if (event is OnCrearRutaInicioDestino) {
       yield* _onCrearRutaInicioDestino(event);
     } else if (event is OnCrearMarcadorInicio) {
@@ -62,6 +62,10 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       yield* this._onCrearMarcadorFinal(event);
     } else if (event is OnQuitarPoliline) {
       yield* this._onQuitarPoliline(event);
+    } else if (event is OnQuitarMarcadores) {
+      yield* this._onQuitarMarcadores(event);
+    } else if (event is OnMapaCrea) {
+      yield state.copyWith(mapaListo: false);
     }
   }
 
@@ -81,7 +85,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
 
   Stream<MapaState> _onMarcarRecorrido(OnMarcarRecorrido event) async* {
     if (!state.dibujarRecorrido) {
-      this._miRuta = this._miRuta.copyWith(colorParam: Colors.black87);
+      this._miRuta = this._miRuta.copyWith(colorParam: Colors.redAccent);
     } else {
       this._miRuta = this._miRuta.copyWith(colorParam: Colors.transparent);
     }
@@ -93,11 +97,8 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   }
 
   Stream<MapaState> _onQuitarPoliline(OnQuitarPoliline event) async* {
-    if (!state.dibujarRecorrido) {
-      this._miRuta = this._miRuta.copyWith(colorParam: Colors.black87);
-    } else {
-      this._miRuta = this._miRuta.copyWith(colorParam: Colors.transparent);
-    }
+    this._miRuta = new Polyline(
+        polylineId: PolylineId('mi_ruta'), width: 4, color: Colors.transparent);
     final currentPolylines = new Map<String, Polyline>();
     currentPolylines['mi_ruta'] = this._miRuta;
 
@@ -169,7 +170,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
 
   Stream<MapaState> _onCrearMarcadorInicio(OnCrearMarcadorInicio event) async* {
     // Marcadores
-    final iconInicio = await getAssetImageMarker();
+    final iconInicio = await getNetworkImageMarker();
     final markerInicio = new Marker(
         anchor: Offset(0.0, 1.0),
         markerId: MarkerId('inicio'),
@@ -188,6 +189,18 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     Future.delayed(Duration(milliseconds: 300)).then((value) => {
           //_mapController.showMarkerInfoWindow(MarkerId('final'))
         });
+    yield state.copyWith(markers: newMarkers);
+  }
+
+  Stream<MapaState> _onQuitarMarcadores(OnQuitarMarcadores event) async* {
+    // Marcadores
+    final marcador = new Marker(markerId: MarkerId('inicio'));
+    final marcadorFinal = new Marker(markerId: MarkerId('final'));
+
+    final newMarkers = {...state.markers};
+    newMarkers['inicio'] = marcador;
+    newMarkers['final'] = marcadorFinal;
+
     yield state.copyWith(markers: newMarkers);
   }
 
@@ -216,5 +229,33 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
           //_mapController.showMarkerInfoWindow(MarkerId('final'))
         });
     yield state.copyWith(polylines: currentPolylines, markers: newMarkers);
+  }
+
+  Stream<MapaState> _onMovioMapa(OnMovioMapa event) async* {
+    final currentPolylines = state.polylines;
+    currentPolylines['mi_ruta_destino'] = this._miRutaDestino;
+
+    // Marcadores()
+    final iconInicio = await getAssetImageMarker();
+    final markerInicio = new Marker(
+        anchor: Offset(0.5, 1.0),
+        markerId: MarkerId('final'),
+        position: event.centroMapa,
+        icon: iconInicio,
+        infoWindow: InfoWindow(
+            title: 'Mi ubicación',
+            snippet: 'Duracion: 0 min.',
+            anchor: Offset(0.0, 0.0),
+            onTap: () {
+              print('Info window tap');
+            }));
+
+    final newMarkers = {...state.markers};
+    newMarkers['final'] = markerInicio;
+    Future.delayed(Duration(milliseconds: 300)).then((value) => {
+          //_mapController.showMarkerInfoWindow(MarkerId('final'))
+        });
+    yield state.copyWith(
+        ubicacionCentral: event.centroMapa, markers: newMarkers);
   }
 }

@@ -8,12 +8,13 @@ class TaxistaPerfil extends StatefulWidget {
 class _TaxistaPerfilState extends State<TaxistaPerfil> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SafeArea(
       child: Align(
         alignment: Alignment.centerRight,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-          width: 250,
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+          width: size.width * .38,
           child: Container(
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
@@ -28,12 +29,11 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                     ),
                   ),
                   _cabeceraTaximetro(),
-                  _contenedorBlanco(),
-                  _contenedorItems(),
+                  _contenedorBlanco(size),
+                  _contenedorItems(size),
                   BlocBuilder<TaximetroBloc, TaximetroState>(
-                    builder: (context, state) => _contTaximetro(state),
+                    builder: (context, state) => _contTaximetro(state, size),
                   ),
-                  _tituloSindical()
                 ],
               )),
         ),
@@ -41,12 +41,12 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _contenedorBlanco() {
+  Widget _contenedorBlanco(Size size) {
     return Align(
-      alignment: Alignment(1.3, -1.1),
+      alignment: Alignment(1, -1.0),
       child: Container(
-          width: 90.0,
-          height: 90.0,
+          width: 70.0,
+          height: 70.0,
           decoration:
               BoxDecoration(shape: BoxShape.circle, color: Colors.white30),
           padding: EdgeInsets.all(8.0),
@@ -57,9 +57,9 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _contenedorItems() {
+  Widget _contenedorItems(Size size) {
     return Container(
-      margin: EdgeInsets.only(top: 170),
+      margin: EdgeInsets.only(top: size.height * .398),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -76,82 +76,84 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: 100.0,
-                height: 100.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white60, width: 2.0),
-                ),
-                padding: EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/avatar.jpg'),
-                ),
-              ),
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white60, width: 2.0),
+                  ),
+                  padding: EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                      backgroundImage: AssetImage('assets/omar.jpg'))),
             ],
           ),
           SizedBox(
             height: 8.0,
           ),
-          Text("Kenny Catzin Ruiz",
+          Text("Omar Cruz Navarro",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 21.0,
                   color: Colors.white)),
-          Text("Unidad 5008",
+          Text("Unidad M-0008",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                   color: Colors.white54)),
-          SizedBox(
-            height: 10.0,
-          ),
         ],
       ),
     );
   }
 
-  Widget _contTaximetro(TaximetroState state) {
-    return Container(
-      margin: EdgeInsets.only(top: 150),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      child: ListView(
-        padding: EdgeInsets.all(20),
-        children: <Widget>[
-          ListTile(
-              leading: Icon(
-                Icons.monetization_on,
-                color: Colors.black87,
+  Widget _contTaximetro(TaximetroState state, Size size) {
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: size.height * .34),
+          height: size.height * .42,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+          child: ListView(
+            padding: EdgeInsets.all(20),
+            children: <Widget>[
+              ListTile(
+                  leading: Icon(
+                    Icons.monetization_on,
+                    color: Colors.black87,
+                  ),
+                  title: Text(state.pago.toString()),
+                  onTap: () => {}),
+              ListTile(
+                leading: Icon(
+                  Icons.local_taxi,
+                  color: Colors.black87,
+                ),
+                title: Text(state.km.toString()),
+                onTap: () {},
               ),
-              title: Text(state.pago.toString()),
-              onTap: () => {}),
-          ListTile(
-            leading: Icon(
-              Icons.local_taxi,
-              color: Colors.black87,
-            ),
-            title: Text(state.km.toString()),
-            onTap: () {},
+              ListTile(
+                leading: Icon(
+                  Icons.timer,
+                  color: Colors.black87,
+                ),
+                title: Text(state.stoptimetoDisplay),
+                onTap: () {},
+              )
+            ],
           ),
-          ListTile(
-            leading: Icon(
-              Icons.timer,
-              color: Colors.black87,
-            ),
-            title: Text(state.stoptimetoDisplay),
-            onTap: () {},
-          )
-        ],
-      ),
+        ),
+        SizedBox(height: 25.0),
+        _tituloSindical()
+      ],
     );
   }
 
   Widget _tituloSindical() {
     return Container(
-      margin: EdgeInsets.only(top: 350, left: 80),
+      //margin: EdgeInsets.only(top: 330, left: 85),
       child: Text(
-        'P-5007',
+        'M-0008',
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
       ),
     );

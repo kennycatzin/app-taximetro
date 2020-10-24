@@ -5,22 +5,22 @@ class CotizandoHelper {
   double tiempo;
   CotizandoHelper({this.kilometraje, this.tiempo});
 
-  String calculaPrecio() {
+  double calculaPrecio() {
     double kilometros = kilometraje / 1000;
     double totalViaje = (kilometros * 9.5).toDouble();
-    String totalReal = '';
 
-    totalReal = totalViaje.toStringAsFixed(1);
-
-    return totalReal;
+    return totalViaje.roundToDouble();
   }
 
   double calculaDistancia() {
-    double kilometros = this.kilometraje / 1000;
-    kilometros = (kilometros * 100).floor().toDouble();
+    double kilometros = kilometraje / 1000;
+    kilometros = (kilometros * 100).toDouble();
     kilometros = kilometros / 100;
+    String totalReal = '';
 
-    return kilometros;
+    totalReal = kilometros.toStringAsFixed(3);
+
+    return double.parse(totalReal);
   }
 
   double calculaTiempoEnMinutos() {

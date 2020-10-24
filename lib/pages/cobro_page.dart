@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
+import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/services/preference_usuario.dart';
 
 class CobroPage extends StatefulWidget {
+  static final String routeName = 'cobro';
+
   @override
   _CobroPageState createState() => _CobroPageState();
 }
 
-int _genero;
-
 class _CobroPageState extends State<CobroPage> {
+  final prefs = new PreferenciasUsuario();
+
+  @override
+  void initState() {
+    super.initState();
+    prefs.ultimaPagina = CobroPage.routeName;
+  }
+
   @override
   Widget build(BuildContext context) {
     final taxiBloc = context.bloc<TaximetroBloc>().state;
@@ -23,40 +32,6 @@ class _CobroPageState extends State<CobroPage> {
         _loginForm(context),
       ],
     ));
-
-    // return Scaffold(
-    //   body: Container(
-    //     height: size.height * .38,
-    //     width: double.infinity,
-    //     color: Colors.green,
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         Container(
-    //           child: Row(
-    //             mainAxisAlignment: MainAxisAlignment.center,
-    //             children: [
-    //               Text(
-    //                 'Total a pagar',
-    //                 style: TextStyle(color: Colors.white, fontSize: 30),
-    //               ),
-    //               Icon(
-    //                 Icons.attach_money,
-    //                 color: Colors.white,
-    //                 size: 35,
-    //               ),
-    //               Text(
-    //                 '200',
-    //                 style: TextStyle(color: Colors.white, fontSize: 35),
-    //               )
-    //             ],
-    //           ),
-    //         ),
-    //         Container()
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   Widget _crearFondo(BuildContext context) {
@@ -118,7 +93,7 @@ class _CobroPageState extends State<CobroPage> {
                 size: 35,
               ),
               Text(
-                '${taxiBloc.pago}',
+                '${taxiBloc.pago.toStringAsFixed(2)}',
                 style: TextStyle(color: Colors.white, fontSize: 35),
               )
             ],
@@ -141,7 +116,7 @@ class _CobroPageState extends State<CobroPage> {
             ),
           ),
           Container(
-            width: size.width * .85,
+            width: size.width * .70,
             margin: EdgeInsets.symmetric(vertical: 30),
             padding: EdgeInsets.symmetric(vertical: 30.0),
             decoration: BoxDecoration(
@@ -173,7 +148,7 @@ class _CobroPageState extends State<CobroPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      '${taxiBloc.km}',
+                      '${taxiBloc.km.toStringAsFixed(3)}',
                       style: TextStyle(fontSize: 18),
                     )
                   ],
@@ -191,7 +166,7 @@ class _CobroPageState extends State<CobroPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      '12:30:45',
+                      '${taxiBloc.horaInicio}',
                       style: TextStyle(fontSize: 18),
                     )
                   ],
@@ -210,7 +185,7 @@ class _CobroPageState extends State<CobroPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      '12:58:45',
+                      '${taxiBloc.horaFinal}',
                       style: TextStyle(fontSize: 18),
                     )
                   ],
@@ -238,52 +213,42 @@ class _CobroPageState extends State<CobroPage> {
                     Container(
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.credit_card,
-                            size: 18,
-                          ),
-                          Text(
-                            'Tarjeta',
-                            style: TextStyle(fontSize: 18),
-                          )
+                          RaisedButton.icon(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              color: Colors.redAccent,
+                              textColor: Colors.white,
+                              label: Text('Tarjeta'),
+                              icon: Icon(Icons.credit_card),
+                              onPressed: () {})
                         ],
                       ),
                     ),
                     Container(
                       child: Row(
-                        children: [
-                          Icon(
-                            Icons.money,
-                            size: 18,
-                          ),
-                          Text(
-                            'Efectivo',
-                            style: TextStyle(fontSize: 18),
-                          )
-                        ],
+                        children: [_crearBoton(context)],
                       ),
                     ),
                     Container(
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.local_taxi,
-                            size: 18,
-                          ),
-                          Text(
-                            'Monedero',
-                            style: TextStyle(fontSize: 18),
+                          RaisedButton.icon(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                            color: Colors.redAccent,
+                            textColor: Colors.white,
+                            label: Text('Monedero'),
+                            icon: Icon(Icons.wallet_giftcard),
+                            onPressed: () {},
                           )
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 10.0),
 
                 //_crearEmail(),
                 //_crearPassword(),
-                _crearBoton(context)
               ],
             ),
           ),
@@ -292,27 +257,21 @@ class _CobroPageState extends State<CobroPage> {
     );
   }
 
-  _setSelectedRadio(int valor) {
-    _genero = valor;
-    setState(() {});
-  }
-
   Widget _crearBoton(BuildContext context) {
     final taxiBloc = context.bloc<TaximetroBloc>();
-    final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    final mapaBloc = context.bloc<MapaBloc>();
 
-    return RaisedButton(
-      padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 15.0),
-      child: Container(
-        child: Text('Regresar'),
-      ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      elevation: 0.0,
-      color: Colors.blueAccent,
+    return RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.redAccent,
       textColor: Colors.white,
+      label: Text('Efectivo'),
+      icon: Icon(Icons.money),
       onPressed: () {
-        taxiBloc.add(OnStartIsPressed(inicio));
-        Navigator.pushNamedAndRemoveUntil(context, 'loading', (_) => false);
+        taxiBloc.add(OnIniciarValores());
+        mapaBloc.add(OnQuitarPoliline());
+        mapaBloc.add(OnMapaCrea());
+        Navigator.pushReplacementNamed(context, 'loading');
       },
     );
   }

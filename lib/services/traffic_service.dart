@@ -42,6 +42,7 @@ class TrafficService {
       'access_token': this.apiKey,
       'language': 'es'
     });
+
     final data = DrivingResponse.fromJson(resp.data);
     return data;
   }

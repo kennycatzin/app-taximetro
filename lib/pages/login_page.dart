@@ -68,7 +68,7 @@ class LoginPage extends StatelessWidget {
                 width: double.infinity,
               ),
               Text(
-                'Kenny Catzin',
+                'F.U.T.V.',
                 style: TextStyle(color: Colors.white, fontSize: 25.0),
               )
             ],

@@ -19,6 +19,19 @@ class OnCorreTaximetro extends TaximetroEvent {
   final double km;
   final double duracion;
   final LatLng inicio;
+  final bool estado;
 
-  OnCorreTaximetro(this.km, this.duracion, this.inicio);
+  OnCorreTaximetro(this.km, this.duracion, this.inicio, this.estado);
+}
+
+class OnIniciarValores extends TaximetroEvent {}
+
+class OnHoraInicio extends TaximetroEvent {
+  final String hora;
+  OnHoraInicio(this.hora);
+}
+
+class OnHoraFinal extends TaximetroEvent {
+  final String hora;
+  OnHoraFinal(this.hora);
 }

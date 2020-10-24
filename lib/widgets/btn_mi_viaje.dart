@@ -12,6 +12,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   bool parartaximetro = true;
   bool iniciaViaje;
   bool accion = false;
+  int contador = 0;
+  DateTime horaActual;
   @override
   void initState() {
     super.initState();
@@ -41,23 +43,18 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
               _alertaConfirmacionInicio(context, state);
               print(accion);
               if (accion) {
-                print('===== inicio viaje $accion====');
                 _iniciarDetenerViaje(context, state);
               } else {
                 return;
               }
             } else {
               _alertaConfirmacionDetener(context, state);
-              // if (accion) {
-              //   print('=== aqui no deberia entrar ===');
-              //   _iniciarDetenerViaje(context, state);
-              // }
             }
           },
           color: Colors.redAccent,
           textColor: Colors.white,
           child: Icon(
-            state.startIsPressed ? Icons.pause : Icons.play_arrow,
+            (state.startIsPressed) ? Icons.pause : Icons.play_arrow,
             size: 50,
           ),
           padding: EdgeInsets.all(16),
@@ -70,30 +67,43 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     final busquedaBloc = context.bloc<BusquedaBloc>();
     final mapaBloc = context.bloc<MapaBloc>();
     final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    String hora = DateFormat.jm().format(DateTime.now());
+
+    mapaBloc.add(OnSeguirUbicacion());
 
     if (!state.startIsPressed) {
       busquedaBloc.add(OnActivarMarcadorManual());
       mapaBloc.add(OnCrearMarcadorInicio(inicio));
-      mapaBloc.add(OnSeguirUbicacion());
+      mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMarcarRecorrido());
+      taximetoBloc.add(OnHoraInicio(hora));
       parartaximetro = false;
     } else {
+      print('=== Voy a quitar markers ===');
       busquedaBloc.add(OnDesActivarMarcadorManual());
       mapaBloc.add(OnCrearMarcadorFinal(inicio));
+      mapaBloc.add(OnQuitarMarcadores());
+      taximetoBloc.add(OnHoraFinal(hora));
+      mapaBloc.add(OnMarcarRecorrido());
       parartaximetro = true;
     }
-    _cotizar(context, parartaximetro);
     taximetoBloc.add(OnStartIsPressed(inicio));
+
+    _cotizar(context, parartaximetro);
     if (state.startIsPressed) {
       print('== Debo ir a la pantalla pago ====');
       await _verificaPrecios(context);
-      Navigator.pushNamed(context, 'cobro');
+      Future.delayed(Duration(milliseconds: 2000)).then((value) => {
+            Navigator.pushNamed(context, 'cobro')
+
+            //_mapController.showMarkerInfoWindow(MarkerId('final'))
+          });
     }
   }
 
   void _cotizar(BuildContext context, bool parar) async {
     if (!parar) {
-      miTimer = new Timer.periodic(const Duration(seconds: 90), (timer) {
+      miTimer = new Timer.periodic(const Duration(seconds: 20), (timer) {
         print(DateTime.now());
         _verificaPrecios(context);
       });
@@ -103,15 +113,31 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   }
 
   void _verificaPrecios(BuildContext context) async {
-    final taxiBloc = context.bloc<TaximetroBloc>();
-    final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
-    final inicio = context.bloc<TaximetroBloc>().state.inicio;
-    final trafficService = new TrafficService();
-    final traffincResponse =
-        await trafficService.getCoordsInicioYFin(inicio, destino);
-    final duracion = traffincResponse.routes[0].duration;
-    final distancia = traffincResponse.routes[0].distance;
-    taxiBloc.add(OnCorreTaximetro(distancia, duracion, destino));
+    try {
+      contador++;
+      final result = await InternetAddress.lookup('api.mapbox.com');
+      if (result.isNotEmpty && result[0].rawAddress.length == 4) {
+        print('connected');
+
+        final taxiBloc = context.bloc<TaximetroBloc>();
+        final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
+        final inicio = context.bloc<TaximetroBloc>().state.inicio;
+        final trafficService = new TrafficService();
+        final traffincResponse =
+            await trafficService.getCoordsInicioYFin(inicio, destino);
+        final duracion = traffincResponse.routes[0].duration;
+        final distancia = traffincResponse.routes[0].distance;
+        taxiBloc.add(
+            OnCorreTaximetro(distancia, duracion, destino, parartaximetro));
+
+        print('==== las consultas son: ${contador} ====');
+      } else {
+        print('conexion perdina perdida');
+      }
+    } on SocketException catch (_) {
+      // Estimar precios !!!!
+      print('not connected');
+    }
   }
 
   void _alertaConfirmacionInicio(BuildContext context, TaximetroState state) {
@@ -130,6 +156,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         iniciaViaje = true;
         parartaximetro = false;
         accion = true;
+
         print('===== inicio viaje $accion====');
         Navigator.of(context).pop();
 
@@ -163,6 +190,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         Navigator.of(context).pop();
       },
     );
+    Widget esperarButton = FlatButton(
+      child: Text("Esperar"),
+      onPressed: () {},
+    );
     Widget continueButton = FlatButton(
       child: Text("Confirmar"),
       onPressed: () {
@@ -179,6 +210,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       content: Text("¿Desea detener el  viaje?"),
       actions: [
         cancelButton,
+        esperarButton,
         continueButton,
       ],
     );
