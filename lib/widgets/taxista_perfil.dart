@@ -84,18 +84,18 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                   ),
                   padding: EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                      backgroundImage: AssetImage('assets/omar.jpg'))),
+                      backgroundImage: AssetImage('assets/avatar.jpg'))),
             ],
           ),
           SizedBox(
             height: 8.0,
           ),
-          Text("Omar Cruz Navarro",
+          Text("Jonathan Hernández",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 21.0,
                   color: Colors.white)),
-          Text("Unidad M-0008",
+          Text("Unidad X-0000",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
@@ -153,7 +153,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     return Container(
       //margin: EdgeInsets.only(top: 330, left: 85),
       child: Text(
-        'M-0008',
+        'X-0000',
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
       ),
     );

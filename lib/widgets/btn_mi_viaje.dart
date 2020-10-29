@@ -115,29 +115,55 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   void _verificaPrecios(BuildContext context) async {
     try {
       contador++;
-      final result = await InternetAddress.lookup('api.mapbox.com');
-      if (result.isNotEmpty && result[0].rawAddress.length == 4) {
-        print('connected');
+//      final result = await InternetAddress.lookup('api.mapbox.com');
+      //    if (result.isNotEmpty && result[0].rawAddress.length == 4) {
+      print('connected');
+      final taxiBloc = context.bloc<TaximetroBloc>();
+      final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
+      final inicio = context.bloc<TaximetroBloc>().state.inicio;
+      // final trafficService = new TrafficService();
+      //final traffincResponse =
+      //  await trafficService.getCoordsInicioYFin(inicio, destino);
+      //final duracion = traffincResponse.routes[0].duration;
+      //final distancia = traffincResponse.routes[0].distance;
+      final distancia = await calcularDistancia(inicio, destino);
+      double duracion = 24000;
+      print('====$distancia====');
 
-        final taxiBloc = context.bloc<TaximetroBloc>();
-        final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
-        final inicio = context.bloc<TaximetroBloc>().state.inicio;
-        final trafficService = new TrafficService();
-        final traffincResponse =
-            await trafficService.getCoordsInicioYFin(inicio, destino);
-        final duracion = traffincResponse.routes[0].duration;
-        final distancia = traffincResponse.routes[0].distance;
-        taxiBloc.add(
-            OnCorreTaximetro(distancia, duracion, destino, parartaximetro));
+      taxiBloc
+          .add(OnCorreTaximetro(distancia, duracion, destino, parartaximetro));
 
-        print('==== las consultas son: ${contador} ====');
-      } else {
-        print('conexion perdina perdida');
-      }
+      print('==== las consultas son: ${contador} ====');
+      //    } else {
+      //    print('conexion perdina perdida');
+      // }
     } on SocketException catch (_) {
       // Estimar precios !!!!
       print('not connected');
     }
+  }
+
+  double calcularDistancia(inicio, destino) {
+    double distancia = 0;
+    const radioTierra = 6378.14;
+    final lat = deg2rad(destino.latitude - inicio.latitude);
+    final long = deg2rad(destino.longitude - inicio.longitude);
+    print('MI lat ===== $lat ====');
+    print('MI lon ===== $long ====');
+    final a = sin(lat / 2) * sin(lat / 2) +
+        cos(deg2rad(inicio.latitude)) *
+            cos(deg2rad(destino.latitude)) *
+            sin(long / 2) *
+            sin(long / 2);
+    print('MI AAA ===== $a ====');
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final d = radioTierra * c; // Distance in km
+    distancia = d * 1000;
+    return distancia;
+  }
+
+  double deg2rad(deg) {
+    return deg * (pi / 180);
   }
 
   void _alertaConfirmacionInicio(BuildContext context, TaximetroState state) {

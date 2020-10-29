@@ -30,8 +30,9 @@ class _MapaPageState extends State<MapaPage>
       DeviceOrientation.landscapeLeft,
     ]);
     super.initState();
-    prefs.ultimaPagina = MapaPage.routeName;
     Wakelock.enable();
+
+    prefs.ultimaPagina = MapaPage.routeName;
   }
 
   @override
@@ -70,6 +71,7 @@ class _MapaPageState extends State<MapaPage>
     if (!state.existeUbicacion) return Center(child: Text('Ubicando...'));
 
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
 
     mapaBloc.add(OnNuevaUbicacion(state.ubicacion));
 
