@@ -90,7 +90,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
           SizedBox(
             height: 8.0,
           ),
-          Text("Jonathan Hernández",
+          Text("José Catzin Zapata",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 21.0,

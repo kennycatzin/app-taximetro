@@ -21,7 +21,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   @override
   void dispose() {
-    miTimer.cancel();
+    // miTimer.cancel();
     super.dispose();
   }
 

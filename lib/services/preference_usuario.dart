@@ -17,13 +17,13 @@ class PreferenciasUsuario {
   }
 
   // GET y SET del Genero
-  // get genero {
-  //   return _prefs.getInt('genero') ?? 1;
-  // }
+  get usuarioID {
+    return _prefs.getInt('usuarioID') ?? 0;
+  }
 
-  // set genero(int value) {
-  //   _prefs.setInt('genero', value);
-  // }
+  set usuarioID(int value) {
+    _prefs.setInt('usuarioID', value);
+  }
 
   // // GET y SET del _colorSecundario
   // get colorSecundario {
@@ -34,14 +34,14 @@ class PreferenciasUsuario {
   //   _prefs.setBool('colorSecundario', value);
   // }
 
-  // // GET y SET del nombreUsuario
-  // get nombreUsuario {
-  //   return _prefs.getString('nombreUsuario') ?? '';
-  // }
+  // GET y SET del token
+  get token {
+    return _prefs.getString('token') ?? '';
+  }
 
-  // set nombreUsuario(String value) {
-  //   _prefs.setString('nombreUsuario', value);
-  // }
+  set token(String value) {
+    _prefs.setString('token', value);
+  }
 
   // GET y SET de la última página
   get ultimaPagina {

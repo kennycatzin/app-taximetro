@@ -57,7 +57,11 @@ class _MapaPageState extends State<MapaPage>
                 builder: (context, state) => crearMapa(state)),
             Positioned(
               top: 10,
-              child: SearchBar(),
+              child: Row(
+                children: [
+                  SearchBar(),
+                ],
+              ),
             ),
             MarcadorManual(),
             TaxistaPerfil(),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/preference_usuario.dart';
+import 'package:mapa_app/services/viajes_service.dart';
 
 class CobroPage extends StatefulWidget {
   static final String routeName = 'cobro';
@@ -13,6 +15,7 @@ class CobroPage extends StatefulWidget {
 
 class _CobroPageState extends State<CobroPage> {
   final prefs = new PreferenciasUsuario();
+  final viajeProvider = new ViajesService();
 
   @override
   void initState() {
@@ -258,9 +261,6 @@ class _CobroPageState extends State<CobroPage> {
   }
 
   Widget _crearBoton(BuildContext context) {
-    final taxiBloc = context.bloc<TaximetroBloc>();
-    final mapaBloc = context.bloc<MapaBloc>();
-
     return RaisedButton.icon(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: Colors.redAccent,
@@ -268,11 +268,27 @@ class _CobroPageState extends State<CobroPage> {
       label: Text('Efectivo'),
       icon: Icon(Icons.money),
       onPressed: () {
-        taxiBloc.add(OnIniciarValores());
-        mapaBloc.add(OnQuitarPoliline());
-        mapaBloc.add(OnMapaCrea());
-        Navigator.pushReplacementNamed(context, 'loading');
+        botonEfectivo(context);
       },
     );
+  }
+
+  void botonEfectivo(BuildContext context) async {
+    mostrarLoading(context);
+
+    final taxiBloc = context.bloc<TaximetroBloc>();
+    final mapaBloc = context.bloc<MapaBloc>();
+    Map info = await viajeProvider.guardarViaje(
+        taxiBloc.state.km, '11:40:10', '11:50:47', taxiBloc.state.pago);
+    Navigator.pop(context);
+
+    if (info['ok'] == true) {
+      taxiBloc.add(OnIniciarValores());
+      mapaBloc.add(OnQuitarPoliline());
+      mapaBloc.add(OnMapaCrea());
+      Navigator.pushReplacementNamed(context, 'loading');
+    } else if (info['ok'] == false) {
+      mostrarAlerta(context, info['mensaje']);
+    }
   }
 }
