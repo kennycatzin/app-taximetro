@@ -38,14 +38,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    final pushProvider = new PushNotificationsProvider();
+    // final pushProvider = new PushNotificationsProvider();
 
-    pushProvider.initNotifictions();
+    // pushProvider.initNotifictions();
 
-    pushProvider.mensajesStream.listen((argumento) {
-      navigatorKey.currentState
-          .pushReplacementNamed('notificacion', arguments: argumento);
-    });
+    // pushProvider.mensajesStream.listen((argumento) {
+    //   navigatorKey.currentState
+    //       .pushReplacementNamed('notificacion', arguments: argumento);
+    // });
   }
 
   @override

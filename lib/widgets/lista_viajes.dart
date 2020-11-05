@@ -8,9 +8,82 @@ class ListaViajes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ListView.builder(
       itemCount: this.viajes.length,
       itemBuilder: (BuildContext context, int index) {
+        if (index == 0) {
+          return Column(
+            children: [
+              SizedBox(
+                height: 7,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 6,
+                          color: Colors.black87,
+                        )
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.all(2),
+                    width: size.width * .45,
+                    height: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.attach_money,
+                          color: Colors.redAccent,
+                          size: 30,
+                        ),
+                        Text(
+                          "${sumaTotales(this.viajes)}",
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 6,
+                          color: Colors.black87,
+                        )
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.all(2),
+                    width: size.width * .45,
+                    height: 100,
+                    child: Text("KM: ${sumaKm(this.viajes)}",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold)),
+                  )
+                ],
+              ),
+              _Viaje(
+                viaje: this.viajes[index],
+                index: index,
+              )
+            ],
+          );
+        }
         return _Viaje(
           viaje: this.viajes[index],
           index: index,
@@ -18,6 +91,24 @@ class ListaViajes extends StatelessWidget {
       },
     );
   }
+}
+
+double sumaTotales(List<Datum> viajes) {
+  double suma = 0;
+
+  viajes.forEach((element) {
+    suma = suma + element.precio;
+  });
+  return suma;
+}
+
+double sumaKm(List<Datum> viajes) {
+  double suma = 0;
+
+  viajes.forEach((element) {
+    suma = suma + element.km;
+  });
+  return suma;
 }
 
 class _Viaje extends StatelessWidget {
@@ -34,7 +125,9 @@ class _Viaje extends StatelessWidget {
         // _TarjetaImagen(noticia: noticia),
         _TarjetaTitulo(viaje: viaje),
         _TarjetaBody(viaje: viaje),
-        _TarjetaBotones(),
+        _TarjetaHora(
+          viaje: viaje,
+        ),
         SizedBox(
           height: 10,
         ),
@@ -91,6 +184,31 @@ class _TarjetaTitulo extends StatelessWidget {
   }
 }
 
+class _TarjetaTotales extends StatelessWidget {
+  final Datum viaje;
+
+  const _TarjetaTotales({this.viaje});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.attach_money,
+              color: Colors.black87,
+              size: 30,
+            ),
+            Text(
+              '${viaje.precio.toStringAsFixed(2)}',
+              style: TextStyle(color: Colors.black87, fontSize: 30),
+            )
+          ],
+        ));
+  }
+}
+
 // class _TarjetaImagen extends StatelessWidget {
 //   final Article noticia;
 
@@ -126,7 +244,35 @@ class _TarjetaBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Text((viaje.km != null) ? '${viaje.km} KM' : '0 KM'));
+        child: Text(
+          (viaje.km != null) ? '${viaje.km} KM' : '0 KM',
+          style: TextStyle(fontSize: 19),
+        ));
+  }
+}
+
+class _TarjetaHora extends StatelessWidget {
+  final Datum viaje;
+
+  const _TarjetaHora({this.viaje});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text((viaje.horaInicio != null)
+                ? 'Hora inicio:  ${viaje.horaInicio}'
+                : '--.---.--')),
+        Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text((viaje.horaTermino != null)
+                ? 'Hora término:  ${viaje.horaTermino}'
+                : '--.---.--'))
+      ],
+    );
   }
 }
 

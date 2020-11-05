@@ -166,7 +166,6 @@ class LoginPage extends StatelessWidget {
                   Icons.local_taxi,
                   color: Colors.redAccent,
                 ),
-                hintText: 'ejemplo@correo.com',
                 labelText: 'Usuario',
                 counterText: snapshot.data,
                 errorText: snapshot.error),
@@ -207,6 +206,7 @@ class LoginPage extends StatelessWidget {
     Navigator.pop(context);
 
     if (info['ok'] == 'true') {
+      print(info['data']);
       Navigator.pushReplacementNamed(context, 'loading');
     } else if (info['ok'] == 'false') {
       mostrarAlerta(context, info['mensaje']);

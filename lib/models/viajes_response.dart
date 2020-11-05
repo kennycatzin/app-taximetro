@@ -58,7 +58,7 @@ class Datum {
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         idViaje: json["id_viaje"],
-        km: json["km"],
+        km: json["km"].toDouble(),
         horaInicio: json["hora_inicio"],
         horaTermino: json["hora_termino"],
         precio: json["precio"],

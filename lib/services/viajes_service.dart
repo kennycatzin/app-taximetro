@@ -6,7 +6,8 @@ import 'package:mapa_app/services/preference_usuario.dart';
 
 class ViajesService {
   final _prefs = new PreferenciasUsuario();
-  final _local = 'http://192.168.0.10/mapas-api';
+  final _local = 'http://localhost:8888/mapas-api';
+  final _prod = 'http://mapas-api.herokuapp.com';
   List<Datum> viajes = [];
 
   // final _prod = 'ruta-server';

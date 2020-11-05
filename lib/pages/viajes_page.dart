@@ -36,6 +36,7 @@ class _ViajesPageState extends State<ViajesPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Viajes del día'),
+          backgroundColor: Colors.redAccent,
         ),
         body: Container(child: _swipedTarjetas()));
   }
