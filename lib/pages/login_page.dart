@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/login/login.dart';
 import 'package:mapa_app/bloc/login/provider.dart';
+import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/user_service.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   final usuarioProvider = new UsuarioProvider();
@@ -206,7 +210,24 @@ class LoginPage extends StatelessWidget {
     Navigator.pop(context);
 
     if (info['ok'] == 'true') {
-      print(info['data']);
+      print(info['data']['operador']["imagen"]);
+      final mapaBloc = context.bloc<UsuarioBloc>();
+      final tarifaBloc = context.bloc<TarifaBloc>();
+
+      mapaBloc.add(OnLogin(
+          true,
+          info['data']['operador']["imagen"],
+          info['data']['operador']["NumEconomico"],
+          info['data']['operador']["TituloSindical"],
+          info['data']['operador']["nombre"]));
+
+      tarifaBloc.add(OnAsignarPrecios(
+          info['data']['tarifas']["tarifa_minima"].toDouble(),
+          info['data']['tarifas']["banderazo"].toDouble(),
+          info['data']['tarifas']["intervalo_tiempo"],
+          info['data']['tarifas']["intervalo_distancia"],
+          info['data']['tarifas']["tarifa_tiempo"].toDouble(),
+          info['data']['tarifas']["horarios"].toList()));
       Navigator.pushReplacementNamed(context, 'loading');
     } else if (info['ok'] == 'false') {
       mostrarAlerta(context, info['mensaje']);

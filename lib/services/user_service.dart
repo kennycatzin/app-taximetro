@@ -6,12 +6,16 @@ import 'package:mapa_app/services/preference_usuario.dart';
 class UsuarioProvider {
   final String _firebaseToken = 'AIzaSyDZCaIJhlOyJxgksAQ2doZ-GY-mie7t0Y8';
   final _prefs = new PreferenciasUsuario();
-  final _local = 'http://192.168.1.93:8888/mapas-api';
-  final _prod = 'http://mapas-api.herokuapp.com';
+  final _local = 'http://10.0.2.2:8888/mapas-api/public';
+  final _prod = 'https://mapas-server.herokuapp.com';
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final authData = {'email': email, 'password': password};
+    final authData = {'usuario': email, 'password': password};
 
-    final resp = await http.post('$_prod/public/api/login', body: authData);
+    final resp = await http.post('$_prod/api/login',
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: jsonEncode(authData));
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
     if (decodedResp.containsKey('token')) {
@@ -19,13 +23,12 @@ class UsuarioProvider {
       _prefs.token = decodedResp['token'];
       _prefs.usuarioID = decodedResp['id'];
 
-      return {'ok': 'true', 'token': decodedResp['token']};
+      return {'ok': 'true', 'token': decodedResp['token'], 'data': decodedResp};
     } else {
       if (decodedResp['ok'] == "pago") {
         return {
           'ok': 'pago',
-          'mensaje': "Favor de pasar a la secretaria para realizar el pago",
-          'data': decodedResp
+          'mensaje': "Favor de pasar a la secretaria para realizar el pago"
         };
       }
       return {'ok': 'false', 'mensaje': decodedResp['mensaje']};

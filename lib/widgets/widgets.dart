@@ -12,7 +12,9 @@ import 'package:mapa_app/bloc/busqueda/busqueda_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
+import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/helpers.dart';
 import 'package:mapa_app/models/search_result.dart';
 import 'package:mapa_app/search/search_destination.dart';

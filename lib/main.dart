@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/busqueda/busqueda_bloc.dart';
 import 'package:mapa_app/bloc/login/provider.dart';
+import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/pages/acceso_gps_page.dart';
 
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
@@ -59,6 +61,8 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (_) => MapaBloc()),
           BlocProvider(create: (_) => TaximetroBloc()),
           BlocProvider(create: (_) => BusquedaBloc()),
+          BlocProvider(create: (_) => UsuarioBloc()),
+          BlocProvider(create: (_) => TarifaBloc()),
         ],
         child: MaterialApp(
           title: 'Material App',

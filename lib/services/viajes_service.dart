@@ -6,13 +6,13 @@ import 'package:mapa_app/services/preference_usuario.dart';
 
 class ViajesService {
   final _prefs = new PreferenciasUsuario();
-  final _local = 'http://localhost:8888/mapas-api';
-  final _prod = 'http://mapas-api.herokuapp.com';
+  final _local = 'http://localhost:8888/mapas-api/public';
+  final _prod = 'https://mapas-server.herokuapp.com';
   List<Datum> viajes = [];
 
   // final _prod = 'ruta-server';
   Future<List<Datum>> listaViajes() async {
-    final miUrl = '$_local/public/api/get-viajes/1';
+    final miUrl = '$_prod/api/get-viajes/1';
 
     final resp = await http.get(miUrl);
     final viajesResponse = viajesResponseFromJson(resp.body);
@@ -38,7 +38,7 @@ class ViajesService {
     };
     print('===' + json.encode(data));
 
-    final resp = await http.post('$_local/public/api/store-viaje',
+    final resp = await http.post('$_prod/api/store-viaje',
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },

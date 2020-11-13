@@ -9,6 +9,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final usuarioState = context.bloc<UsuarioBloc>().state;
     return SafeArea(
       child: Align(
         alignment: Alignment.centerRight,
@@ -28,11 +29,12 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                   ),
-                  _cabeceraTaximetro(),
+                  _cabeceraTaximetro(usuarioState),
                   _contenedorBlanco(size),
                   _contenedorItems(size),
                   BlocBuilder<TaximetroBloc, TaximetroState>(
-                    builder: (context, state) => _contTaximetro(state, size),
+                    builder: (context, state) =>
+                        _contTaximetro(state, size, usuarioState),
                   ),
                 ],
               )),
@@ -67,7 +69,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _cabeceraTaximetro() {
+  Widget _cabeceraTaximetro(UsuarioState usuarioState) {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
       child: Column(
@@ -84,18 +86,18 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                   ),
                   padding: EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                      backgroundImage: AssetImage('assets/avatar.jpg'))),
+                      backgroundImage: NetworkImage(usuarioState.imagen))),
             ],
           ),
           SizedBox(
             height: 8.0,
           ),
-          Text("José Catzin Zapata",
+          Text(usuarioState.nombre,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 21.0,
                   color: Colors.white)),
-          Text("Unidad X-0000",
+          Text(usuarioState.numEconomico,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
@@ -105,7 +107,8 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _contTaximetro(TaximetroState state, Size size) {
+  Widget _contTaximetro(
+      TaximetroState state, Size size, UsuarioState usuarioState) {
     return Column(
       children: [
         Container(
@@ -122,38 +125,36 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                     Icons.monetization_on,
                     color: Colors.black87,
                   ),
-                  title: Text(state.pago.toString()),
+                  title: Text(
+                    '${state.pago.toStringAsFixed(2)}',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
                   onTap: () => {}),
+              SizedBox(height: 10.0),
               ListTile(
                 leading: Icon(
                   Icons.local_taxi,
                   color: Colors.black87,
                 ),
-                title: Text(state.km.toString()),
+                title: Text('${state.km.toStringAsFixed(3)}',
+                    style:
+                        TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 onTap: () {},
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.timer,
-                  color: Colors.black87,
-                ),
-                title: Text(state.stoptimetoDisplay),
-                onTap: () {},
-              )
             ],
           ),
         ),
-        SizedBox(height: 25.0),
-        _tituloSindical()
+        SizedBox(height: 6.0),
+        _tituloSindical(usuarioState)
       ],
     );
   }
 
-  Widget _tituloSindical() {
+  Widget _tituloSindical(UsuarioState usuarioState) {
     return Container(
       //margin: EdgeInsets.only(top: 330, left: 85),
       child: Text(
-        'X-0000',
+        usuarioState.tituloSindical,
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
       ),
     );

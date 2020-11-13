@@ -12,8 +12,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   bool parartaximetro = true;
   bool iniciaViaje;
   bool accion = false;
+  bool enEspera = false;
   int contador = 0;
   DateTime horaActual;
+  String accionChofer = "Esperar";
   @override
   void initState() {
     super.initState();
@@ -87,12 +89,14 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       mapaBloc.add(OnMarcarRecorrido());
       parartaximetro = true;
     }
-    taximetoBloc.add(OnStartIsPressed(inicio));
+    taximetoBloc.add(OnStartIsPressed(inicio, 5.00));
 
-    _cotizar(context, parartaximetro);
+    _cotizar(context, parartaximetro, 10);
     if (state.startIsPressed) {
       print('== Debo ir a la pantalla pago ====');
       await _verificaPrecios(context);
+      enEspera = false;
+      accionChofer = "Esperar";
       Future.delayed(Duration(milliseconds: 2000)).then((value) => {
             Navigator.pushNamed(context, 'cobro')
 
@@ -101,9 +105,55 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     }
   }
 
-  void _cotizar(BuildContext context, bool parar) async {
+  double calcularTarifa(TarifaState tarifaState, double km) {
+    List<dynamic> objeto;
+    List<dynamic> detalle;
+    double tarifa = 0;
+    var bandera = 0;
+    int tomado = 1;
+
+    objeto = tarifaState.horarios;
+    DateTime now = DateTime.now();
+    var contador = 0;
+    // final formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
+    for (var i = 0; i <= objeto.length - 1; i++) {
+      var horaInicial = objeto[i]["hora_inicial"];
+      var horaFinal = objeto[i]["hora_final"];
+      var arr = horaInicial.split(':');
+      var arr2 = horaFinal.split(':');
+
+      if (i > 0) {
+        tomado = 1;
+      }
+      final startTime = DateTime(now.year, now.month, now.day,
+          int.parse(arr[0]), int.parse(arr[1]), int.parse(arr[2]));
+      final endTime = DateTime(now.year, now.month, now.day + 1,
+          int.parse(arr2[0]), int.parse(arr2[1]), int.parse(arr2[2]));
+
+      final currentTime = DateTime.now();
+
+      if (currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
+        print("entrando a la cueva $i");
+        detalle = objeto[i]["detalle_horario"];
+        for (var j = 0; j <= detalle.length - 1; j++) {
+          if (bandera == 0) {
+            if (km >= detalle[j]["km_inicial"] &&
+                km <= detalle[j]["km_final"]) {
+              print("entro en ${detalle[j]["precio"].toDouble()}");
+              tarifa = detalle[j]["precio"].toDouble();
+              bandera = 1;
+            }
+          }
+        }
+      }
+    }
+    return tarifa;
+  }
+
+  void _cotizar(BuildContext context, bool parar, int intervalo_tiempo) async {
     if (!parar) {
-      miTimer = new Timer.periodic(const Duration(seconds: 20), (timer) {
+      miTimer =
+          new Timer.periodic(Duration(seconds: intervalo_tiempo), (timer) {
         print(DateTime.now());
         _verificaPrecios(context);
       });
@@ -112,33 +162,49 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     }
   }
 
+  double convertKM(double kilometraje) {
+    double kilometros = kilometraje / 1000;
+    kilometros = (kilometros * 100).toDouble();
+    kilometros = kilometros / 100;
+    String totalReal = '';
+
+    totalReal = kilometros.toStringAsFixed(3);
+
+    return double.parse(totalReal);
+  }
+
   void _verificaPrecios(BuildContext context) async {
     try {
-      contador++;
-//      final result = await InternetAddress.lookup('api.mapbox.com');
-      //    if (result.isNotEmpty && result[0].rawAddress.length == 4) {
-      print('connected');
       final taxiBloc = context.bloc<TaximetroBloc>();
-      final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
-      final inicio = context.bloc<TaximetroBloc>().state.inicio;
-      // final trafficService = new TrafficService();
-      //final traffincResponse =
-      //  await trafficService.getCoordsInicioYFin(inicio, destino);
-      //final duracion = traffincResponse.routes[0].duration;
-      //final distancia = traffincResponse.routes[0].distance;
-      final distancia = await calcularDistancia(inicio, destino);
-      double duracion = 24000;
-      print('====$distancia====');
+      final tarifaState = context.bloc<TarifaBloc>().state;
 
-      taxiBloc
-          .add(OnCorreTaximetro(distancia, duracion, destino, parartaximetro));
-
-      print('==== las consultas son: ${contador} ====');
-      //    } else {
-      //    print('conexion perdina perdida');
-      // }
+      if (!enEspera) {
+        contador++;
+        final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
+        final inicio = context.bloc<TaximetroBloc>().state.inicio;
+        double distancia = await calcularDistancia(inicio, destino);
+        final auxDistancia = await convertKM(distancia);
+        final miDistancia = taxiBloc.state.km + auxDistancia;
+        final miTarifa = await calcularTarifa(tarifaState, miDistancia);
+        print(
+            '=== mi distancia === : $auxDistancia ==== mi tarifa ====:::::: $miTarifa');
+        double duracion = 24000;
+        taxiBloc.add(OnCorreTaximetro(
+            distancia,
+            duracion,
+            destino,
+            parartaximetro,
+            miTarifa,
+            enEspera,
+            tarifaState.tarifaMinima,
+            tarifaState.tarifaTiempo));
+      } else {
+        print(
+            "=== mi tarifa ${tarifaState.tarifaTiempo}  ==== mi intervalo ${tarifaState.intervaloTiempo}, ==== mi programado ${10.toString()}");
+        taxiBloc.add(OnEspera(
+            tarifaState.tarifaTiempo, tarifaState.intervaloTiempo, 10));
+      }
     } on SocketException catch (_) {
-      // Estimar precios !!!!
       print('not connected');
     }
   }
@@ -148,14 +214,11 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     const radioTierra = 6378.14;
     final lat = deg2rad(destino.latitude - inicio.latitude);
     final long = deg2rad(destino.longitude - inicio.longitude);
-    print('MI lat ===== $lat ====');
-    print('MI lon ===== $long ====');
     final a = sin(lat / 2) * sin(lat / 2) +
         cos(deg2rad(inicio.latitude)) *
             cos(deg2rad(destino.latitude)) *
             sin(long / 2) *
             sin(long / 2);
-    print('MI AAA ===== $a ====');
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
     final d = radioTierra * c; // Distance in km
     distancia = d * 1000;
@@ -207,6 +270,16 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     );
   }
 
+  void accionarEsperaOAvanza() {
+    if (!enEspera) {
+      accionChofer = "Continuar";
+      enEspera = true;
+    } else {
+      accionChofer = "Esperar";
+      enEspera = false;
+    }
+  }
+
   void _alertaConfirmacionDetener(BuildContext context, TaximetroState state) {
     // set up the buttons
     Widget cancelButton = FlatButton(
@@ -217,8 +290,11 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       },
     );
     Widget esperarButton = FlatButton(
-      child: Text("Esperar"),
-      onPressed: () {},
+      child: Text(accionChofer),
+      onPressed: () {
+        accionarEsperaOAvanza();
+        Navigator.of(context).pop();
+      },
     );
     Widget continueButton = FlatButton(
       child: Text("Confirmar"),

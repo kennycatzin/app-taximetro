@@ -73,6 +73,8 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       yield state.copyWith(horaInicio: event.hora);
     } else if (event is OnHoraFinal) {
       yield state.copyWith(horaFinal: event.hora);
+    } else if (event is OnEspera) {
+      yield* this._onEspera(event);
     }
   }
 
@@ -85,12 +87,16 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
           startIsPressed: !state.startIsPressed,
           stoptimetoDisplay: stoptimetoDisplay,
           inicio: event.centroMapa,
-          pago: double.parse(pagoInicio));
+          pago: event.banderazo);
     } else {
       // swatch.reset();
       // stopstopwatch();
       print('=== para viajesin! ===');
-      yield state.copyWith(startIsPressed: !state.startIsPressed);
+      yield state.copyWith(
+          startIsPressed: !state.startIsPressed,
+          metaTiempo: 0,
+          metaCobro: 0.0,
+          cobraTiempo: false);
     }
     print(event.centroMapa);
     print(state.stoptimetoDisplay);
@@ -128,19 +134,67 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
         pago: double.parse(totalReal));
   }
 
+  Stream<TaximetroState> _onEspera(OnEspera event) async* {
+    double pago;
+
+    if (state.cobraTiempo) {
+      // despues de bandera para hacer el cambio cada 5 segundos
+      pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
+      pago = double.parse(pago.toStringAsFixed(2));
+      print(pago);
+      print("despues de bandera para hacer el cambio cada 5 segundos");
+
+      yield state.copyWith(pago: state.pago + pago);
+    } else {
+      yield state.copyWith(metaTiempo: state.metaTiempo + event.prograInter);
+      if (state.metaTiempo >= 180) {
+        // despues de cumplir los segundos se da bandera de cobrar normal
+        print("despues de cumplir los segundos se da bandera de cobrar normal");
+        pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
+        pago = double.parse(pago.toStringAsFixed(2));
+
+        print(pago);
+        // realiza la suma
+        yield state.copyWith(
+            pago: state.pago + pago + state.metaCobro, cobraTiempo: true);
+      } else {
+        // antes del cobro
+        pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
+        pago = double.parse(pago.toStringAsFixed(2));
+
+        print("antes del cobro");
+
+        yield state.copyWith(
+            metaTiempo: state.metaTiempo + event.prograInter,
+            metaCobro: state.metaCobro + pago);
+        print(state.metaTiempo);
+        print(state.metaCobro);
+      }
+    }
+  }
+
   Stream<TaximetroState> _onCorreTaximetro(OnCorreTaximetro event) async* {
-    CotizandoHelper cotizaController =
-        new CotizandoHelper(kilometraje: event.km, tiempo: event.duracion);
+    CotizandoHelper cotizaController = new CotizandoHelper(
+        kilometraje: event.km, tiempo: event.duracion, tarifa: event.tarifa);
+    double minutos;
+    double kilometros = 0;
+    double pagoReal = state.pago;
+    double tarifaTiempo = 0;
 
-    final minutos = cotizaController.calculaTiempoEnMinutos();
-    final kilometros = cotizaController.calculaDistancia();
-    final totalViaje = cotizaController.calculaPrecio();
+    if (!event.enEspera) {
+      minutos = cotizaController.calculaTiempoEnMinutos();
+      kilometros = cotizaController.calculaDistancia();
+      final totalViaje = cotizaController.calculaPrecio();
 
-    double pagoReal = state.pago + totalViaje;
+      pagoReal = pagoReal + totalViaje;
+    } else {
+      // Aqui se calcula el tiempo de espera
+
+    }
 
     if (event.estado) {
-      if (pagoReal < 25) {
-        pagoReal = 25.00;
+      if (pagoReal < event.tarifaMinima) {
+        pagoReal = event.tarifaMinima.toDouble();
       }
     }
 

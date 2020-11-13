@@ -151,7 +151,7 @@ class _CobroPageState extends State<CobroPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      '${taxiBloc.km.toStringAsFixed(3)}',
+                      '${taxiBloc.km.toStringAsFixed(3)} KM',
                       style: TextStyle(fontSize: 18),
                     )
                   ],

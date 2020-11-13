@@ -3,11 +3,12 @@ part of 'helpers.dart';
 class CotizandoHelper {
   double kilometraje;
   double tiempo;
-  CotizandoHelper({this.kilometraje, this.tiempo});
+  double tarifa;
+  CotizandoHelper({this.kilometraje, this.tiempo, this.tarifa});
 
   double calculaPrecio() {
     double kilometros = kilometraje / 1000;
-    double totalViaje = (kilometros * 9.5).toDouble();
+    double totalViaje = (kilometros * tarifa).toDouble();
 
     return totalViaje.roundToDouble();
   }

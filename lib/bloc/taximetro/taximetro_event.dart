@@ -5,7 +5,8 @@ abstract class TaximetroEvent {}
 
 class OnStartIsPressed extends TaximetroEvent {
   final LatLng centroMapa;
-  OnStartIsPressed(this.centroMapa);
+  final double banderazo;
+  OnStartIsPressed(this.centroMapa, this.banderazo);
 }
 
 class OnCotizarPrecio extends TaximetroEvent {
@@ -20,8 +21,21 @@ class OnCorreTaximetro extends TaximetroEvent {
   final double duracion;
   final LatLng inicio;
   final bool estado;
+  final double tarifa;
+  final bool enEspera;
+  final double tarifaMinima;
+  final double tarifaTiempo;
 
-  OnCorreTaximetro(this.km, this.duracion, this.inicio, this.estado);
+  OnCorreTaximetro(this.km, this.duracion, this.inicio, this.estado,
+      this.tarifa, this.enEspera, this.tarifaMinima, this.tarifaTiempo);
+}
+
+class OnEspera extends TaximetroEvent {
+  final double tarifaTiempo;
+  final int intervalo;
+  final int prograInter;
+
+  OnEspera(this.tarifaTiempo, this.intervalo, this.prograInter);
 }
 
 class OnIniciarValores extends TaximetroEvent {}
