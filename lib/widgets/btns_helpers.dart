@@ -26,7 +26,7 @@ class _BuildBtnsHelpers extends StatelessWidget {
         alignment: Alignment.bottomLeft,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: [BtnUbicacion(), BtnSeguirUbicacion(), BtnMiRuta()],
+          children: [BtnUbicacion(), BtnMiRuta(), BtnSeguirUbicacion()],
         ),
       ),
     );

@@ -21,7 +21,7 @@ class UsuarioProvider {
     if (decodedResp.containsKey('token')) {
       // TODO salvar el token en el sstorage
       _prefs.token = decodedResp['token'];
-      _prefs.usuarioID = decodedResp['id'];
+      _prefs.usuarioID = decodedResp['operador']['id'];
 
       return {'ok': 'true', 'token': decodedResp['token'], 'data': decodedResp};
     } else {

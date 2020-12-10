@@ -16,11 +16,11 @@ class ViajesResponse {
   });
 
   List<Datum> data;
-  int total;
+  double total;
 
   factory ViajesResponse.fromJson(Map<String, dynamic> json) => ViajesResponse(
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-        total: json["total"],
+        total: json["total"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,7 +48,7 @@ class Datum {
   double km;
   String horaInicio;
   String horaTermino;
-  int precio;
+  double precio;
   int idChofer;
   int usuarioCreacion;
   int usuarioModificacion;
@@ -61,7 +61,7 @@ class Datum {
         km: json["km"].toDouble(),
         horaInicio: json["hora_inicio"],
         horaTermino: json["hora_termino"],
-        precio: json["precio"],
+        precio: json["precio"].toDouble(),
         idChofer: json["id_chofer"],
         usuarioCreacion: json["usuario_creacion"],
         usuarioModificacion: json["usuario_modificacion"],

@@ -279,7 +279,10 @@ class _CobroPageState extends State<CobroPage> {
     final taxiBloc = context.bloc<TaximetroBloc>();
     final mapaBloc = context.bloc<MapaBloc>();
     Map info = await viajeProvider.guardarViaje(
-        taxiBloc.state.km, '11:40:10', '11:50:47', taxiBloc.state.pago);
+        taxiBloc.state.km,
+        taxiBloc.state.horaInicio,
+        taxiBloc.state.horaFinal,
+        taxiBloc.state.pago);
     Navigator.pop(context);
 
     if (info['ok'] == true) {

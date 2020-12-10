@@ -69,8 +69,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     final busquedaBloc = context.bloc<BusquedaBloc>();
     final mapaBloc = context.bloc<MapaBloc>();
     final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
-    String hora = DateFormat.jm().format(DateTime.now());
-
+    DateTime hora = DateTime.now();
+    String horaReal = '${hora.hour}:${hora.minute}:${hora.second}';
     mapaBloc.add(OnSeguirUbicacion());
 
     if (!state.startIsPressed) {
@@ -78,14 +78,14 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       mapaBloc.add(OnCrearMarcadorInicio(inicio));
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMarcarRecorrido());
-      taximetoBloc.add(OnHoraInicio(hora));
+      taximetoBloc.add(OnHoraInicio(horaReal));
       parartaximetro = false;
     } else {
       print('=== Voy a quitar markers ===');
       busquedaBloc.add(OnDesActivarMarcadorManual());
       mapaBloc.add(OnCrearMarcadorFinal(inicio));
       mapaBloc.add(OnQuitarMarcadores());
-      taximetoBloc.add(OnHoraFinal(hora));
+      taximetoBloc.add(OnHoraFinal(horaReal));
       mapaBloc.add(OnMarcarRecorrido());
       parartaximetro = true;
     }
@@ -167,9 +167,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     kilometros = (kilometros * 100).toDouble();
     kilometros = kilometros / 100;
     String totalReal = '';
-
     totalReal = kilometros.toStringAsFixed(3);
-
     return double.parse(totalReal);
   }
 
@@ -202,7 +200,11 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         print(
             "=== mi tarifa ${tarifaState.tarifaTiempo}  ==== mi intervalo ${tarifaState.intervaloTiempo}, ==== mi programado ${10.toString()}");
         taxiBloc.add(OnEspera(
-            tarifaState.tarifaTiempo, tarifaState.intervaloTiempo, 10));
+            tarifaState.tarifaTiempo,
+            tarifaState.intervaloTiempo,
+            10,
+            parartaximetro,
+            tarifaState.tarifaMinima));
       }
     } on SocketException catch (_) {
       print('not connected');
@@ -292,6 +294,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     Widget esperarButton = FlatButton(
       child: Text(accionChofer),
       onPressed: () {
+        _verificaPrecios(context);
         accionarEsperaOAvanza();
         Navigator.of(context).pop();
       },

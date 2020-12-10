@@ -8,8 +8,15 @@ import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/user_service.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final usuarioProvider = new UsuarioProvider();
+
+  Future<bool> _onWillPop() => Future.value(false);
 
   @override
   Widget build(BuildContext context) {

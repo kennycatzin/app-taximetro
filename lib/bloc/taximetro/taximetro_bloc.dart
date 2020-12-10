@@ -84,19 +84,23 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       // swatch.start();
       // startTimer();
       yield state.copyWith(
-          startIsPressed: !state.startIsPressed,
-          stoptimetoDisplay: stoptimetoDisplay,
-          inicio: event.centroMapa,
-          pago: event.banderazo);
+        startIsPressed: !state.startIsPressed,
+        stoptimetoDisplay: stoptimetoDisplay,
+        inicio: event.centroMapa,
+        pago: event.banderazo,
+        tiempoCobroMeta: 0.0,
+        metaTiempo: -10,
+        metaCobro: 0.0,
+        cobraTiempo: false,
+        metaDistancia: 0.0,
+      );
     } else {
       // swatch.reset();
       // stopstopwatch();
       print('=== para viajesin! ===');
       yield state.copyWith(
-          startIsPressed: !state.startIsPressed,
-          metaTiempo: 0,
-          metaCobro: 0.0,
-          cobraTiempo: false);
+        startIsPressed: !state.startIsPressed,
+      );
     }
     print(event.centroMapa);
     print(state.stoptimetoDisplay);
@@ -136,40 +140,55 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
 
   Stream<TaximetroState> _onEspera(OnEspera event) async* {
     double pago;
+    pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
+    pago = double.parse(pago.toStringAsFixed(2));
+    print(state.tiempoCobroMeta);
 
     if (state.cobraTiempo) {
       // despues de bandera para hacer el cambio cada 5 segundos
-      pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
-      pago = double.parse(pago.toStringAsFixed(2));
-      print(pago);
       print("despues de bandera para hacer el cambio cada 5 segundos");
 
-      yield state.copyWith(pago: state.pago + pago);
+      yield state.copyWith(
+          pago: state.pago + pago,
+          tiempoCobroMeta: state.tiempoCobroMeta + pago);
     } else {
       yield state.copyWith(metaTiempo: state.metaTiempo + event.prograInter);
       if (state.metaTiempo >= 180) {
         // despues de cumplir los segundos se da bandera de cobrar normal
         print("despues de cumplir los segundos se da bandera de cobrar normal");
-        pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
-        pago = double.parse(pago.toStringAsFixed(2));
-
-        print(pago);
         // realiza la suma
         yield state.copyWith(
-            pago: state.pago + pago + state.metaCobro, cobraTiempo: true);
+            pago: state.pago + pago + state.metaCobro,
+            cobraTiempo: true,
+            tiempoCobroMeta: state.tiempoCobroMeta + pago);
       } else {
         // antes del cobro
-        pago = (event.prograInter * event.tarifaTiempo) / event.intervalo;
-        pago = double.parse(pago.toStringAsFixed(2));
 
         print("antes del cobro");
 
         yield state.copyWith(
             metaTiempo: state.metaTiempo + event.prograInter,
-            metaCobro: state.metaCobro + pago);
+            metaCobro: state.metaCobro + pago,
+            tiempoCobroMeta: state.tiempoCobroMeta + pago);
         print(state.metaTiempo);
         print(state.metaCobro);
       }
+    }
+    if (event.finaliza) {
+      double miTotal = state.tiempoCobroMeta + 5;
+      print("Mi total es: =====" + miTotal.toString());
+      print("=== mi tiempo de cobro es ${state.tiempoCobroMeta}");
+      if (state.metaDistancia < event.tarifaMinima) {
+        // Calcula el total mínimo
+        miTotal = event.tarifaMinima + state.tiempoCobroMeta;
+        pago = miTotal;
+      } else {
+        print("==== valgo masss ===");
+        pago = state.pago;
+      }
+      yield state.copyWith(
+        pago: pago,
+      );
     }
   }
 
@@ -180,16 +199,16 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     double kilometros = 0;
     double pagoReal = state.pago;
     double tarifaTiempo = 0;
+    double totalViaje = 0;
 
     if (!event.enEspera) {
       minutos = cotizaController.calculaTiempoEnMinutos();
       kilometros = cotizaController.calculaDistancia();
-      final totalViaje = cotizaController.calculaPrecio();
+      totalViaje = cotizaController.calculaPrecio();
+      print("mi principio es :: ======== ${state.pago}");
+      print("mi total de km  es :: ======== ${totalViaje}");
 
       pagoReal = pagoReal + totalViaje;
-    } else {
-      // Aqui se calcula el tiempo de espera
-
     }
 
     if (event.estado) {
@@ -201,6 +220,7 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     yield state.copyWith(
         km: state.km + kilometros,
         stoptimetoDisplay: '00:00:00',
+        metaDistancia: pagoReal,
         pago: pagoReal,
         inicio: event.inicio);
   }

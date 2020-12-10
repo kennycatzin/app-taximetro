@@ -18,8 +18,7 @@ class MapaPage extends StatefulWidget {
   _MapaPageState createState() => _MapaPageState();
 }
 
-class _MapaPageState extends State<MapaPage>
-    with AutomaticKeepAliveClientMixin {
+class _MapaPageState extends State<MapaPage> {
   final prefs = new PreferenciasUsuario();
 
   @override
@@ -49,7 +48,7 @@ class _MapaPageState extends State<MapaPage>
 
   @override
   Widget build(BuildContext context) {
-    final taximetoBloc = context.bloc<TaximetroBloc>();
+    final taximetoBloc = BlocProvider.of<TaximetroBloc>(context);
     return Scaffold(
         body: Stack(
           children: [
@@ -100,8 +99,4 @@ class _MapaPageState extends State<MapaPage>
       },
     );
   }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
 }

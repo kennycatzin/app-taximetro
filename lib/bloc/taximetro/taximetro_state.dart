@@ -14,6 +14,8 @@ class TaximetroState {
   final int metaTiempo;
   final bool cobraTiempo;
   final double metaCobro;
+  final double metaDistancia;
+  final double tiempoCobroMeta;
 
   TaximetroState(
       {this.startIsPressed = false,
@@ -27,7 +29,9 @@ class TaximetroState {
       this.horaFinal,
       this.metaTiempo = -10,
       this.cobraTiempo = false,
-      this.metaCobro = 0.0});
+      this.metaCobro = 0.0,
+      this.metaDistancia = 0.0,
+      this.tiempoCobroMeta = 0.0});
 
   TaximetroState copyWith(
           {bool startIsPressed,
@@ -41,7 +45,9 @@ class TaximetroState {
           String horaFinal,
           int metaTiempo,
           bool cobraTiempo,
-          double metaCobro}) =>
+          double metaCobro,
+          double metaDistancia,
+          double tiempoCobroMeta}) =>
       TaximetroState(
           startIsPressed: startIsPressed ?? this.startIsPressed,
           stoptimetoDisplay: stoptimetoDisplay ?? this.stoptimetoDisplay,
@@ -54,5 +60,7 @@ class TaximetroState {
           horaFinal: horaFinal ?? this.horaFinal,
           metaTiempo: metaTiempo ?? this.metaTiempo,
           cobraTiempo: cobraTiempo ?? this.cobraTiempo,
-          metaCobro: metaCobro ?? this.metaCobro);
+          metaCobro: metaCobro ?? this.metaCobro,
+          metaDistancia: metaDistancia ?? this.metaDistancia,
+          tiempoCobroMeta: tiempoCobroMeta ?? this.tiempoCobroMeta);
 }

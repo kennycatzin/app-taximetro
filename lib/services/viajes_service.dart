@@ -12,7 +12,9 @@ class ViajesService {
 
   // final _prod = 'ruta-server';
   Future<List<Datum>> listaViajes() async {
-    final miUrl = '$_prod/api/get-viajes/1';
+    final userId = await _prefs.usuarioID;
+    final miUrl = '$_prod/api/get-viajes/' + userId.toString();
+    print(miUrl);
 
     final resp = await http.get(miUrl);
     final viajesResponse = viajesResponseFromJson(resp.body);
@@ -28,13 +30,14 @@ class ViajesService {
 
   Future<Map<String, dynamic>> guardarViaje(
       double km, String horaInicio, String horaFinal, double precio) async {
+    final userId = await _prefs.usuarioID;
     final data = {
       'km': km.toDouble(),
       'hora_inicio': horaInicio,
       'hora_termino': horaFinal,
       'precio': precio.toDouble(),
-      'id_chofer': 1.toInt(),
-      'usuario_creacion': 1.toInt()
+      'id_chofer': userId.toInt(),
+      'usuario_creacion': _prefs.usuarioID.toInt()
     };
     print('===' + json.encode(data));
 
