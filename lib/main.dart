@@ -73,9 +73,9 @@ class _MyAppState extends State<MyApp> {
           // ),
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
-          initialRoute: 'loading',
+          // initialRoute: 'loading',
           // home: TaxistaPerfil(),
-          // home: LoginPage(),
+          home: LoginPage(),
           routes: {
             'mapa': (_) => MapaPage(),
             'loading': (_) => LoadingPage(),

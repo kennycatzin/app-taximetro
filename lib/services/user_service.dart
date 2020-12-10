@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:mapa_app/global/enviroment.dart';
 import 'package:mapa_app/services/preference_usuario.dart';
 
 class UsuarioProvider {
@@ -55,5 +56,25 @@ class UsuarioProvider {
     } else {
       return {'ok': false, 'mensaje': decodedResp['error']['message']};
     }
+  }
+
+  // Future<bool> isLoggedIn() async {
+  //   final token = await this._storage.read(key: 'token');
+  //   final resp = await http.get('${Enviroment.apiUrlDev}/login/renovar',
+  //       headers: {'Content-Type': 'application/json', 'x-token': token});
+
+  //   if (resp.statusCode == 200) {
+  //     //nfinal loginResponse = loginResponseFromJson(resp.body);
+  //     // this.usuario = loginResponse.usuario;
+  //     // await this._guardarToken(loginResponse.token);
+  //     return true;
+  //   } else {
+  //     this.logout();
+  //     return false;
+  //   }
+  // }
+
+  Future logout() async {
+    // await _prefs.delete(key: 'token');
   }
 }
