@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:mapa_app/global/enviroment.dart';
 import 'package:mapa_app/models/viajes_response.dart';
 import 'package:mapa_app/services/preference_usuario.dart';
 
@@ -13,7 +14,7 @@ class ViajesService {
   // final _prod = 'ruta-server';
   Future<List<Datum>> listaViajes() async {
     final userId = await _prefs.usuarioID;
-    final miUrl = '$_prod/api/get-viajes/' + userId.toString();
+    final miUrl = '${Enviroment.apiUrlDev}/get-viajes/' + userId.toString();
     print(miUrl);
 
     final resp = await http.get(miUrl);
@@ -41,7 +42,7 @@ class ViajesService {
     };
     print('===' + json.encode(data));
 
-    final resp = await http.post('$_prod/api/store-viaje',
+    final resp = await http.post('${Enviroment.apiUrlDev}/store-viaje',
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },

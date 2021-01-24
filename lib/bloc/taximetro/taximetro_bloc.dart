@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_app/helpers/helpers.dart';
@@ -18,6 +17,7 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
   String kmDis = '0 km';
   final pago = 0;
   final km = '';
+  List<Map<String, double>> _puntosRuta = [];
 
   void startTimer() {
     Timer(dur, keeprunning);
@@ -84,19 +84,18 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       // swatch.start();
       // startTimer();
       yield state.copyWith(
-        startIsPressed: !state.startIsPressed,
-        stoptimetoDisplay: stoptimetoDisplay,
-        inicio: event.centroMapa,
-        pago: event.banderazo,
-        tiempoCobroMeta: 0.0,
-        metaTiempo: -10,
-        metaCobro: 0.0,
-        cobraTiempo: false,
-        metaDistancia: 0.0,
-      );
+          startIsPressed: !state.startIsPressed,
+          stoptimetoDisplay: stoptimetoDisplay,
+          inicio: event.centroMapa,
+          pago: event.banderazo,
+          tiempoCobroMeta: 0.0,
+          metaTiempo: -10,
+          metaCobro: 0.0,
+          cobraTiempo: false,
+          metaDistancia: 0.0,
+          pagoTiempo: 0.0);
+      this._puntosRuta = [];
     } else {
-      // swatch.reset();
-      // stopstopwatch();
       print('=== para viajesin! ===');
       yield state.copyWith(
         startIsPressed: !state.startIsPressed,
@@ -104,16 +103,6 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
     }
     print(event.centroMapa);
     print(state.stoptimetoDisplay);
-    // if (state.startIsPressed) {
-    //   swatch.reset();
-    //   stoptimetoDisplay = "00:00:00";
-    // }
-
-    // yield state.copyWith(
-    //     startIsPressed: !state.startIsPressed,
-    //     stoptimetoDisplay: stoptimetoDisplay,
-    //     inicio: event.centroMapa,
-    //     pago: double.parse(pagoInicio));
   }
 
   Stream<TaximetroState> _onIniciarValores(OnIniciarValores event) async* {
@@ -149,7 +138,7 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       print("despues de bandera para hacer el cambio cada 5 segundos");
 
       yield state.copyWith(
-          pago: state.pago + pago,
+          pagoTiempo: state.pagoTiempo + pago,
           tiempoCobroMeta: state.tiempoCobroMeta + pago);
     } else {
       yield state.copyWith(metaTiempo: state.metaTiempo + event.prograInter);
@@ -158,14 +147,11 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
         print("despues de cumplir los segundos se da bandera de cobrar normal");
         // realiza la suma
         yield state.copyWith(
-            pago: state.pago + pago + state.metaCobro,
+            pagoTiempo: state.pagoTiempo + pago + state.metaCobro,
             cobraTiempo: true,
             tiempoCobroMeta: state.tiempoCobroMeta + pago);
       } else {
         // antes del cobro
-
-        print("antes del cobro");
-
         yield state.copyWith(
             metaTiempo: state.metaTiempo + event.prograInter,
             metaCobro: state.metaCobro + pago,
@@ -178,13 +164,15 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       double miTotal = state.tiempoCobroMeta + 5;
       print("Mi total es: =====" + miTotal.toString());
       print("=== mi tiempo de cobro es ${state.tiempoCobroMeta}");
-      if (state.metaDistancia < event.tarifaMinima) {
+      // no se le ha sumado
+      double totalParcial = await this.calculaPrecioFinal(event.banderazo);
+      if (totalParcial < event.tarifaMinima) {
         // Calcula el total mínimo
-        miTotal = event.tarifaMinima + state.tiempoCobroMeta;
+        miTotal = event.tarifaMinima + state.pagoTiempo;
         pago = miTotal;
       } else {
         print("==== valgo masss ===");
-        pago = state.pago;
+        pago = totalParcial + state.pagoTiempo;
       }
       yield state.copyWith(
         pago: pago,
@@ -210,11 +198,21 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
 
       pagoReal = pagoReal + totalViaje;
     }
+    print("mis km ====== $kilometros");
+    Map<String, double> newPunto = {
+      "tarifa": event.tarifa,
+      "distancia": kilometros
+    };
+    _puntosRuta.insert(0, newPunto);
+    print(_puntosRuta.length);
 
     if (event.estado) {
+      pagoReal = await this.calculaPrecioFinal(event.banderazo);
       if (pagoReal < event.tarifaMinima) {
         pagoReal = event.tarifaMinima.toDouble();
       }
+      pagoReal = pagoReal + state.pagoTiempo;
+      // TODO recalcular precios!!!!!!
     }
 
     yield state.copyWith(
@@ -223,5 +221,15 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
         metaDistancia: pagoReal,
         pago: pagoReal,
         inicio: event.inicio);
+  }
+
+  double calculaPrecioFinal(double banderazo) {
+    double miTotal = 0;
+    for (var i = 0; i <= _puntosRuta.length - 1; i++) {
+      miTotal += (_puntosRuta[i]["tarifa"] * _puntosRuta[i]["distancia"]);
+    }
+    miTotal = miTotal + banderazo;
+    print("calculo mi totalote ======= $miTotal");
+    return miTotal;
   }
 }

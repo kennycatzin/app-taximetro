@@ -13,9 +13,12 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   bool iniciaViaje;
   bool accion = false;
   bool enEspera = false;
+  bool viajeFinalizado = false;
   int contador = 0;
   DateTime horaActual;
   String accionChofer = "Esperar";
+  String cabeceraChofer = "¿Cobrar tiempo de espera?";
+
   @override
   void initState() {
     super.initState();
@@ -40,28 +43,32 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         margin:
             EdgeInsets.only(top: size.width * 0.39, left: size.height * .17),
         child: MaterialButton(
-          onPressed: () {
-            if (parartaximetro) {
-              _alertaConfirmacionInicio(context, state);
-              print(accion);
-              if (accion) {
-                _iniciarDetenerViaje(context, state);
-              } else {
-                return;
-              }
-            } else {
-              _alertaConfirmacionDetener(context, state);
-            }
-          },
-          color: Colors.redAccent,
+          color: (!enEspera) ? Colors.redAccent : Colors.green,
           textColor: Colors.white,
           child: Icon(
-            (state.startIsPressed) ? Icons.pause : Icons.play_arrow,
+            (state.startIsPressed)
+                ? (!enEspera)
+                    ? Icons.pause
+                    : Icons.timer
+                : Icons.play_arrow,
             size: 50,
           ),
           padding: EdgeInsets.all(16),
           shape: CircleBorder(),
+          onPressed: viajeFinalizado ? null : () => accionBoton(state),
         ));
+  }
+
+  void accionBoton(TaximetroState state) {
+    if (parartaximetro) {
+      _alertaConfirmacionInicio(context, state);
+      print(accion);
+      if (accion) {
+        _iniciarDetenerViaje(context, state);
+      }
+    } else {
+      _alertaConfirmacionDetener(context, state);
+    }
   }
 
   void _iniciarDetenerViaje(BuildContext context, TaximetroState state) async {
@@ -81,6 +88,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       taximetoBloc.add(OnHoraInicio(horaReal));
       parartaximetro = false;
     } else {
+      viajeFinalizado = true;
       print('=== Voy a quitar markers ===');
       busquedaBloc.add(OnDesActivarMarcadorManual());
       mapaBloc.add(OnCrearMarcadorFinal(inicio));
@@ -97,6 +105,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       await _verificaPrecios(context);
       enEspera = false;
       accionChofer = "Esperar";
+      cabeceraChofer = "¿Cobrar tiempo de espera?";
       Future.delayed(Duration(milliseconds: 2000)).then((value) => {
             Navigator.pushNamed(context, 'cobro')
 
@@ -195,7 +204,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
             miTarifa,
             enEspera,
             tarifaState.tarifaMinima,
-            tarifaState.tarifaTiempo));
+            tarifaState.tarifaTiempo,
+            tarifaState.banderazo));
       } else {
         print(
             "=== mi tarifa ${tarifaState.tarifaTiempo}  ==== mi intervalo ${tarifaState.intervaloTiempo}, ==== mi programado ${10.toString()}");
@@ -204,7 +214,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
             tarifaState.intervaloTiempo,
             10,
             parartaximetro,
-            tarifaState.tarifaMinima));
+            tarifaState.tarifaMinima,
+            tarifaState.banderazo));
       }
     } on SocketException catch (_) {
       print('not connected');
@@ -233,16 +244,25 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   void _alertaConfirmacionInicio(BuildContext context, TaximetroState state) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("Cancelar"),
+    Widget cancelButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.redAccent,
+      textColor: Colors.white,
+      label: Text('No'),
+      icon: Icon(Icons.cancel),
       onPressed: () {
         accion = false;
         iniciaViaje = false;
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = FlatButton(
-      child: Text("Confirmar"),
+
+    Widget continueButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.green,
+      textColor: Colors.white,
+      label: Text('Si'),
+      icon: Icon(Icons.check_circle),
       onPressed: () {
         iniciaViaje = true;
         parartaximetro = false;
@@ -254,13 +274,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         _iniciarDetenerViaje(context, state);
       },
     );
+
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Alerta de confirmación"),
-      content: Text("¿Desea iniciar viaje?"),
+      title: Center(child: Text("¿Desea iniciar viaje?")),
       actions: [
-        cancelButton,
         continueButton,
+        cancelButton,
       ],
     );
     // show the dialog
@@ -274,33 +294,51 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   void accionarEsperaOAvanza() {
     if (!enEspera) {
-      accionChofer = "Continuar";
+      accionChofer = "Si";
+      cabeceraChofer = "¿Continuar con el viaje?";
+
       enEspera = true;
     } else {
-      accionChofer = "Esperar";
+      accionChofer = "Si";
+      cabeceraChofer = "¿Cobrar tiempo de espera?";
+
       enEspera = false;
     }
   }
 
   void _alertaConfirmacionDetener(BuildContext context, TaximetroState state) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("Cancelar"),
+    Widget cancelButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.red,
+      textColor: Colors.white,
+      label: Text('No'),
+      icon: Icon(Icons.cancel),
       onPressed: () {
         accion = false;
         Navigator.of(context).pop();
       },
     );
-    Widget esperarButton = FlatButton(
-      child: Text(accionChofer),
+
+    Widget esperarButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.green,
+      textColor: Colors.white,
+      label: Text(accionChofer),
+      icon: Icon((!enEspera) ? Icons.timer : Icons.time_to_leave),
       onPressed: () {
         _verificaPrecios(context);
         accionarEsperaOAvanza();
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = FlatButton(
-      child: Text("Confirmar"),
+
+    Widget continueButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.blue,
+      textColor: Colors.white,
+      label: Text("Finalizar viaje"),
+      icon: Icon(Icons.payments_sharp),
       onPressed: () {
         iniciaViaje = false;
         parartaximetro = true;
@@ -309,15 +347,12 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         Navigator.of(context).pop();
       },
     );
+
     // set up the AlertDialog
+    // Cobrar tiempo de espera
     AlertDialog alert = AlertDialog(
-      title: Text("Alerta de confirmación"),
-      content: Text("¿Desea detener el  viaje?"),
-      actions: [
-        cancelButton,
-        esperarButton,
-        continueButton,
-      ],
+      title: Text(cabeceraChofer),
+      actions: [esperarButton, cancelButton, continueButton],
     );
     // show the dialog
     showDialog(

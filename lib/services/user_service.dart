@@ -12,7 +12,7 @@ class UsuarioProvider {
   Future<Map<String, dynamic>> login(String email, String password) async {
     final authData = {'usuario': email, 'password': password};
 
-    final resp = await http.post('$_prod/api/login',
+    final resp = await http.post('${Enviroment.apiUrlDev}/login',
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
@@ -23,7 +23,6 @@ class UsuarioProvider {
       // TODO salvar el token en el sstorage
       _prefs.token = decodedResp['token'];
       _prefs.usuarioID = decodedResp['operador']['id'];
-
       return {'ok': 'true', 'token': decodedResp['token'], 'data': decodedResp};
     } else {
       if (decodedResp['ok'] == "pago") {
@@ -58,23 +57,40 @@ class UsuarioProvider {
     }
   }
 
-  // Future<bool> isLoggedIn() async {
-  //   final token = await this._storage.read(key: 'token');
-  //   final resp = await http.get('${Enviroment.apiUrlDev}/login/renovar',
-  //       headers: {'Content-Type': 'application/json', 'x-token': token});
+  Future<Map<String, dynamic>> isLoggedIn() async {
+    final token = await this._prefs.token;
+    final resp = await http.get('${Enviroment.apiUrlDev}/renovar-token',
+        headers: {'Content-Type': 'application/json', 'x-token': token});
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> decodedResp = json.decode(resp.body);
+      print(decodedResp);
+      _prefs.token = decodedResp['token'];
+      if (decodedResp.containsKey('token')) {
+        // TODO salvar el token en el sstorage
+        _prefs.token = decodedResp['token'];
+        _prefs.usuarioID = decodedResp['operador']['id'];
+        return {
+          'ok': 'true',
+          'token': decodedResp['token'],
+          'data': decodedResp
+        };
+      } else {
+        if (decodedResp['ok'] == "pago") {
+          return {
+            'ok': 'pago',
+            'mensaje': "Favor de pasar a la secretaria para realizar el pago"
+          };
+        }
+        return {'ok': 'false', 'mensaje': decodedResp['mensaje']};
+      }
+    } else {
+      this.logout();
+      return {'ok': 'invalido'};
+    }
+  }
 
-  //   if (resp.statusCode == 200) {
-  //     //nfinal loginResponse = loginResponseFromJson(resp.body);
-  //     // this.usuario = loginResponse.usuario;
-  //     // await this._guardarToken(loginResponse.token);
-  //     return true;
-  //   } else {
-  //     this.logout();
-  //     return false;
-  //   }
-  // }
-
-  Future logout() async {
-    // await _prefs.delete(key: 'token');
+  void logout() async {
+    print("saliendo");
+    _prefs.token = '';
   }
 }

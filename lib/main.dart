@@ -10,12 +10,14 @@ import 'package:mapa_app/pages/acceso_gps_page.dart';
 
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
+import 'package:mapa_app/pages/carga_page.dart';
 import 'package:mapa_app/pages/cobro_page.dart';
 import 'package:mapa_app/pages/cronometro_page.dart';
 
 import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
 import 'package:mapa_app/pages/mapa_page.dart';
+import 'package:mapa_app/pages/mensajes_page.dart';
 import 'package:mapa_app/pages/push_notificaciones_page.dart';
 import 'package:mapa_app/pages/viajes_page.dart';
 import 'package:mapa_app/services/preference_usuario.dart';
@@ -75,7 +77,7 @@ class _MyAppState extends State<MyApp> {
           navigatorKey: navigatorKey,
           // initialRoute: 'loading',
           // home: TaxistaPerfil(),
-          home: LoginPage(),
+          home: CargaPage(),
           routes: {
             'mapa': (_) => MapaPage(),
             'loading': (_) => LoadingPage(),
@@ -85,6 +87,8 @@ class _MyAppState extends State<MyApp> {
             'cobro': (_) => CobroPage(),
             'notificacion': (_) => PushNotificacionesPage(),
             'viajes': (_) => ViajesPage(),
+            'mensajes': (_) => MensajesPage(),
+            'carga': (_) => CargaPage(),
           },
         ),
       ),

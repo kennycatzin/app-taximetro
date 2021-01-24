@@ -31,7 +31,7 @@ class _MapaPageState extends State<MapaPage> {
     super.initState();
     Wakelock.enable();
 
-    prefs.ultimaPagina = "login";
+    prefs.ultimaPagina = "loading";
   }
 
   @override

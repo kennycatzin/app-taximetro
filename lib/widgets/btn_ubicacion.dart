@@ -24,8 +24,10 @@ class BtnUbicacion extends StatelessWidget {
             )
           ]),
           onPressed: () {
-            final destino = miUbicacionBloc.state.ubicacion;
-            mapaBloc.moverCamara(destino);
+            Navigator.pushNamed(context, 'mensajes');
+
+            // final destino = miUbicacionBloc.state.ubicacion;
+            // mapaBloc.moverCamara(destino);
           },
         ),
       ),

@@ -7,7 +7,7 @@ import 'package:mapa_app/services/preference_usuario.dart';
 import 'package:mapa_app/services/viajes_service.dart';
 
 class CobroPage extends StatefulWidget {
-  static final String routeName = 'cobro';
+  static final String routeName = 'loading';
 
   @override
   _CobroPageState createState() => _CobroPageState();
@@ -138,7 +138,7 @@ class _CobroPageState extends State<CobroPage> {
                   'Detalle de viaje',
                   style: TextStyle(fontSize: 20.0),
                 ),
-                SizedBox(height: 30.0),
+                SizedBox(height: 25.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -156,7 +156,26 @@ class _CobroPageState extends State<CobroPage> {
                     )
                   ],
                 ),
-                SizedBox(height: 10.0),
+                SizedBox(height: 6.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.money,
+                      size: 18,
+                    ),
+                    Text(
+                      'Total cobro espera: ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      '${taxiBloc.pagoTiempo.toStringAsFixed(3)}',
+                      style: TextStyle(fontSize: 18),
+                    )
+                  ],
+                ),
+
+                SizedBox(height: 6.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -174,7 +193,7 @@ class _CobroPageState extends State<CobroPage> {
                     )
                   ],
                 ),
-                SizedBox(height: 10.0),
+                SizedBox(height: 6.0),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -223,7 +242,7 @@ class _CobroPageState extends State<CobroPage> {
                               textColor: Colors.white,
                               label: Text('Tarjeta'),
                               icon: Icon(Icons.credit_card),
-                              onPressed: () {})
+                              onPressed: null)
                         ],
                       ),
                     ),
@@ -242,7 +261,7 @@ class _CobroPageState extends State<CobroPage> {
                             textColor: Colors.white,
                             label: Text('Monedero'),
                             icon: Icon(Icons.wallet_giftcard),
-                            onPressed: () {},
+                            onPressed: null,
                           )
                         ],
                       ),

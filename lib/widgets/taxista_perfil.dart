@@ -61,7 +61,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
 
   Widget _contenedorItems(Size size) {
     return Container(
-      margin: EdgeInsets.only(top: size.height * .398),
+      margin: EdgeInsets.only(top: size.height * .440),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -95,12 +95,12 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
           Text(usuarioState.nombre,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 21.0,
+                  fontSize: 17.0,
                   color: Colors.white)),
           Text(usuarioState.numEconomico,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+                  fontSize: 14.0,
                   color: Colors.white54)),
         ],
       ),
@@ -112,8 +112,8 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: size.height * .34),
-          height: size.height * .42,
+          margin: EdgeInsets.only(top: size.height * .40),
+          height: size.height * .37,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
@@ -144,7 +144,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
             ],
           ),
         ),
-        SizedBox(height: 6.0),
+        SizedBox(height: 1.0),
         _tituloSindical(usuarioState)
       ],
     );

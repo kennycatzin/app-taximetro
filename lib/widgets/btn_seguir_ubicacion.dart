@@ -44,6 +44,8 @@ class BtnSeguirUbicacion extends StatelessWidget {
       onPressed: () {
         final taxiBloc = context.bloc<TaximetroBloc>();
         final mapaBloc = context.bloc<MapaBloc>();
+        final authService = new UsuarioProvider();
+        authService.logout();
 
         taxiBloc.add(OnIniciarValores());
         mapaBloc.add(OnQuitarPoliline());

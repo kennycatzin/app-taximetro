@@ -218,8 +218,8 @@ class _LoginPageState extends State<LoginPage> {
 
     if (info['ok'] == 'true') {
       print(info['data']['operador']["imagen"]);
-      final mapaBloc = context.bloc<UsuarioBloc>();
-      final tarifaBloc = context.bloc<TarifaBloc>();
+      final mapaBloc = BlocProvider.of<UsuarioBloc>(context);
+      final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
 
       mapaBloc.add(OnLogin(
           true,

@@ -45,7 +45,7 @@ class ListaViajes extends StatelessWidget {
                           size: 30,
                         ),
                         Text(
-                          "${sumaTotales(this.viajes)}",
+                          " ${sumaTotales(this.viajes).toStringAsFixed(2)}",
                           style: TextStyle(
                               fontSize: 20,
                               color: Colors.redAccent,
@@ -69,7 +69,7 @@ class ListaViajes extends StatelessWidget {
                     margin: EdgeInsets.all(2),
                     width: size.width * .45,
                     height: 100,
-                    child: Text("KM: ${sumaKm(this.viajes)}",
+                    child: Text("KM: ${sumaKm(this.viajes).toStringAsFixed(2)}",
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.redAccent,
@@ -209,32 +209,6 @@ class _TarjetaTotales extends StatelessWidget {
   }
 }
 
-// class _TarjetaImagen extends StatelessWidget {
-//   final Article noticia;
-
-//   const _TarjetaImagen({this.noticia});
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: EdgeInsets.symmetric(vertical: 10),
-//       child: ClipRRect(
-//         borderRadius: BorderRadius.only(
-//             topLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
-//         child: Container(
-//           child: (noticia.urlToImage != "(none)")
-//               ? FadeInImage(
-//                   placeholder: AssetImage('assets/img/giphy.gif'),
-//                   image: NetworkImage(noticia.urlToImage),
-//                 )
-//               : Image(
-//                   image: AssetImage('assets/img/no-image.png'),
-//                 ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class _TarjetaBody extends StatelessWidget {
   final Datum viaje;
 
@@ -265,12 +239,12 @@ class _TarjetaHora extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text((viaje.horaInicio != null)
                 ? 'Hora inicio:  ${viaje.horaInicio}'
-                : '--.---.--')),
+                : '--.--.--')),
         Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text((viaje.horaTermino != null)
                 ? 'Hora término:  ${viaje.horaTermino}'
-                : '--.---.--'))
+                : '--.--.--'))
       ],
     );
   }

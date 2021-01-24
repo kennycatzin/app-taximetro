@@ -25,9 +25,18 @@ class OnCorreTaximetro extends TaximetroEvent {
   final bool enEspera;
   final double tarifaMinima;
   final double tarifaTiempo;
+  final double banderazo;
 
-  OnCorreTaximetro(this.km, this.duracion, this.inicio, this.estado,
-      this.tarifa, this.enEspera, this.tarifaMinima, this.tarifaTiempo);
+  OnCorreTaximetro(
+      this.km,
+      this.duracion,
+      this.inicio,
+      this.estado,
+      this.tarifa,
+      this.enEspera,
+      this.tarifaMinima,
+      this.tarifaTiempo,
+      this.banderazo);
 }
 
 class OnEspera extends TaximetroEvent {
@@ -36,9 +45,10 @@ class OnEspera extends TaximetroEvent {
   final int prograInter;
   final bool finaliza;
   final double tarifaMinima;
+  final double banderazo;
 
   OnEspera(this.tarifaTiempo, this.intervalo, this.prograInter, this.finaliza,
-      this.tarifaMinima);
+      this.tarifaMinima, this.banderazo);
 }
 
 class OnIniciarValores extends TaximetroEvent {}
