@@ -5,7 +5,9 @@ import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
+import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 class CargaPage extends StatelessWidget {
   @override
@@ -22,10 +24,12 @@ class CargaPage extends StatelessWidget {
   Future checkLoginState(BuildContext context) async {
     final authService = new UsuarioProvider();
     final info = await authService.isLoggedIn();
+    final socket = new SocketService();
     // final socketService = Provider.of<SocketService>(context, listen: false);
     if (info["ok"] != "invalido") {
       // Navigator.pushReplacementNamed(context, 'usuarios');
       // socketService.connect();
+      socket.connect();
       if (info['ok'] == 'true') {
         print(info['data']['operador']["imagen"]);
         final mapaBloc = BlocProvider.of<UsuarioBloc>(context);

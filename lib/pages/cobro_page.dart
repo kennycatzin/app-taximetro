@@ -294,16 +294,14 @@ class _CobroPageState extends State<CobroPage> {
 
   void botonEfectivo(BuildContext context) async {
     mostrarLoading(context);
-
-    final taxiBloc = context.bloc<TaximetroBloc>();
-    final mapaBloc = context.bloc<MapaBloc>();
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
     Map info = await viajeProvider.guardarViaje(
         taxiBloc.state.km,
         taxiBloc.state.horaInicio,
         taxiBloc.state.horaFinal,
         taxiBloc.state.pago);
     Navigator.pop(context);
-
     if (info['ok'] == true) {
       taxiBloc.add(OnIniciarValores());
       mapaBloc.add(OnQuitarPoliline());

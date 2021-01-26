@@ -12,20 +12,15 @@ String viajesResponseToJson(ViajesResponse data) => json.encode(data.toJson());
 class ViajesResponse {
   ViajesResponse({
     this.data,
-    this.total,
   });
 
   List<Datum> data;
-  double total;
 
   factory ViajesResponse.fromJson(Map<String, dynamic> json) => ViajesResponse(
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-        total: json["total"].toDouble(),
-      );
+      data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))));
 
   Map<String, dynamic> toJson() => {
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
-        "total": total,
       };
 }
 
@@ -41,7 +36,6 @@ class Datum {
     this.usuarioModificacion,
     this.fechaCreacion,
     this.fechaModificacion,
-    this.activo,
   });
 
   int idViaje;
@@ -54,7 +48,6 @@ class Datum {
   int usuarioModificacion;
   DateTime fechaCreacion;
   DateTime fechaModificacion;
-  int activo;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         idViaje: json["id_viaje"],
@@ -67,7 +60,6 @@ class Datum {
         usuarioModificacion: json["usuario_modificacion"],
         fechaCreacion: DateTime.parse(json["fecha_creacion"]),
         fechaModificacion: DateTime.parse(json["fecha_modificacion"]),
-        activo: json["activo"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -81,6 +73,5 @@ class Datum {
         "usuario_modificacion": usuarioModificacion,
         "fecha_creacion": fechaCreacion.toIso8601String(),
         "fecha_modificacion": fechaModificacion.toIso8601String(),
-        "activo": activo,
       };
 }

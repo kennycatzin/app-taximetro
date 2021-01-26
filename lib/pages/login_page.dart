@@ -6,7 +6,6 @@ import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/user_service.dart';
-import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   @override

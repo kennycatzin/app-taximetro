@@ -90,7 +90,6 @@ class UsuarioProvider {
   }
 
   void logout() async {
-    print("saliendo");
     _prefs.token = '';
   }
 }

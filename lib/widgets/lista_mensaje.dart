@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mapa_app/models/viajes_response.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
+import 'package:mapa_app/models/mensajes_response.dart';
 
 class ListaMensaje extends StatelessWidget {
-  final List<Datum> viajes;
+  final List<Mensaje> mensajes;
 
-  const ListaMensaje(this.viajes);
+  const ListaMensaje(this.mensajes);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: this.viajes.length,
+      itemCount: this.mensajes.length,
       itemBuilder: (BuildContext context, int index) {
-        return _Viaje(
-          viaje: this.viajes[index],
+        return _Mensaje(
+          mensaje: this.mensajes[index],
           index: index,
         );
       },
@@ -20,19 +22,26 @@ class ListaMensaje extends StatelessWidget {
   }
 }
 
-class _Viaje extends StatelessWidget {
-  final Datum viaje;
+class _Mensaje extends StatelessWidget {
+  final Mensaje mensaje;
   final int index;
 
-  const _Viaje({@required this.viaje, @required this.index});
+  const _Mensaje({@required this.mensaje, @required this.index});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('Nombre usuario'),
-      subtitle: Text('Correo usuario'),
+      title: Text('${mensaje.titulo}'),
+      subtitle: Text(
+        '${mensaje.mensaje}',
+        overflow: TextOverflow.ellipsis,
+      ),
       leading: CircleAvatar(
-        child: Text('KC'),
+        child: Text((mensaje.tipo == 1)
+            ? 'CC'
+            : (mensaje.tipo == 2)
+                ? 'TG'
+                : 'TP'),
         // usuario.nombre.substring(0, 2)
         backgroundColor: Colors.red[600],
       ),
@@ -41,13 +50,19 @@ class _Viaje extends StatelessWidget {
         height: 10,
         decoration: BoxDecoration(
             // color: usuario.online ? Colors.green[300] : Colors.red,
-            color: Colors.blue,
+            color: (mensaje.idStatus == 5) ? Colors.blue : Colors.transparent,
             borderRadius: BorderRadius.circular(100)),
       ),
       onTap: () {
-        // final chatService = Provider.of<ChatService>(context, listen: false);
-        // chatService.usuarioPara = usuario;
-        // Navigator.pushNamed(context, 'chat');
+        print(this.mensaje.name);
+        final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
+        mensajeBloc.add(OnTapMensaje(
+            this.mensaje.idMensaje,
+            this.mensaje.titulo,
+            this.mensaje.mensaje,
+            this.mensaje.tipo,
+            this.mensaje.name));
+        Navigator.pushNamed(context, 'detalle_mensaje');
       },
     );
   }

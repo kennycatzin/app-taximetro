@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mapa_app/services/viajes_service.dart';
+import 'package:mapa_app/services/mensaje_service.dart';
 import 'package:mapa_app/widgets/lista_mensaje.dart';
-import 'package:mapa_app/widgets/lista_viajes.dart';
 
 class MensajesPage extends StatefulWidget {
   @override
@@ -26,7 +25,7 @@ class _MensajesPageState extends State<MensajesPage> {
     super.dispose();
   }
 
-  final viajesService = new ViajesService();
+  final mensajesService = new MensajesService();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class _MensajesPageState extends State<MensajesPage> {
 
   Widget _swipedTarjetas() {
     return FutureBuilder(
-        future: viajesService.listaViajes(),
+        future: mensajesService.listaMensajes(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
             return ListaMensaje(snapshot.data);

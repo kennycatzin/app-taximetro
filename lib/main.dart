@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/busqueda/busqueda_bloc.dart';
 import 'package:mapa_app/bloc/login/provider.dart';
+import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
 import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/pages/carga_page.dart';
 import 'package:mapa_app/pages/cobro_page.dart';
 import 'package:mapa_app/pages/cronometro_page.dart';
+import 'package:mapa_app/pages/detalle_mensaje_page.dart';
 
 import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
@@ -57,42 +59,43 @@ class _MyAppState extends State<MyApp> {
     final prefs = new PreferenciasUsuario();
     // config();
     return Provider(
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => MiUbicacionBloc()),
-          BlocProvider(create: (_) => MapaBloc()),
-          BlocProvider(create: (_) => TaximetroBloc()),
-          BlocProvider(create: (_) => BusquedaBloc()),
-          BlocProvider(create: (_) => UsuarioBloc()),
-          BlocProvider(create: (_) => TarifaBloc()),
-        ],
-        child: MaterialApp(
-          title: 'Material App',
-          // theme: ThemeData(
-          //   brightness: Brightness.dark,
-          //   primaryColor: Colors.lightBlue[800],
-          //   accentColor: Colors.cyan[600],
-          // ),
-          debugShowCheckedModeBanner: false,
-          navigatorKey: navigatorKey,
-          // initialRoute: 'loading',
-          // home: TaxistaPerfil(),
-          home: CargaPage(),
-          routes: {
-            'mapa': (_) => MapaPage(),
-            'loading': (_) => LoadingPage(),
-            'login': (_) => LoginPage(),
-            'cronometro': (_) => CronometroPage(),
-            'acceso_gps': (_) => AccesoGpsPage(),
-            'cobro': (_) => CobroPage(),
-            'notificacion': (_) => PushNotificacionesPage(),
-            'viajes': (_) => ViajesPage(),
-            'mensajes': (_) => MensajesPage(),
-            'carga': (_) => CargaPage(),
-          },
-        ),
+        child: MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => MiUbicacionBloc()),
+        BlocProvider(create: (_) => MapaBloc()),
+        BlocProvider(create: (_) => TaximetroBloc()),
+        BlocProvider(create: (_) => BusquedaBloc()),
+        BlocProvider(create: (_) => UsuarioBloc()),
+        BlocProvider(create: (_) => TarifaBloc()),
+        BlocProvider(create: (_) => MensajeBloc()),
+      ],
+      child: MaterialApp(
+        title: 'Material App',
+        // theme: ThemeData(
+        //   brightness: Brightness.dark,
+        //   primaryColor: Colors.lightBlue[800],
+        //   accentColor: Colors.cyan[600],
+        // ),
+        debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey,
+        // initialRoute: 'loading',
+        // home: TaxistaPerfil(),
+        home: CargaPage(),
+        routes: {
+          'mapa': (_) => MapaPage(),
+          'loading': (_) => LoadingPage(),
+          'login': (_) => LoginPage(),
+          'cronometro': (_) => CronometroPage(),
+          'acceso_gps': (_) => AccesoGpsPage(),
+          'cobro': (_) => CobroPage(),
+          'notificacion': (_) => PushNotificacionesPage(),
+          'viajes': (_) => ViajesPage(),
+          'mensajes': (_) => MensajesPage(),
+          'carga': (_) => CargaPage(),
+          'detalle_mensaje': (_) => DetalleMensaje(),
+        },
       ),
-    );
+    ));
   }
 
   void config() {
