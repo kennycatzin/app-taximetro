@@ -75,7 +75,20 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       yield state.copyWith(horaFinal: event.hora);
     } else if (event is OnEspera) {
       yield* this._onEspera(event);
+    } else if (event is OnViajeManual) {
+      yield* this._onViajeManual(event);
     }
+  }
+
+  Stream<TaximetroState> _onViajeManual(OnViajeManual event) async* {
+    print('inicia cronometro');
+
+    yield state.copyWith(
+        pago: event.pago,
+        km: event.km,
+        pagoTiempo: event.pagoTiempo,
+        horaInicio: event.horaInicio,
+        horaFinal: event.horaFinal);
   }
 
   Stream<TaximetroState> _onStartIsPressed(OnStartIsPressed event) async* {

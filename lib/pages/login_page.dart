@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mapa_app/bloc/login/login.dart';
-import 'package:mapa_app/bloc/login/provider.dart';
+import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,19 +13,56 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
   final usuarioProvider = new UsuarioProvider();
-
-  Future<bool> _onWillPop() => Future.value(false);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(
-      children: <Widget>[
-        _crearFondo(context),
-        _loginForm(context),
-      ],
-    ));
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+          body: Stack(
+        children: <Widget>[
+          _crearFondo(context),
+          _loginForm(context),
+        ],
+      )),
+    );
+  }
+
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('¿Desea salir de la aplicación?'),
+            actions: <Widget>[
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                label: Text('No'),
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.green,
+                textColor: Colors.white,
+                label: Text('Si'),
+                icon: Icon(Icons.check_circle),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 
   Widget _crearFondo(BuildContext context) {
@@ -96,7 +133,6 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginForm(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final bloc = Provider.of(context);
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -126,11 +162,11 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 20.0),
                 ),
                 SizedBox(height: 60.0),
-                _crearEmail(bloc),
+                _crearEmail(),
                 SizedBox(height: 30.0),
-                _crearPassword(bloc),
+                _crearPassword(),
                 SizedBox(height: 30.0),
-                _crearBoton(bloc)
+                _crearBoton()
               ],
             ),
           ),
@@ -143,89 +179,79 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _crearBoton(LoginBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.formValidStream,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return RaisedButton(
-            padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-            child: Container(
-              child: Text('Ingresar'),
-            ),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
-            elevation: 0.0,
-            color: Colors.redAccent,
-            textColor: Colors.white,
-            onPressed: snapshot.hasData ? () => _login(bloc, context) : null);
-      },
-    );
+  Widget _crearBoton() {
+    return RaisedButton(
+        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+        child: Container(
+          child: Text('Ingresar'),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        elevation: 0.0,
+        color: Colors.redAccent,
+        textColor: Colors.white,
+        onPressed: _login);
   }
 
-  Widget _crearEmail(LoginBloc bloc) {
+  Widget _crearEmail() {
     // StreamBuilder es la contruccion dinámica en cuanto a las validaciones del bloc
-    return StreamBuilder(
-      stream: bloc.emailStream,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-                icon: Icon(
-                  Icons.local_taxi,
-                  color: Colors.redAccent,
-                ),
-                labelText: 'Usuario',
-                counterText: snapshot.data,
-                errorText: snapshot.error),
-            onChanged: bloc.changeEmail,
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        keyboardType: TextInputType.emailAddress,
+        controller: this.emailCtrl,
+        decoration: InputDecoration(
+          icon: Icon(
+            Icons.local_taxi,
+            color: Colors.redAccent,
           ),
-        );
-      },
+          labelText: 'Usuario',
+        ),
+      ),
     );
   }
 
-  Widget _crearPassword(LoginBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.passwordStream,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextField(
-            obscureText: true,
-            decoration: InputDecoration(
-                icon: Icon(
-                  Icons.lock,
-                  color: Colors.redAccent,
-                ),
-                labelText: 'Contraseña',
-                counterText: snapshot.data,
-                errorText: snapshot.error),
-            onChanged: bloc.changePassword,
-          ),
-        );
-      },
+  Widget _crearPassword() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+          controller: this.passCtrl,
+          obscureText: true,
+          decoration: InputDecoration(
+            icon: Icon(
+              Icons.lock,
+              color: Colors.redAccent,
+            ),
+            labelText: 'Contraseña',
+          )),
     );
   }
 
-  _login(LoginBloc bloc, BuildContext context) async {
+  _login() async {
+    print(this.emailCtrl.toString());
+    print(this.passCtrl.toString());
+
     mostrarLoading(context);
 
-    Map info = await usuarioProvider.login(bloc.email, bloc.password);
+    Map info = await usuarioProvider.login(
+        this.emailCtrl.text.toString(), this.passCtrl.text.toString());
     Navigator.pop(context);
 
     if (info['ok'] == 'true') {
       print(info['data']['operador']["imagen"]);
       final mapaBloc = BlocProvider.of<UsuarioBloc>(context);
       final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
+      final socketService = Provider.of<SocketService>(context, listen: false);
 
+      socketService.connect();
+      print('Despues de conectar');
       mapaBloc.add(OnLogin(
           true,
           info['data']['operador']["imagen"],
           info['data']['operador']["NumEconomico"],
           info['data']['operador']["TituloSindical"],
-          info['data']['operador']["nombre"]));
+          info['data']['operador']["nombre"],
+          info['data']['operador']["id_status"]));
 
       tarifaBloc.add(OnAsignarPrecios(
           info['data']['tarifas']["tarifa_minima"].toDouble(),

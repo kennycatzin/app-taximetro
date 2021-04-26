@@ -72,16 +72,19 @@ class _DetalleMensajeState extends State<DetalleMensaje> {
 
   Widget contenidoMensaje(MensajeState mensaje) {
     return ListTile(
-      title: Text('${mensaje.titulo}'),
+      title: Text(
+        '${mensaje.titulo}',
+        style: TextStyle(fontSize: 26, fontFamily: 'bold'),
+      ),
+      hoverColor: Colors.red,
       subtitle: Text(
         '${mensaje.mensaje}',
+        style: TextStyle(
+          fontSize: 24,
+        ),
       ),
       leading: CircleAvatar(
-        child: Text((mensaje.tipo == 1)
-            ? 'CC'
-            : (mensaje.tipo == 2)
-                ? 'TG'
-                : 'TP'),
+        child: Text((mensaje.tipo)),
         // usuario.nombre.substring(0, 2)
         backgroundColor: Colors.red[600],
       ),

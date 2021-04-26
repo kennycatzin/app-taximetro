@@ -72,10 +72,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   }
 
   void _iniciarDetenerViaje(BuildContext context, TaximetroState state) async {
-    final taximetoBloc = context.bloc<TaximetroBloc>();
-    final busquedaBloc = context.bloc<BusquedaBloc>();
-    final mapaBloc = context.bloc<MapaBloc>();
-    final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    final taximetoBloc = BlocProvider.of<TaximetroBloc>(context);
+    final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
     DateTime hora = DateTime.now();
     String horaReal = '${hora.hour}:${hora.minute}:${hora.second}';
     mapaBloc.add(OnSeguirUbicacion());
@@ -108,7 +108,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       cabeceraChofer = "¿Cobrar tiempo de espera?";
       Future.delayed(Duration(milliseconds: 2000)).then((value) => {
             Navigator.pushNamed(context, 'cobro')
-
             //_mapController.showMarkerInfoWindow(MarkerId('final'))
           });
     }
@@ -182,8 +181,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   void _verificaPrecios(BuildContext context) async {
     try {
-      final taxiBloc = context.bloc<TaximetroBloc>();
-      final tarifaState = context.bloc<TarifaBloc>().state;
+      final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+      final tarifaState = BlocProvider.of<TarifaBloc>(context).state;
 
       if (!enEspera) {
         contador++;

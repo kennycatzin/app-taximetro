@@ -22,6 +22,7 @@ class _ViajesPageState extends State<ViajesPage> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+
     super.dispose();
   }
 
@@ -34,11 +35,46 @@ class _ViajesPageState extends State<ViajesPage> {
       DeviceOrientation.portraitDown,
     ]);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Viajes del día'),
-          backgroundColor: Colors.redAccent,
-        ),
-        body: Container(child: _swipedTarjetas()));
+      appBar: AppBar(
+        title: Text('Viajes del día'),
+        backgroundColor: Colors.redAccent,
+      ),
+      body: Container(child: _swipedTarjetas()),
+    );
+  }
+
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('¿Regresar al taxímetro?'),
+            actions: <Widget>[
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                label: Text('No'),
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.green,
+                textColor: Colors.white,
+                label: Text('Si'),
+                icon: Icon(Icons.check_circle),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'carga');
+                },
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 
   Widget _swipedTarjetas() {

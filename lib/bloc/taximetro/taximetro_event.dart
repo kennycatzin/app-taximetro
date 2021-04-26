@@ -62,3 +62,14 @@ class OnHoraFinal extends TaximetroEvent {
   final String hora;
   OnHoraFinal(this.hora);
 }
+
+class OnViajeManual extends TaximetroEvent {
+  final double km;
+  final double pago;
+  final double pagoTiempo;
+  final String horaInicio;
+  final String horaFinal;
+
+  OnViajeManual(
+      this.km, this.pago, this.pagoTiempo, this.horaInicio, this.horaFinal);
+}

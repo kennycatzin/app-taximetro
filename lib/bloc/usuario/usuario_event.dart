@@ -9,7 +9,8 @@ class OnLogin extends UsuarioEvent {
   final String numEconomico;
   final String tituloSindical;
   final String nombre;
+  final int id_status;
 
   OnLogin(this.login, this.imagen, this.numEconomico, this.tituloSindical,
-      this.nombre);
+      this.nombre, this.id_status);
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mapa_app/global/enviroment.dart';
+import 'package:mapa_app/services/preference_usuario.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -13,16 +13,20 @@ class SocketService with ChangeNotifier {
 
   IO.Socket get socket => this._socket;
   Function get emit => this._socket.emit;
+  final _prefs = new PreferenciasUsuario();
 
   void connect() async {
+    final token = await _prefs.token;
+
     // Dart client
-    this._socket = IO.io('http://10.0.2.2:3002/', {
+    this._socket = IO.io('https://mensajes-sockets.herokuapp.com/', {
       'transports': ['websocket'],
       'autoConnect': true,
       'forceNew': true
     });
 
     this._socket.on('connect', (_) {
+      print('Conectando');
       this._serverStatus = ServerStatus.Online;
       notifyListeners();
     });
@@ -34,6 +38,6 @@ class SocketService with ChangeNotifier {
   }
 
   void disconnect() {
-    this._socket.disconnect();
+    this._socket.disconnected;
   }
 }

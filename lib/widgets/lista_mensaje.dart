@@ -37,11 +37,7 @@ class _Mensaje extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       leading: CircleAvatar(
-        child: Text((mensaje.tipo == 1)
-            ? 'CC'
-            : (mensaje.tipo == 2)
-                ? 'TG'
-                : 'TP'),
+        child: Text((mensaje.tipo)),
         // usuario.nombre.substring(0, 2)
         backgroundColor: Colors.red[600],
       ),

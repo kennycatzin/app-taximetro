@@ -29,8 +29,28 @@ class ViajesService {
     return viajes;
   }
 
-  Future<Map<String, dynamic>> guardarViaje(
-      double km, String horaInicio, String horaFinal, double precio) async {
+  Future<bool> verificarEstatus(int id_viaje) async {
+    final userId = await _prefs.usuarioID;
+    bool pagado = false;
+    final miUrl =
+        '${Enviroment.apiUrlDev}/get-estatus-viaje/' + id_viaje.toString();
+    print(miUrl);
+
+    final resp = await http.get(miUrl);
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> decodedResp = json.decode(resp.body);
+      if (decodedResp["data"]["Estatus"] == "POR PAGAR") {
+        pagado = false;
+      } else if (decodedResp["data"]["Estatus"] == "PAGADO") {
+        pagado = true;
+      }
+    }
+
+    return pagado;
+  }
+
+  Future<Map<String, dynamic>> guardarViaje(double km, String horaInicio,
+      String horaFinal, double precio, int tipo, double pago_tiempo) async {
     final userId = await _prefs.usuarioID;
     final data = {
       'km': km.toDouble(),
@@ -38,9 +58,10 @@ class ViajesService {
       'hora_termino': horaFinal,
       'precio': precio.toDouble(),
       'id_chofer': userId.toInt(),
-      'usuario_creacion': _prefs.usuarioID.toInt()
+      'usuario_creacion': _prefs.usuarioID.toInt(),
+      'tipo_viaje': tipo.toInt(),
+      'precio_tiempo_espera': pago_tiempo.toDouble()
     };
-    print('===' + json.encode(data));
 
     final resp = await http.post('${Enviroment.apiUrlDev}/store-viaje',
         headers: {
@@ -52,7 +73,11 @@ class ViajesService {
     print(decodedResp);
 
     if (decodedResp['ok'] == true) {
-      return {'ok': true, 'mensaje': decodedResp['data']};
+      return {
+        'ok': true,
+        'mensaje': decodedResp['data'],
+        'id_viaje': decodedResp['id_viaje']
+      };
     }
     return {'ok': false, 'mensaje': 'No se pude establecer la conexion'};
   }

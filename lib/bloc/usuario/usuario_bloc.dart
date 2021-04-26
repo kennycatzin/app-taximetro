@@ -26,6 +26,7 @@ class UsuarioBloc extends Bloc<UsuarioEvent, UsuarioState> {
         imagen: event.imagen,
         nombre: event.nombre,
         tituloSindical: event.tituloSindical,
-        numEconomico: event.numEconomico);
+        numEconomico: event.numEconomico,
+        id_status: event.id_status);
   }
 }

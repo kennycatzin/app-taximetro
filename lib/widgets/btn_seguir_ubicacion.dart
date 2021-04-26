@@ -33,17 +33,25 @@ class BtnSeguirUbicacion extends StatelessWidget {
 
   void _alertaConfirmacionInicio(BuildContext context) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("Cancelar"),
+    Widget cancelButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.red,
+      textColor: Colors.white,
+      label: Text('No'),
+      icon: Icon(Icons.cancel),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = FlatButton(
-      child: Text("Confirmar"),
+    Widget continueButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.green,
+      textColor: Colors.white,
+      label: Text('Si'),
+      icon: Icon(Icons.check_circle),
       onPressed: () {
-        final taxiBloc = context.bloc<TaximetroBloc>();
-        final mapaBloc = context.bloc<MapaBloc>();
+        final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+        final mapaBloc = BlocProvider.of<MapaBloc>(context);
         final authService = new UsuarioProvider();
         authService.logout();
 
@@ -55,10 +63,10 @@ class BtnSeguirUbicacion extends StatelessWidget {
         Navigator.pushNamed(context, 'login');
       },
     );
+
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Alerta de confirmación"),
-      content: Text("¿Desea salir de la aplicación?"),
+      title: Text("¿Desea salir de la aplicación?"),
       actions: [
         cancelButton,
         continueButton,

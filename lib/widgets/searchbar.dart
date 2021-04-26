@@ -6,15 +6,32 @@ class SearchBar extends StatelessWidget {
     BuildContext context,
   ) {
     // : implement build
-    return BlocBuilder<BusquedaBloc, BusquedaState>(
-      builder: (context, state) {
-        if (state.seleccionManual) {
-          return Container();
-        } else {
-          return FadeInDownBig(child: buildSearchBar(context));
-        }
-      },
+    return Container(
+      margin: EdgeInsets.only(top: 34.0),
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      width: 150,
+      child: CircleAvatar(
+        backgroundColor: Colors.white,
+        maxRadius: 25,
+        child: IconButton(
+          icon: Icon(Icons.menu, color: Colors.redAccent),
+          onPressed: () {
+            // mapaBloc.add( OnMarcarRecorrido() );
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
     );
+
+    //BlocBuilder<BusquedaBloc, BusquedaState>(
+    //   builder: (context, state) {
+    //     if (state.seleccionManual) {
+    //       return Container();
+    //     } else {
+    //       return FadeInDownBig(child: buildSearchBar(context));
+    //     }
+    //   },
+    // );
   }
 
   Widget buildSearchBar(BuildContext context) {

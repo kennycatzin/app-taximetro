@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
-import 'package:mapa_app/services/preference_usuario.dart';
 import 'package:mapa_app/services/viajes_service.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class CobroPage extends StatefulWidget {
   static final String routeName = 'loading';
@@ -14,20 +16,24 @@ class CobroPage extends StatefulWidget {
 }
 
 class _CobroPageState extends State<CobroPage> {
-  final prefs = new PreferenciasUsuario();
   final viajeProvider = new ViajesService();
 
   @override
   void initState() {
     super.initState();
-    prefs.ultimaPagina = CobroPage.routeName;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final taxiBloc = context.bloc<TaximetroBloc>().state;
-    final size = MediaQuery.of(context).size;
-
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
     return Scaffold(
         body: Stack(
       children: <Widget>[
@@ -38,8 +44,7 @@ class _CobroPageState extends State<CobroPage> {
   }
 
   Widget _crearFondo(BuildContext context) {
-    final taxiBloc = context.bloc<TaximetroBloc>().state;
-
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context).state;
     final size = MediaQuery.of(context).size;
     final fondoMorado = Container(
       height: size.height * 0.4,
@@ -108,8 +113,8 @@ class _CobroPageState extends State<CobroPage> {
 
   Widget _loginForm(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final taxiBloc = context.bloc<TaximetroBloc>().state;
-
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context).state;
+    final operadorBloc = BlocProvider.of<UsuarioBloc>(context).state;
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -236,34 +241,24 @@ class _CobroPageState extends State<CobroPage> {
                       child: Row(
                         children: [
                           RaisedButton.icon(
+                              padding: EdgeInsets.all(10),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               color: Colors.redAccent,
                               textColor: Colors.white,
-                              label: Text('Tarjeta'),
+                              label: Text(
+                                  'Tarjeta \n \$ ${((((taxiBloc.pago * .029) + 2.5) * 1.16) + taxiBloc.pago).toStringAsFixed(2)}',
+                                  style: TextStyle(fontSize: 18)),
                               icon: Icon(Icons.credit_card),
-                              onPressed: null)
+                              onPressed: (operadorBloc.id_status == 1)
+                                  ? null
+                                  : () => accionPago(context, 2))
                         ],
                       ),
                     ),
                     Container(
                       child: Row(
                         children: [_crearBoton(context)],
-                      ),
-                    ),
-                    Container(
-                      child: Row(
-                        children: [
-                          RaisedButton.icon(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
-                            color: Colors.redAccent,
-                            textColor: Colors.white,
-                            label: Text('Monedero'),
-                            icon: Icon(Icons.wallet_giftcard),
-                            onPressed: null,
-                          )
-                        ],
                       ),
                     ),
                   ],
@@ -280,19 +275,22 @@ class _CobroPageState extends State<CobroPage> {
   }
 
   Widget _crearBoton(BuildContext context) {
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context).state;
     return RaisedButton.icon(
+      padding: EdgeInsets.all(10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       color: Colors.redAccent,
       textColor: Colors.white,
-      label: Text('Efectivo'),
+      label: Text('Efectivo \n\$ ${taxiBloc.pago.toStringAsFixed(2)}',
+          style: TextStyle(fontSize: 18)),
       icon: Icon(Icons.money),
       onPressed: () {
-        botonEfectivo(context);
+        accionPago(context, 1);
       },
     );
   }
 
-  void botonEfectivo(BuildContext context) async {
+  void accionPago(BuildContext context, tipo) async {
     mostrarLoading(context);
     final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
@@ -300,15 +298,83 @@ class _CobroPageState extends State<CobroPage> {
         taxiBloc.state.km,
         taxiBloc.state.horaInicio,
         taxiBloc.state.horaFinal,
-        taxiBloc.state.pago);
+        taxiBloc.state.pago,
+        tipo,
+        taxiBloc.state.pagoTiempo);
+    print(info);
     Navigator.pop(context);
     if (info['ok'] == true) {
-      taxiBloc.add(OnIniciarValores());
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMapaCrea());
-      Navigator.pushReplacementNamed(context, 'loading');
+      if (tipo == 1) {
+        taxiBloc.add(OnIniciarValores());
+        Navigator.pushReplacementNamed(context, 'loading');
+      } else if (tipo == 2) {
+        Navigator.pushReplacementNamed(context, 'tarjeta',
+            arguments: {"id_viaje": info['id_viaje']});
+      }
     } else if (info['ok'] == false) {
       mostrarAlerta(context, info['mensaje']);
     }
+  }
+
+  Future<bool> pagoClienteOChofer(int id_viaje) async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('¿Enviar link de pago al cliente?'),
+            actions: <Widget>[
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                label: Text('No'),
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  // Abrir modal
+                  CupertinoScaffold.showCupertinoModalBottomSheet(
+                    expand: true,
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Stack(
+                      children: <Widget>[
+                        Positioned(
+                          height: 40,
+                          left: 40,
+                          right: 40,
+                          bottom: 20,
+                          child: MaterialButton(
+                            onPressed: () => {
+                              Navigator.pushReplacementNamed(
+                                context,
+                                'tarjeta',
+                                arguments: {"id_viaje": id_viaje, "tipo": 0},
+                              )
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.green,
+                textColor: Colors.white,
+                label: Text('Si'),
+                icon: Icon(Icons.check_circle),
+                onPressed: () {
+                  // enviar mensaje
+                  Navigator.pushReplacementNamed(context, 'tarjeta',
+                      arguments: {"id_viaje": id_viaje, "tipo": 0});
+                },
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }

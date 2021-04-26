@@ -7,7 +7,7 @@ class OnTapMensaje extends MensajeEvent {
   final int id_mensaje;
   final String titulo;
   final String mensaje;
-  final int tipo;
+  final String tipo;
   final String name;
 
   OnTapMensaje(

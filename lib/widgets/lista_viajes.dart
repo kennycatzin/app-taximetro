@@ -5,7 +5,6 @@ class ListaViajes extends StatelessWidget {
   final List<Datum> viajes;
 
   const ListaViajes(this.viajes);
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -125,6 +124,7 @@ class _Viaje extends StatelessWidget {
         // _TarjetaImagen(noticia: noticia),
         _TarjetaTitulo(viaje: viaje),
         _TarjetaBody(viaje: viaje),
+        _TarjetaBotones(viaje: viaje),
         _TarjetaHora(
           viaje: viaje,
         ),
@@ -201,7 +201,7 @@ class _TarjetaTotales extends StatelessWidget {
               size: 30,
             ),
             Text(
-              '${viaje.precio.toStringAsFixed(2)}',
+              '90',
               style: TextStyle(color: Colors.black87, fontSize: 30),
             )
           ],
@@ -251,24 +251,34 @@ class _TarjetaHora extends StatelessWidget {
 }
 
 class _TarjetaBotones extends StatelessWidget {
+  final Datum viaje;
+
+  const _TarjetaBotones({this.viaje});
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        RawMaterialButton(
-            child: Icon(Icons.star_border),
-            fillColor: Colors.redAccent,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            onPressed: null),
-        SizedBox(width: 10),
-        RawMaterialButton(
-            child: Icon(Icons.more),
-            fillColor: Colors.blueAccent,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            onPressed: null),
+        (this.viaje.tipo_viaje == 1)
+            ? RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                label: Text('Efectivo'),
+                icon: Icon(Icons.money),
+                onPressed: () => {})
+            : (this.viaje.tipo_viaje == 2)
+                ? RaisedButton.icon(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    color: Colors.blueAccent,
+                    textColor: Colors.white,
+                    label: Text('Tarjeta'),
+                    icon: Icon(Icons.card_membership_outlined),
+                    onPressed: () => {},
+                  )
+                : null
       ],
     );
   }

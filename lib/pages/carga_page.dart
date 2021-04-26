@@ -24,23 +24,22 @@ class CargaPage extends StatelessWidget {
   Future checkLoginState(BuildContext context) async {
     final authService = new UsuarioProvider();
     final info = await authService.isLoggedIn();
-    final socket = new SocketService();
-    // final socketService = Provider.of<SocketService>(context, listen: false);
+
     if (info["ok"] != "invalido") {
       // Navigator.pushReplacementNamed(context, 'usuarios');
-      // socketService.connect();
-      socket.connect();
       if (info['ok'] == 'true') {
         print(info['data']['operador']["imagen"]);
         final mapaBloc = BlocProvider.of<UsuarioBloc>(context);
         final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
+        print('Despues de conectar');
 
         mapaBloc.add(OnLogin(
             true,
             info['data']['operador']["imagen"],
             info['data']['operador']["NumEconomico"],
             info['data']['operador']["TituloSindical"],
-            info['data']['operador']["nombre"]));
+            info['data']['operador']["nombre"],
+            info['data']['operador']["id_status"]));
 
         tarifaBloc.add(OnAsignarPrecios(
             info['data']['tarifas']["tarifa_minima"].toDouble(),

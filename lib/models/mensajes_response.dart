@@ -46,7 +46,7 @@ class Mensaje {
   int idMensaje;
   String titulo;
   String mensaje;
-  int tipo;
+  String tipo;
   String name;
   int idStatus;
   String estatus;

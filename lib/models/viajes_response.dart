@@ -32,6 +32,7 @@ class Datum {
     this.horaTermino,
     this.precio,
     this.idChofer,
+    this.tipo_viaje,
     this.usuarioCreacion,
     this.usuarioModificacion,
     this.fechaCreacion,
@@ -44,6 +45,7 @@ class Datum {
   String horaTermino;
   double precio;
   int idChofer;
+  int tipo_viaje;
   int usuarioCreacion;
   int usuarioModificacion;
   DateTime fechaCreacion;
@@ -56,6 +58,7 @@ class Datum {
         horaTermino: json["hora_termino"],
         precio: json["precio"].toDouble(),
         idChofer: json["id_chofer"],
+        tipo_viaje: json["tipo_viaje"].toInt(),
         usuarioCreacion: json["usuario_creacion"],
         usuarioModificacion: json["usuario_modificacion"],
         fechaCreacion: DateTime.parse(json["fecha_creacion"]),
@@ -69,6 +72,7 @@ class Datum {
         "hora_termino": horaTermino,
         "precio": precio,
         "id_chofer": idChofer,
+        "tipo_viaje": tipo_viaje,
         "usuario_creacion": usuarioCreacion,
         "usuario_modificacion": usuarioModificacion,
         "fecha_creacion": fechaCreacion.toIso8601String(),

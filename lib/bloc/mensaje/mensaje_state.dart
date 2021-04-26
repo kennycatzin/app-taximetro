@@ -5,7 +5,7 @@ class MensajeState {
   final int id_mensaje;
   final String titulo;
   final String mensaje;
-  final int tipo;
+  final String tipo;
   final String name;
 
   MensajeState({
@@ -20,7 +20,7 @@ class MensajeState {
     int id_mensaje,
     String titulo,
     String mensaje,
-    int tipo,
+    String tipo,
     String name,
   }) =>
       MensajeState(

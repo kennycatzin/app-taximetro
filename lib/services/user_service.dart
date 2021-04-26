@@ -59,8 +59,18 @@ class UsuarioProvider {
 
   Future<Map<String, dynamic>> isLoggedIn() async {
     final token = await this._prefs.token;
-    final resp = await http.get('${Enviroment.apiUrlDev}/renovar-token',
-        headers: {'Content-Type': 'application/json', 'x-token': token});
+    if (token == "") {
+      this.logout();
+      return {'ok': 'invalido'};
+    }
+    final miId = await this._prefs.usuarioID;
+    final query = '${Enviroment.apiUrlDev}/renovar-token';
+
+    final resp = await http.get(query, headers: {
+      'Content-Type': 'application/json',
+      'x-token': token,
+      'id': miId.toString()
+    });
     if (resp.statusCode == 200) {
       Map<String, dynamic> decodedResp = json.decode(resp.body);
       print(decodedResp);
@@ -91,5 +101,6 @@ class UsuarioProvider {
 
   void logout() async {
     _prefs.token = '';
+    _prefs.usuarioID = 0;
   }
 }
