@@ -3,8 +3,7 @@ part of 'widgets.dart';
 class MarcadorManual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final taximetroState = context.bloc<TaximetroBloc>().state;
-
+    final taximetroState = BlocProvider.of<TaximetroBloc>(context).state;
     return BlocBuilder<BusquedaBloc, BusquedaState>(
       builder: (context, state) {
         if (state.seleccionManual && !taximetroState.startIsPressed) {
@@ -38,8 +37,7 @@ class _BuildMarcadorManual extends StatelessWidget {
                 ),
                 onPressed: () {
                   //  hacer algo chidori
-                  context
-                      .bloc<BusquedaBloc>()
+                  BlocProvider.of<BusquedaBloc>(context)
                       .add(OnDesActivarMarcadorManual());
                 },
               ),
@@ -86,10 +84,10 @@ class _BuildMarcadorManual extends StatelessWidget {
 
   void calcularDestino(BuildContext context) async {
     calculandoAlerta(context);
-    final mapaBloc = context.bloc<MapaBloc>();
-    final taxiBloc = context.bloc<TaximetroBloc>();
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
     final trafficService = new TrafficService();
-    final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
     final destino = mapaBloc.state.ubicacionCentral;
 
     // Obtener informacion del destino
@@ -114,7 +112,7 @@ class _BuildMarcadorManual extends StatelessWidget {
         rutaCoords, distancia, duracion, nombreDestino));
     taxiBloc.add(OnCotizarPrecio(distancia.toString(), duracion.toString()));
     Navigator.of(context).pop();
-    context.bloc<BusquedaBloc>().add(OnDesActivarMarcadorManual());
+    BlocProvider.of<BusquedaBloc>(context).add(OnDesActivarMarcadorManual());
 
     // tarea quitar el confirmar destino, marcador y el boton para regresar
   }

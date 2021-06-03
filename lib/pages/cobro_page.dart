@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
+import 'package:mapa_app/global/enviroment.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/viajes_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CobroPage extends StatefulWidget {
   static final String routeName = 'loading';
@@ -217,23 +219,7 @@ class _CobroPageState extends State<CobroPage> {
                     )
                   ],
                 ),
-                // Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //     children: <Widget>[
-                //       RadioListTile(
-                //         value: 1,
-                //         title: Text('Masculino'),
-                //         groupValue: _genero,
-                //         onChanged: _setSelectedRadio,
-                //       ),
-                //       RadioListTile(
-                //           value: 2,
-                //           title: Text('Femenino'),
-                //           groupValue: _genero,
-                //           onChanged: _setSelectedRadio),
-                //     ]),
                 SizedBox(height: 10.0),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -251,7 +237,7 @@ class _CobroPageState extends State<CobroPage> {
                                   style: TextStyle(fontSize: 18)),
                               icon: Icon(Icons.credit_card),
                               onPressed: (operadorBloc.id_status == 1)
-                                  ? null
+                                  ? _launchURL
                                   : () => accionPago(context, 2))
                         ],
                       ),
@@ -272,6 +258,31 @@ class _CobroPageState extends State<CobroPage> {
         ],
       ),
     );
+  }
+
+  _launchURL() async {
+    mostrarLoading(context);
+    String url = '';
+    url = Enviroment.urlContrataPasarela;
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    Map info = await viajeProvider.guardarViaje(
+        taxiBloc.state.km,
+        taxiBloc.state.horaInicio,
+        taxiBloc.state.horaFinal,
+        taxiBloc.state.pago,
+        1,
+        taxiBloc.state.pagoTiempo);
+    if (info['ok'] == true) {
+      mapaBloc.add(OnQuitarPoliline());
+      mapaBloc.add(OnMapaCrea());
+    }
+    print(info);
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget _crearBoton(BuildContext context) {

@@ -43,8 +43,10 @@ class SearchBar extends StatelessWidget {
         width: wifht * .6,
         child: GestureDetector(
           onTap: () async {
-            final proximidad = context.bloc<MiUbicacionBloc>().state.ubicacion;
-            final historial = context.bloc<BusquedaBloc>().state.historial;
+            final proximidad =
+                BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+            final historial =
+                BlocProvider.of<BusquedaBloc>(context).state.historial;
             final resultado = await showSearch(
                 context: context,
                 delegate: SearchDestination(proximidad, historial));
@@ -83,15 +85,15 @@ class SearchBar extends StatelessWidget {
       return;
     }
     if (result.manual) {
-      context.bloc<BusquedaBloc>().add(OnActivarMarcadorManual());
+      BlocProvider.of<BusquedaBloc>(context).add(OnActivarMarcadorManual());
       return;
     }
     calculandoAlerta(context);
     // Calcular la ruta en base al valor
     final trafficService = new TrafficService();
-    final mapaBloc = context.bloc<MapaBloc>();
-    final taxiBloc = context.bloc<TaximetroBloc>();
-    final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
     final destino = result.position;
 
     final drivingResponse =
@@ -115,7 +117,7 @@ class SearchBar extends StatelessWidget {
 
     Navigator.of(context).pop();
     // agregar al historial
-    final busquedaBloc = context.bloc<BusquedaBloc>();
+    final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
     busquedaBloc.add(OnAgregarHistorial(result));
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'usuario_event.dart';
@@ -18,7 +17,6 @@ class UsuarioBloc extends Bloc<UsuarioEvent, UsuarioState> {
   }
 
   Stream<UsuarioState> _onLogin(OnLogin event) async* {
-    print('Operador logueado');
     // swatch.start();
     // startTimer();
     yield state.copyWith(

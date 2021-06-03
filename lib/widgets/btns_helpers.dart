@@ -3,8 +3,7 @@ part of 'widgets.dart';
 class BtnsHelpers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final taximetroState = context.bloc<TaximetroBloc>().state;
-
+    final taximetroState = BlocProvider.of<TaximetroBloc>(context).state;
     return BlocBuilder<BusquedaBloc, BusquedaState>(
       builder: (context, state) {
         if (!state.seleccionManual && !taximetroState.startIsPressed) {

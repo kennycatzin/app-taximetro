@@ -186,14 +186,14 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
       if (!enEspera) {
         contador++;
-        final destino = context.bloc<MiUbicacionBloc>().state.ubicacion;
-        final inicio = context.bloc<TaximetroBloc>().state.inicio;
+        final destino =
+            BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+        final inicio = BlocProvider.of<TaximetroBloc>(context).state.inicio;
         double distancia = await calcularDistancia(inicio, destino);
         final auxDistancia = await convertKM(distancia);
         final miDistancia = taxiBloc.state.km + auxDistancia;
         final miTarifa = await calcularTarifa(tarifaState, miDistancia);
-        print(
-            '=== mi distancia === : $auxDistancia ==== mi tarifa ====:::::: $miTarifa');
+
         double duracion = 24000;
         taxiBloc.add(OnCorreTaximetro(
             distancia,

@@ -228,11 +228,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _login() async {
-    print(this.emailCtrl.toString());
-    print(this.passCtrl.toString());
-
     mostrarLoading(context);
-
     Map info = await usuarioProvider.login(
         this.emailCtrl.text.toString(), this.passCtrl.text.toString());
     Navigator.pop(context);

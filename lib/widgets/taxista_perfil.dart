@@ -9,7 +9,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final usuarioState = context.bloc<UsuarioBloc>().state;
+    final usuarioState = BlocProvider.of<UsuarioBloc>(context).state;
     return SafeArea(
       child: Align(
         alignment: Alignment.centerRight,
