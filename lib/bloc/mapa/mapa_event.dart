@@ -11,6 +11,11 @@ class OnMarcarRecorrido extends MapaEvent {}
 
 class OnSeguirUbicacion extends MapaEvent {}
 
+class OnTipoMapa extends MapaEvent {
+  final int tipo;
+  OnTipoMapa(this.tipo);
+}
+
 class OnCrearRutaInicioDestino extends MapaEvent {
   final List<LatLng> rutaCoordenadas;
   final double distancia;

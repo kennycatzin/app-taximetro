@@ -57,7 +57,9 @@ class _Mensaje extends StatelessWidget {
             this.mensaje.titulo,
             this.mensaje.mensaje,
             this.mensaje.tipo,
-            this.mensaje.name));
+            this.mensaje.name,
+            this.mensaje.telefono,
+            this.mensaje.correo));
         Navigator.pushNamed(context, 'detalle_mensaje');
       },
     );

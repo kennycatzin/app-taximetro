@@ -7,12 +7,11 @@ import 'package:mapa_app/services/preference_usuario.dart';
 class UsuarioProvider {
   final String _firebaseToken = 'AIzaSyDZCaIJhlOyJxgksAQ2doZ-GY-mie7t0Y8';
   final _prefs = new PreferenciasUsuario();
-  final _local = 'http://10.0.2.2:8888/mapas-api/public';
-  final _prod = 'https://mapas-server.herokuapp.com';
+
   Future<Map<String, dynamic>> login(String email, String password) async {
     final authData = {'usuario': email, 'password': password};
 
-    final resp = await http.post('${Enviroment.apiUrlDev}/login',
+    final resp = await http.post(Uri.parse('${Enviroment.apiUrlDev}/login'),
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
@@ -20,7 +19,6 @@ class UsuarioProvider {
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
     if (decodedResp.containsKey('token')) {
-      // TODO salvar el token en el sstorage
       _prefs.token = decodedResp['token'];
       _prefs.usuarioID = decodedResp['operador']['id'];
       return {'ok': 'true', 'token': decodedResp['token'], 'data': decodedResp};
@@ -44,7 +42,8 @@ class UsuarioProvider {
     };
 
     final resp = await http.post(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$_firebaseToken',
+        Uri.parse(
+            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$_firebaseToken'),
         body: json.encode(authData));
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
@@ -65,8 +64,7 @@ class UsuarioProvider {
     }
     final miId = await this._prefs.usuarioID;
     final query = '${Enviroment.apiUrlDev}/renovar-token';
-
-    final resp = await http.get(query, headers: {
+    final resp = await http.get(Uri.parse(query), headers: {
       'Content-Type': 'application/json',
       'x-token': token,
       'id': miId.toString()

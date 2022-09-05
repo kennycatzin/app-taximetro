@@ -15,12 +15,23 @@ void mostrarAlerta(BuildContext context, String mensaje) {
           title: Text('Información incorrecta'),
           content: Text(mensaje),
           actions: <Widget>[
-            FlatButton(
-                child: Text('Ok'),
-                onPressed: () => Navigator.of(context).pop()),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(), child: Text("Ok"))
           ],
         );
       });
+}
+
+void mostarSnack(String mensaje) {
+  SnackBar(
+    content: const Text('Información almacenada'),
+    action: SnackBarAction(
+      label: 'Undo',
+      onPressed: () {
+        // Some code to undo the change.
+      },
+    ),
+  );
 }
 
 mostrarLoading(BuildContext context) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:mapa_app/helpers/helpers.dart';
@@ -29,7 +30,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      if (await Geolocator().isLocationServiceEnabled()) {
+      if (await Geolocator.isLocationServiceEnabled()) {
         Navigator.pushReplacement(
             context, navegarMapaFadeIn(context, MapaPage()));
       }
@@ -47,8 +48,12 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
         future: this.checkGpsYLocation(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
+            print('==== mis valores =====');
+            print(snapshot.data);
             return Center(child: Text(snapshot.data));
           } else {
+            print('==== mis conectadooooooo =====');
+            print(snapshot.data);
             return Center(child: CircularProgressIndicator(strokeWidth: 2));
           }
         },
@@ -60,15 +65,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     // PermisoGPS
     final permisoGPS = await Permission.location.isGranted;
     // GPS está activo
-    final gpsActivo = await Geolocator().isLocationServiceEnabled();
+    final gpsActivo = await Geolocator.isLocationServiceEnabled();
 
     if (permisoGPS && gpsActivo) {
       Navigator.pushReplacement(
           context, navegarMapaFadeIn(context, MapaPage()));
       return '';
     } else if (!permisoGPS) {
-      Navigator.pushReplacement(
-          context, navegarMapaFadeIn(context, AccesoGpsPage()));
+      Navigator.pushNamed(context, 'acceso_gps');
       return 'Es necesario el permiso de GPS';
     } else {
       return 'Active el GPS';

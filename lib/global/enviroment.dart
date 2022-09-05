@@ -9,24 +9,26 @@ class Enviroment {
 
   static String apiUrlDev = Platform.isAndroid
       ? 'https://taximetro.serteza.com/public/api'
-      : 'hhttps://taximetro.serteza.com/public/api';
-
-  static String socketUrlDev =
-      Platform.isAndroid ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-
-  static String apiUrlProd = Platform.isAndroid
-      ? 'https://taximetro.serteza.com/public/api'
       : 'https://taximetro.serteza.com/public/api';
 
-  static String socketUrlProd =
-      Platform.isAndroid ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+  static String socketUrlDev = Platform.isAndroid
+      ? 'https://mapa-sockets.herokuapp.com'
+      : 'http://localhost:3000';
+
+  static String apiUrlProd = Platform.isAndroid
+      ? 'http://10.0.2.2:8000'
+      : 'http://10.0.2.2:8888/mapas-api/public/api';
+
+  static String socketUrlProd = Platform.isAndroid
+      ? 'https://mapa-sockets.herokuapp.com'
+      : 'http://localhost:8080';
 
   static String urlPagoLinea = Platform.isAndroid
-      ? 'https://pasarela.serteza.com'
-      : 'https://pasarela.serteza.com';
+      ? 'https://pasarela.sistemaya.com'
+      : 'https://pasarela.sistemaya.com';
 
   static String urlContrataPasarela = Platform.isAndroid
-      ? 'http://contrata-pasarela.serteza.com/'
-      : 'http://contrata-pasarela.serteza.com/';
+      ? 'https://pasarela.sistemaya.com'
+      : 'https://pasarela.sistemaya.com';
 }
 // http://192.168.1.93:8888/pagocurso/index.php

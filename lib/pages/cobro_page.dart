@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
+import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/global/enviroment.dart';
+import 'package:mapa_app/helpers/helpers.dart';
 import 'package:mapa_app/helpers/utils.dart';
+import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:mapa_app/services/viajes_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,10 +35,6 @@ class _CobroPageState extends State<CobroPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
     return Scaffold(
         body: Stack(
       children: <Widget>[
@@ -126,7 +125,7 @@ class _CobroPageState extends State<CobroPage> {
             ),
           ),
           Container(
-            width: size.width * .70,
+            width: size.width * .90,
             margin: EdgeInsets.symmetric(vertical: 30),
             padding: EdgeInsets.symmetric(vertical: 30.0),
             decoration: BoxDecoration(
@@ -276,12 +275,9 @@ class _CobroPageState extends State<CobroPage> {
     if (info['ok'] == true) {
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMapaCrea());
-    }
-    print(info);
-    if (await canLaunch(url)) {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, 'loading');
       await launch(url);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 
@@ -305,6 +301,7 @@ class _CobroPageState extends State<CobroPage> {
     mostrarLoading(context);
     final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
     Map info = await viajeProvider.guardarViaje(
         taxiBloc.state.km,
         taxiBloc.state.horaInicio,
@@ -318,8 +315,10 @@ class _CobroPageState extends State<CobroPage> {
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMapaCrea());
       if (tipo == 1) {
+        // TODO: Verificar si falta limpiar algún campo la razón del cobro extra
         taxiBloc.add(OnIniciarValores());
-        Navigator.pushReplacementNamed(context, 'loading');
+        mensajeBloc.add(OnTapSendComprobante(info['id_viaje']));
+        comprobanteConfirmation(info['id_viaje']);
       } else if (tipo == 2) {
         Navigator.pushReplacementNamed(context, 'tarjeta',
             arguments: {"id_viaje": info['id_viaje']});
@@ -381,6 +380,42 @@ class _CobroPageState extends State<CobroPage> {
                   // enviar mensaje
                   Navigator.pushReplacementNamed(context, 'tarjeta',
                       arguments: {"id_viaje": id_viaje, "tipo": 0});
+                },
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
+  Future<bool> comprobanteConfirmation(String id_viaje) async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('¿Enviar comprobante de pago al cliente?'),
+            actions: <Widget>[
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.redAccent,
+                textColor: Colors.white,
+                label: Text('No'),
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'loading');
+                },
+              ),
+              new RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.green,
+                textColor: Colors.white,
+                label: Text('Si'),
+                icon: Icon(Icons.check_circle),
+                onPressed: () {
+                  // enviar mensaje
+                  Navigator.pushReplacement(
+                      context, navegarMapaFadeIn(context, Comprobante()));
                 },
               ),
             ],

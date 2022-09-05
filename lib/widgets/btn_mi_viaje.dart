@@ -33,11 +33,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaximetroBloc, TaximetroState>(
-      builder: (context, state) => _crearBoton(context, state),
-    );
+        builder: (context, state) => _btnIniciar(context, state));
   }
 
-  Widget _crearBoton(BuildContext context, TaximetroState state) {
+  Widget _btnIniciar(BuildContext context, TaximetroState state) {
     final size = MediaQuery.of(context).size;
     return Container(
         margin:
@@ -59,7 +58,26 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         ));
   }
 
+  Widget _crearBoton(BuildContext context, TaximetroState state) {
+    final size = MediaQuery.of(context).size;
+    return Container(
+        margin:
+            EdgeInsets.only(top: size.width * 0.39, left: size.height * .17),
+        child: MaterialButton(
+          color: Colors.blue,
+          textColor: Colors.white,
+          child: Icon(Icons.online_prediction),
+          padding: EdgeInsets.all(20),
+          shape: CircleBorder(),
+          onPressed: viajeFinalizado ? null : () => accionBoton(state),
+        ));
+  }
+
   void accionBoton(TaximetroState state) {
+    final miUsuario = BlocProvider.of<UsuarioBloc>(context);
+    if (!miUsuario.state.conectado) {
+      return null;
+    }
     if (parartaximetro) {
       _alertaConfirmacionInicio(context, state);
       print(accion);
@@ -75,7 +93,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     final taximetoBloc = BlocProvider.of<TaximetroBloc>(context);
     final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final miTarifa = BlocProvider.of<TarifaBloc>(context).state;
+    final miUsuario = BlocProvider.of<UsuarioBloc>(context).state;
     final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+    final socketService = Provider.of<SocketService>(context, listen: false);
     DateTime hora = DateTime.now();
     String horaReal = '${hora.hour}:${hora.minute}:${hora.second}';
     mapaBloc.add(OnSeguirUbicacion());
@@ -97,7 +118,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       mapaBloc.add(OnMarcarRecorrido());
       parartaximetro = true;
     }
-    taximetoBloc.add(OnStartIsPressed(inicio, 5.00));
+    taximetoBloc.add(OnStartIsPressed(inicio, miTarifa.banderazo));
 
     _cotizar(context, parartaximetro, 10);
     if (state.startIsPressed) {
@@ -107,7 +128,9 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       accionChofer = "Esperar";
       cabeceraChofer = "¿Cobrar tiempo de espera?";
       Future.delayed(Duration(milliseconds: 2000)).then((value) => {
-            Navigator.pushNamed(context, 'cobro')
+            // socketService.emit('marcador-borrar', miUsuario.id_usuario),
+            BlocProvider.of<MiUbicacionBloc>(context).cancelarSeguimiento(),
+            Navigator.pushReplacementNamed(context, 'cobro')
             //_mapController.showMarkerInfoWindow(MarkerId('final'))
           });
     }

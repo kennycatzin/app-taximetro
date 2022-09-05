@@ -20,12 +20,11 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <application
-        android:name=".Application"
         android:label="mapa_app"
         android:icon="@mipmap/ic_launcher">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyBymU3Xq5fZ56rGtZWdebHDxTptOx0fGKk"/>
+               android:value="AIzaSyBM7I6iB-JsPxDCk6-TTSu4SF3NHVBHdPU"/>
 
         <activity
             android:name=".MainActivity"
@@ -47,10 +46,9 @@
                  screen fades out. A splash screen is useful to avoid any visual
                  gap between the end of Android's launch screen and the painting of
                  Flutter's first frame. -->
-            <meta-data
-              android:name="io.flutter.embedding.android.SplashScreenDrawable"
-              android:resource="@drawable/launch_background"
-              />
+
+
+              
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -63,8 +61,8 @@
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+         <meta-data
+    android:name="flutterEmbedding"
+    android:value="2" />
     </application>
 </manifest>

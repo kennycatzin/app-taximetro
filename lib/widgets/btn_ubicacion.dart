@@ -152,11 +152,14 @@ class BtnUbicacion extends StatelessWidget {
     await viajeProvider.aceptarViajeMensaje(mensaje["mensaje"]["id_viaje"]);
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
     mensajeBloc.add(OnTapMensaje(
-        mensaje["mensaje"]["id_mensaje"],
-        mensaje["mensaje"]["titulo"],
-        mensaje["mensaje"]["mensaje"],
-        mensaje["mensaje"]["tipo"],
-        mensaje["mensaje"]["name"]));
+      mensaje["mensaje"]["id_mensaje"],
+      mensaje["mensaje"]["titulo"],
+      mensaje["mensaje"]["mensaje"],
+      mensaje["mensaje"]["tipo"],
+      mensaje["mensaje"]["name"],
+      mensaje["mensaje"]["telefono"],
+      mensaje["mensaje"]["correo"],
+    ));
     Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.pushNamed(context, 'detalle_mensaje');

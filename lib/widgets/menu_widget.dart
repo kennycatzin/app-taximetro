@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/global/globales.dart';
+import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 class MenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final socketService = Provider.of<SocketService>(context);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -56,6 +60,18 @@ class MenuWidget extends StatelessWidget {
               // Navigator.pop(context);
               _alertaConfirmacionInicio(context);
             },
+          ),
+          ListTile(
+            title: Center(
+              child: Text(
+                Globales.versionProyecto,
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            onTap: () {
+              // Navigator.pop(context);
+              _alertaConfirmacionInicio(context);
+            },
           )
         ],
       ),
@@ -91,7 +107,7 @@ class MenuWidget extends StatelessWidget {
         mapaBloc.add(OnMapaCrea());
 
         Navigator.of(context).pop();
-        Navigator.pushNamed(context, 'login');
+        Navigator.pushReplacementNamed(context, 'login');
       },
     );
 

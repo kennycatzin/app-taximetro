@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
+import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/pages/loading_page.dart';
 import 'package:mapa_app/pages/login_page.dart';
 import 'package:mapa_app/services/socket_service.dart';
+// import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/services/user_service.dart';
 import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 
 class CargaPage extends StatelessWidget {
   @override
@@ -31,15 +35,23 @@ class CargaPage extends StatelessWidget {
         print(info['data']['operador']["imagen"]);
         final mapaBloc = BlocProvider.of<UsuarioBloc>(context);
         final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
-        print('Despues de conectar');
-
+        final socketService =
+            Provider.of<SocketService>(context, listen: false);
+        final miMapa = BlocProvider.of<MapaBloc>(context);
+        // socketService.connect();
+        miMapa.add(OnTipoMapa(info['data']['operador']["id_centro_trabajo"]));
         mapaBloc.add(OnLogin(
             true,
+            info['data']['operador']["id"],
+            true,
             info['data']['operador']["imagen"],
+            info['data']['operador']["centro_imagen"],
             info['data']['operador']["NumEconomico"],
             info['data']['operador']["TituloSindical"],
             info['data']['operador']["nombre"],
-            info['data']['operador']["id_status"]));
+            info['data']['operador']["id_status"],
+            info['data']['operador']["centro_trabajo"],
+            info['data']['operador']["id_centro_trabajo"]));
 
         tarifaBloc.add(OnAsignarPrecios(
             info['data']['tarifas']["tarifa_minima"].toDouble(),

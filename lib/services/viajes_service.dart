@@ -17,7 +17,7 @@ class ViajesService {
     final miUrl = '${Enviroment.apiUrlDev}/get-viajes/' + userId.toString();
     print(miUrl);
 
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
     final viajesResponse = viajesResponseFromJson(resp.body);
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
@@ -36,7 +36,7 @@ class ViajesService {
         '${Enviroment.apiUrlDev}/get-estatus-viaje/' + id_viaje.toString();
     print(miUrl);
 
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
     if (resp.statusCode == 200) {
       Map<String, dynamic> decodedResp = json.decode(resp.body);
       if (decodedResp["data"]["Estatus"] == "POR PAGAR") {
@@ -63,11 +63,12 @@ class ViajesService {
       'precio_tiempo_espera': pago_tiempo.toDouble()
     };
 
-    final resp = await http.post('${Enviroment.apiUrlDev}/store-viaje',
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: jsonEncode(data));
+    final resp =
+        await http.post(Uri.parse('${Enviroment.apiUrlDev}/store-viaje'),
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: jsonEncode(data));
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
     print(decodedResp);
@@ -78,6 +79,31 @@ class ViajesService {
         'mensaje': decodedResp['data'],
         'id_viaje': decodedResp['id_viaje']
       };
+    }
+    return {'ok': false, 'mensaje': 'No se pude establecer la conexion'};
+  }
+
+  Future<Map<String, dynamic>> guardarUbicacion(
+      String latitud, String longitud) async {
+    final userId = await _prefs.usuarioID;
+    final data = {
+      'id_usuario': userId.toInt(),
+      'latitud': latitud,
+      'longitud': longitud
+    };
+
+    final resp =
+        await http.post(Uri.parse('${Enviroment.apiUrlDev}/store-ubicacion'),
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: jsonEncode(data));
+
+    Map<String, dynamic> decodedResp = json.decode(resp.body);
+    print(decodedResp);
+
+    if (decodedResp['ok'] == true) {
+      return {'ok': true, 'mensaje': decodedResp['message']};
     }
     return {'ok': false, 'mensaje': 'No se pude establecer la conexion'};
   }

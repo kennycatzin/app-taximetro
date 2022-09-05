@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +7,10 @@ import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/mensaje_service.dart';
+import 'package:mapa_app/services/preference_usuario.dart';
 import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/widgets/menu_widget.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +26,9 @@ class MapaPage extends StatefulWidget {
 }
 
 class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
-  SocketService socketService;
   bool boton = true;
+  SocketService service;
+  final _prefs = new PreferenciasUsuario();
 
   @override
   void initState() {
@@ -37,8 +38,8 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+    service = Provider.of<SocketService>(context, listen: false);
     Wakelock.enable();
-    print("Iniciandooooooooooo");
     verificarMensajes(context);
   }
 
@@ -77,24 +78,47 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
   Widget crearMapa(MiUbicacionState state) {
     if (!state.existeUbicacion) return Center(child: Text('Ubicando...'));
+
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    final taximetroBloc = BlocProvider.of<TaximetroBloc>(context);
+    final taxistaBloc = BlocProvider.of<UsuarioBloc>(context).state;
+    if (!taximetroBloc.state.startIsPressed) {
+      final nuevoMarcador = {
+        "nombre": taxistaBloc.nombre,
+        "lat": state.ubicacion.latitude,
+        "lng": state.ubicacion.longitude,
+        "id": taxistaBloc.id_usuario.toString()
+      };
+      // service.emit('marcador-borrar', taxistaBloc.id_usuario);
+      // service.emit('marcador-nuevo', nuevoMarcador);
+    }
+
     mapaBloc.add(OnNuevaUbicacion(state.ubicacion));
 
     final cameraPosition =
         new CameraPosition(target: state.ubicacion, zoom: 15);
-
     return BlocBuilder<MapaBloc, MapaState>(
       builder: (context, _) {
         return GoogleMap(
           initialCameraPosition: cameraPosition,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
+          zoomGesturesEnabled: false,
           zoomControlsEnabled: false,
           onMapCreated: mapaBloc.initMapa,
           polylines: mapaBloc.state.polylines.values.toSet(),
           markers: mapaBloc.state.markers.values.toSet(),
           onCameraMove: (cameraPosition) {
             // cameraPosition.target = LatLng central del mapa
+            final usuarioBloc = BlocProvider.of<UsuarioBloc>(context).state;
+            if (usuarioBloc.conectado) {
+              // service.emit('marcador-mover', {
+              //   "nombre": usuarioBloc.nombre,
+              //   "lat": cameraPosition.target.latitude,
+              //   "lng": cameraPosition.target.longitude,
+              //   "id": usuarioBloc.id_usuario.toString()
+              // });
+            }
             mapaBloc.add(OnMovioMapa(cameraPosition.target));
           },
         );
@@ -224,11 +248,14 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
     await viajeProvider.aceptarViajeMensaje(mensaje["mensaje"]["id_viaje"]);
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
     mensajeBloc.add(OnTapMensaje(
-        mensaje["mensaje"]["id_mensaje"],
-        mensaje["mensaje"]["titulo"],
-        mensaje["mensaje"]["mensaje"],
-        mensaje["mensaje"]["tipo"],
-        mensaje["mensaje"]["name"]));
+      mensaje["mensaje"]["id_mensaje"],
+      mensaje["mensaje"]["titulo"],
+      mensaje["mensaje"]["mensaje"],
+      mensaje["mensaje"]["tipo"],
+      mensaje["mensaje"]["name"],
+      mensaje["mensaje"]["telefono"],
+      mensaje["mensaje"]["correo"],
+    ));
     Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.pushNamed(context, 'detalle_mensaje');
@@ -256,13 +283,21 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    BlocProvider.of<MiUbicacionBloc>(context).cancelarSeguimiento();
+    print('=== entrando a dispose === ');
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    print('=== entrando a dispose === ');
     super.dispose();
     Wakelock.disable();
   }
+
+  // @override
+  // void deactivate() {
+  //   print('=== entrando a dispose === ');
+  //   service.emit('marcador-borrar', 1);
+  //   super.deactivate();
+  // }
 }

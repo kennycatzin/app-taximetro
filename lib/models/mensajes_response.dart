@@ -33,15 +33,16 @@ class MensajesResponse {
 }
 
 class Mensaje {
-  Mensaje({
-    this.idMensaje,
-    this.titulo,
-    this.mensaje,
-    this.tipo,
-    this.name,
-    this.idStatus,
-    this.estatus,
-  });
+  Mensaje(
+      {this.idMensaje,
+      this.titulo,
+      this.mensaje,
+      this.tipo,
+      this.name,
+      this.idStatus,
+      this.estatus,
+      this.telefono,
+      this.correo});
 
   int idMensaje;
   String titulo;
@@ -50,16 +51,19 @@ class Mensaje {
   String name;
   int idStatus;
   String estatus;
+  String telefono;
+  String correo;
 
   factory Mensaje.fromJson(Map<String, dynamic> json) => Mensaje(
-        idMensaje: json["id_mensaje"],
-        titulo: json["titulo"],
-        mensaje: json["mensaje"],
-        tipo: json["tipo"],
-        name: json["name"],
-        idStatus: json["id_status"],
-        estatus: json["Estatus"],
-      );
+      idMensaje: json["id_mensaje"],
+      titulo: json["titulo"],
+      mensaje: json["mensaje"],
+      tipo: json["tipo"],
+      name: json["name"],
+      idStatus: json["id_status"],
+      estatus: json["Estatus"],
+      telefono: json["telefono"],
+      correo: json["correo"]);
 
   Map<String, dynamic> toJson() => {
         "id_mensaje": idMensaje,
@@ -69,5 +73,7 @@ class Mensaje {
         "name": name,
         "id_status": idStatus,
         "Estatus": estatus,
+        "telefono": telefono,
+        "correo": correo
       };
 }

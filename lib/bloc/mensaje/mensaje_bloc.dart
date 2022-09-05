@@ -15,6 +15,8 @@ class MensajeBloc extends Bloc<MensajeEvent, MensajeState> {
   ) async* {
     if (event is OnTapMensaje) {
       yield* this._onTapMensaje(event);
+    } else if (event is OnTapSendComprobante) {
+      yield* this._onTapSendComprobante(event);
     }
   }
 
@@ -24,6 +26,13 @@ class MensajeBloc extends Bloc<MensajeEvent, MensajeState> {
         tipo: event.tipo,
         titulo: event.titulo,
         mensaje: event.mensaje,
-        name: event.name);
+        name: event.name,
+        telefono: event.telefono,
+        correo: event.correo);
+  }
+
+  Stream<MensajeState> _onTapSendComprobante(
+      OnTapSendComprobante event) async* {
+    yield state.copyWith(viajeID: event.viajeID);
   }
 }

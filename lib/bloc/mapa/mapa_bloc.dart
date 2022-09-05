@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart' show Colors, Offset;
 import 'package:mapa_app/helpers/helpers.dart';
+import 'package:mapa_app/themes/santaana_map_theme.dart';
+import 'package:mapa_app/themes/uber_map_theme.dart';
 import 'package:meta/meta.dart';
 
-import 'package:mapa_app/themes/uber_map_theme.dart';
+// import 'package:mapa_app/themes/uber_map_theme.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 part 'mapa_event.dart';
@@ -27,12 +29,19 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       width: 4,
       color: Colors.redAccent);
 
-  void initMapa(GoogleMapController controller) {
-    if (!state.mapaListo) {
-      this._mapController = controller;
-      this._mapController.setMapStyle(jsonEncode(uberMapTheme));
-
-      add(OnMapaListo());
+  void initMapa(GoogleMapController controller) async {
+    if (state.tipo == 1) {
+      if (!state.mapaListo) {
+        this._mapController = controller;
+        await this._mapController.setMapStyle(jsonEncode(uberMapTheme));
+        add(OnMapaListo());
+      }
+    } else if (state.tipo == 2) {
+      if (!state.mapaListo) {
+        this._mapController = controller;
+        await this._mapController.setMapStyle(jsonEncode(santaanaMapTheme));
+        add(OnMapaListo());
+      }
     }
   }
 
@@ -66,6 +75,8 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       yield* this._onQuitarMarcadores(event);
     } else if (event is OnMapaCrea) {
       yield state.copyWith(mapaListo: false);
+    } else if (event is OnTipoMapa) {
+      yield state.copyWith(tipo: event.tipo);
     }
   }
 

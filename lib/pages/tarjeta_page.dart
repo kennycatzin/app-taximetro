@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sms/flutter_sms.dart';
+// import 'package:flutter_sms/flutter_sms.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/viajes_service.dart';
@@ -86,7 +87,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
       _verificar();
       // crear funcion que verifique que se ha pagado mediante un clock
 
-      print(_result);
+      // print(_result);
     } else {
       // set up the buttons
       Widget cancelButton = FlatButton(

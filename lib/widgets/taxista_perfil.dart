@@ -6,10 +6,12 @@ class TaxistaPerfil extends StatefulWidget {
 }
 
 class _TaxistaPerfilState extends State<TaxistaPerfil> {
+  bool miStatus = true;
+  final viajeProvider = new ViajesService();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final usuarioState = BlocProvider.of<UsuarioBloc>(context).state;
+    final usuarioState = BlocProvider.of<UsuarioBloc>(context);
     return SafeArea(
       child: Align(
         alignment: Alignment.centerRight,
@@ -24,13 +26,19 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.red, Colors.redAccent],
+                        colors: (usuarioState.state.centro_trabajo == "Mi taxi")
+                            ? [Colors.redAccent, Colors.redAccent]
+                            : [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade900
+                              ],
                       ),
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                   ),
+                  _conectadoSocket(size, usuarioState),
                   _cabeceraTaximetro(usuarioState),
-                  _contenedorBlanco(size),
+                  _contenedorBlanco(size, usuarioState, context),
                   _contenedorItems(size),
                   BlocBuilder<TaximetroBloc, TaximetroState>(
                     builder: (context, state) =>
@@ -43,19 +51,103 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _contenedorBlanco(Size size) {
-    return Align(
-      alignment: Alignment(1, -1.0),
-      child: Container(
-          width: 70.0,
-          height: 70.0,
-          decoration:
-              BoxDecoration(shape: BoxShape.circle, color: Colors.white30),
-          padding: EdgeInsets.all(8.0),
-          child: Icon(
-            Icons.local_taxi,
-            color: Colors.white,
+  Widget _contenedorBlanco(
+      Size size, UsuarioBloc usuarioState, BuildContext context) {
+    return GestureDetector(
+      onTap: () => guardarUbicacion(context),
+      child: Align(
+          alignment: Alignment(1, -1.0),
+          child: Container(
+            width: 70.0,
+            height: 70.0,
+            decoration:
+                BoxDecoration(shape: BoxShape.circle, color: Colors.white30),
+            padding: EdgeInsets.all(8.0),
+            child: CircleAvatar(
+                backgroundImage:
+                    NetworkImage(usuarioState.state.centro_imagen)),
           )),
+    );
+  }
+
+  Widget _conectadoSocket(Size size, UsuarioBloc usuarioBloc) {
+    return GestureDetector(
+      onTap: () => print("holaaa"),
+      child: Container(
+        margin: EdgeInsets.only(right: 198),
+        child: Align(
+            alignment: Alignment(1, -1.0),
+            child: Container(
+              width: 50.0,
+              height: 50.0,
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: Colors.white30),
+              padding: EdgeInsets.all(6.0),
+              child: (miStatus)
+                  ? Icon(Icons.online_prediction, color: Colors.greenAccent)
+                  : Icon(Icons.offline_bolt, color: Colors.red[800]),
+            )),
+      ),
+    );
+  }
+
+  void cambioStatus(status, UsuarioBloc usuarioBloc) {
+    final socketService = Provider.of<SocketService>(context, listen: false);
+    final ubicacionBloc = BlocProvider.of<MiUbicacionBloc>(context).state;
+    print("hola beb");
+  }
+
+  void guardarUbicacion(BuildContext context) {
+    // set up the buttons
+    final destino = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+    Widget cancelButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.redAccent,
+      textColor: Colors.white,
+      label: Text('No'),
+      icon: Icon(Icons.cancel),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget continueButton = RaisedButton.icon(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      color: Colors.green,
+      textColor: Colors.white,
+      label: Text('Si'),
+      icon: Icon(Icons.check_circle),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        mostrarLoading(context);
+        Map info = await viajeProvider.guardarUbicacion(
+            destino.latitude.toString(), destino.longitude.toString());
+        print("guardando ubiaccion");
+        print(destino.latitude);
+        print(destino.longitude);
+
+        Navigator.of(context).pop();
+        const snackBar = SnackBar(
+          content: Text('Se guardó la información'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Center(child: Text("¿Desea guardar ubicación?")),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 
@@ -69,7 +161,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _cabeceraTaximetro(UsuarioState usuarioState) {
+  Widget _cabeceraTaximetro(UsuarioBloc usuarioState) {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
       child: Column(
@@ -86,18 +178,19 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
                   ),
                   padding: EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                      backgroundImage: NetworkImage(usuarioState.imagen))),
+                      backgroundImage:
+                          NetworkImage(usuarioState.state.imagen))),
             ],
           ),
           SizedBox(
             height: 8.0,
           ),
-          Text(usuarioState.nombre,
+          Text(usuarioState.state.nombre,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 17.0,
                   color: Colors.white)),
-          Text(usuarioState.numEconomico,
+          Text(usuarioState.state.numEconomico,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,
@@ -108,7 +201,7 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
   }
 
   Widget _contTaximetro(
-      TaximetroState state, Size size, UsuarioState usuarioState) {
+      TaximetroState state, Size size, UsuarioBloc usuarioState) {
     return Column(
       children: [
         Container(
@@ -150,11 +243,11 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
     );
   }
 
-  Widget _tituloSindical(UsuarioState usuarioState) {
+  Widget _tituloSindical(UsuarioBloc usuarioState) {
     return Container(
       //margin: EdgeInsets.only(top: 330, left: 85),
       child: Text(
-        usuarioState.tituloSindical,
+        usuarioState.state.tituloSindical,
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
       ),
     );

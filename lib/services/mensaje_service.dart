@@ -9,12 +9,11 @@ class MensajesService {
   final _prefs = new PreferenciasUsuario();
   List<Mensaje> mensajes = [];
 
-  // final _prod = 'ruta-server';
   Future<List<Mensaje>> listaMensajes() async {
     final userId = await _prefs.usuarioID;
     final miUrl = '${Enviroment.apiUrlDev}/get-mensajes/' + userId.toString();
     print(miUrl);
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
     Map<String, dynamic> decodedResp = json.decode(resp.body);
     print(decodedResp);
     final newsResponse = mensajesResponseFromJson(resp.body);
@@ -26,7 +25,7 @@ class MensajesService {
     final miUrl =
         '${Enviroment.apiUrlDev}/mensaje-visto/' + idMensaje.toString();
     print(miUrl);
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
 
     if (resp.statusCode == 200) {
       Map<String, dynamic> decodedResp = json.decode(resp.body);
@@ -43,7 +42,7 @@ class MensajesService {
   Future<bool> aceptarViajeMensaje(int idViaje) async {
     final miUrl = '${Enviroment.apiUrlDev}/aceptar-viaje/' + idViaje.toString();
     print(miUrl);
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
 
     if (resp.statusCode == 200) {
       Map<String, dynamic> decodedResp = json.decode(resp.body);
@@ -63,7 +62,7 @@ class MensajesService {
     final miUrl =
         '${Enviroment.apiUrlDev}/rechazar-viaje/' + idViaje.toString();
     print(miUrl);
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
     print(resp);
 
     if (resp.statusCode == 200) {
@@ -83,7 +82,7 @@ class MensajesService {
     final userId = await _prefs.usuarioID;
     final miUrl =
         '${Enviroment.apiUrlDev}/get-mensajes-nuevos/' + userId.toString();
-    final resp = await http.get(miUrl);
+    final resp = await http.get(Uri.parse(miUrl));
     Map<String, dynamic> decodedResp = json.decode(resp.body);
     print(decodedResp);
     return decodedResp;

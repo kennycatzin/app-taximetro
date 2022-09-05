@@ -13,7 +13,7 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
   var swatch = Stopwatch();
   final dur = const Duration(seconds: 1);
   String stoptimetoDisplay = "00:00:00";
-  String pagoInicio = '5.00';
+  String pagoInicio = '0.00';
   String kmDis = '0 km';
   final pago = 0;
   final km = '';
@@ -28,10 +28,10 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       startTimer();
 
       var sec = swatch.elapsed.inSeconds;
-      var min = swatch.elapsed.inMinutes;
-      var hora = swatch.elapsed.inHours;
+      // var min = swatch.elapsed.inMinutes;
+      // var hora = swatch.elapsed.inHours;
 
-      var total = (sec / 60) + min + (hora * 60);
+      // var total = (sec / 60) + min + (hora * 60);
       print("entro $sec");
       if ((sec / contador) == 30) {
         print("aqui consulta los precios ");

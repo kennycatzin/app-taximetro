@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,7 @@ import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/pages/carga_page.dart';
 import 'package:mapa_app/pages/cobro_page.dart';
+import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:mapa_app/pages/cronometro_page.dart';
 import 'package:mapa_app/pages/detalle_mensaje_page.dart';
 
@@ -32,7 +35,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = new PreferenciasUsuario();
   await prefs.initPrefs();
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -45,7 +58,6 @@ class _MyAppState extends State<MyApp> {
       new GlobalKey<NavigatorState>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // final pushProvider = new PushNotificationsProvider();
 
@@ -96,7 +108,8 @@ class _MyAppState extends State<MyApp> {
             'detalle_mensaje': (_) => DetalleMensaje(),
             'tarjeta': (_) => TarjetaPage(),
             'pagado': (_) => PagadoPage(),
-            'viaje_manual': (_) => ViajeManualPage()
+            'viaje_manual': (_) => ViajeManualPage(),
+            'comprobante': (_) => Comprobante()
           },
         ));
   }
@@ -104,5 +117,11 @@ class _MyAppState extends State<MyApp> {
   void config() {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+  }
+
+  @override
+  void dispose() {
+    print('=== entrando a dispose === ');
+    super.dispose();
   }
 }

@@ -2,14 +2,10 @@ part of 'helpers.dart';
 
 void Confirmacion(BuildContext context, String texto) {
   // set up the buttons
-  Widget cancelButton = FlatButton(
-    child: Text("Cancelar"),
-    onPressed: () {},
-  );
-  Widget continueButton = FlatButton(
-    child: Text("Confirmar"),
-    onPressed: () {},
-  );
+  Widget cancelButton = TextButton(onPressed: () {}, child: Text("Cancelar"));
+
+  Widget continueButton =
+      TextButton(onPressed: () {}, child: Text("Confirmar"));
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: Text("Alerta de confirmación"),
