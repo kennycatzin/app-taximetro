@@ -266,10 +266,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   void _alertaConfirmacionInicio(BuildContext context, TaximetroState state) {
     // set up the buttons
-    Widget cancelButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.redAccent,
-      textColor: Colors.white,
+    Widget cancelButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.redAccent,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+      ),
       label: Text('No'),
       icon: Icon(Icons.cancel),
       onPressed: () {
@@ -279,10 +282,14 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       },
     );
 
-    Widget continueButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.green,
-      textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.green,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.green),
+      ),
+
       label: Text('Si'),
       icon: Icon(Icons.check_circle),
       onPressed: () {
@@ -330,10 +337,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
   void _alertaConfirmacionDetener(BuildContext context, TaximetroState state) {
     // set up the buttons
-    Widget cancelButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.red,
-      textColor: Colors.white,
+    Widget cancelButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.red,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.red),
+      ),
       label: Text('No'),
       icon: Icon(Icons.cancel),
       onPressed: () {
@@ -342,10 +352,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       },
     );
 
-    Widget esperarButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.green,
-      textColor: Colors.white,
+    Widget esperarButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.green,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.green),
+      ),
       label: Text(accionChofer),
       icon: Icon((!enEspera) ? Icons.timer : Icons.time_to_leave),
       onPressed: () {
@@ -355,10 +368,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       },
     );
 
-    Widget continueButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.blue,
-      textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.blue,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.blue),
+      ),
       label: Text("Finalizar viaje"),
       icon: Icon(Icons.payments_sharp),
       onPressed: () {

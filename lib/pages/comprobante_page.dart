@@ -117,18 +117,21 @@ class _Comprobante extends State<Comprobante> {
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context).state;
     final id_viaje = mensajeBloc.viajeID;
 
-    return RaisedButton(
-        padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
+    return ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         child: Container(
           child: Text(
             'Enviar',
             textAlign: TextAlign.center,
           ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 0.0,
-        color: Colors.redAccent,
-        textColor: Colors.white,
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        // elevation: 0.0,
+        // padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         onPressed: () => _send(
             "Para descargar tu comprobante, ingrese al siguiente enlace: " +
                 Enviroment.urlPagoLinea +
@@ -168,7 +171,7 @@ class _Comprobante extends State<Comprobante> {
       // print(_result);
     } else {
       // set up the buttons
-      Widget cancelButton = FlatButton(
+      Widget cancelButton = TextButton(
         child: Text("Cerrar"),
         onPressed: () {
           Navigator.pop(context);

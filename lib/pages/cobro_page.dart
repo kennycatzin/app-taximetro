@@ -10,7 +10,7 @@ import 'package:mapa_app/helpers/helpers.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:mapa_app/services/viajes_service.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CobroPage extends StatefulWidget {
@@ -225,12 +225,17 @@ class _CobroPageState extends State<CobroPage> {
                     Container(
                       child: Row(
                         children: [
-                          RaisedButton.icon(
-                              padding: EdgeInsets.all(10),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0)),
-                              color: Colors.redAccent,
-                              textColor: Colors.white,
+                          ElevatedButton.icon(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.redAccent),
+                              ),
+
+                              // padding: EdgeInsets.all(10),
+                              // shape: RoundedRectangleBorder(
+                              //     borderRadius: BorderRadius.circular(10.0)),
+                              // color: Colors.redAccent,
+                              // textColor: Colors.white,
                               label: Text(
                                   'Tarjeta \n \$ ${((((taxiBloc.pago * .029) + 2.5) * 1.16) + taxiBloc.pago).toStringAsFixed(2)}',
                                   style: TextStyle(fontSize: 18)),
@@ -283,11 +288,15 @@ class _CobroPageState extends State<CobroPage> {
 
   Widget _crearBoton(BuildContext context) {
     final taxiBloc = BlocProvider.of<TaximetroBloc>(context).state;
-    return RaisedButton.icon(
-      padding: EdgeInsets.all(10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.redAccent,
-      textColor: Colors.white,
+    return ElevatedButton.icon(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+      ),
+
+      // padding: EdgeInsets.all(10),
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.redAccent,
+      // textColor: Colors.white,
       label: Text('Efectivo \n\$ ${taxiBloc.pago.toStringAsFixed(2)}',
           style: TextStyle(fontSize: 18)),
       icon: Icon(Icons.money),
@@ -334,46 +343,46 @@ class _CobroPageState extends State<CobroPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Enviar link de pago al cliente?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   // Abrir modal
-                  CupertinoScaffold.showCupertinoModalBottomSheet(
-                    expand: true,
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => Stack(
-                      children: <Widget>[
-                        Positioned(
-                          height: 40,
-                          left: 40,
-                          right: 40,
-                          bottom: 20,
-                          child: MaterialButton(
-                            onPressed: () => {
-                              Navigator.pushReplacementNamed(
-                                context,
-                                'tarjeta',
-                                arguments: {"id_viaje": id_viaje, "tipo": 0},
-                              )
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  );
+                  // CupertinoScaffold.showCupertinoModalBottomSheet(
+                  //   expand: true,
+                  //   context: context,
+                  //   backgroundColor: Colors.transparent,
+                  //   builder: (context) => Stack(
+                  //     children: <Widget>[
+                  //       Positioned(
+                  //         height: 40,
+                  //         left: 40,
+                  //         right: 40,
+                  //         bottom: 20,
+                  //         child: MaterialButton(
+                  //           onPressed: () => {
+                  //             Navigator.pushReplacementNamed(
+                  //               context,
+                  //               'tarjeta',
+                  //               arguments: {"id_viaje": id_viaje, "tipo": 0},
+                  //             )
+                  //           },
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // );
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {
@@ -394,22 +403,30 @@ class _CobroPageState extends State<CobroPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Enviar comprobante de pago al cliente?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+                ),
+
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, 'loading');
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.green),
+                ),
+
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {

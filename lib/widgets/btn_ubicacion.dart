@@ -46,11 +46,11 @@ class BtnUbicacion extends StatelessWidget {
 
   void _alertaConfirmaViaje(BuildContext context, Map data) {
     // set up the buttons
-    Widget cancelButton = RaisedButton.icon(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        color: Colors.redAccent,
-        textColor: Colors.white,
+    Widget cancelButton = ElevatedButton.icon(
+        // shape:
+        //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         label: Text('Rechazar'),
         icon: Icon(Icons.cancel),
         onPressed: () => (boton == true)
@@ -58,10 +58,10 @@ class BtnUbicacion extends StatelessWidget {
                 data['mensaje']['id_viaje'])
             : null);
 
-    Widget continueButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.green,
-      textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.green,
+      // textColor: Colors.white,
       label: Text('Aceptar'),
       icon: Icon(Icons.check_circle),
       onPressed: () => (boton == true) ? aceptar(context, data) : null,
@@ -102,11 +102,11 @@ class BtnUbicacion extends StatelessWidget {
   void _alertaMensajeNuevo(BuildContext context, Map data) {
     // set up the buttons
 
-    Widget continueButton = RaisedButton.icon(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        color: Colors.redAccent,
-        textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+        // shape:
+        //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         label: Text('Cerrar'),
         icon: Icon(Icons.cancel),
         onPressed: () => mensajeVisto(context, data["mensaje"]["id_mensaje"]));

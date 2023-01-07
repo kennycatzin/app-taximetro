@@ -260,20 +260,23 @@ class _TarjetaBotones extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         (this.viaje.tipo_viaje == 1)
-            ? RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+            ? ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+                ),
                 label: Text('Efectivo'),
                 icon: Icon(Icons.money),
                 onPressed: () => {})
             : (this.viaje.tipo_viaje == 2)
-                ? RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
+                ? ElevatedButton.icon(
+                    // shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.circular(10.0)),
+                    // color: Colors.blueAccent,
+                    // textColor: Colors.white,
                     label: Text('Tarjeta'),
                     icon: Icon(Icons.card_membership_outlined),
                     onPressed: () => {},

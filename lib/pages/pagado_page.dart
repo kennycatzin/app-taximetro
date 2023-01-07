@@ -71,15 +71,15 @@ class _PagadoPageState extends State<PagadoPage> {
   }
 
   Widget _crearBoton() {
-    return RaisedButton(
-        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+    return ElevatedButton(
+        // padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
         child: Container(
           child: Text('Regresar'),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 0.0,
-        color: Colors.redAccent,
-        textColor: Colors.white,
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        // elevation: 0.0,
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         onPressed: () {
           Navigator.pushReplacementNamed(context, 'loading');
         });

@@ -107,18 +107,21 @@ class _ViajeManualPageState extends State<ViajeManualPage> {
   }
 
   Widget _crearBoton() {
-    return RaisedButton(
-        padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
+    return ElevatedButton(
+        // padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         child: Container(
           child: Text(
             'Guardar',
             textAlign: TextAlign.center,
           ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 0.0,
-        color: Colors.redAccent,
-        textColor: Colors.white,
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        // elevation: 0.0,
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         onPressed: () => !enviado ? pagar() : {}
         // onPressed: () => {
         //   showCupertinoModalBottomSheet(
@@ -159,7 +162,7 @@ class _ViajeManualPageState extends State<ViajeManualPage> {
     } else {
       enviado = false;
       // set up the buttons
-      Widget cancelButton = FlatButton(
+      Widget cancelButton = TextButton(
         child: Text("Cerrar"),
         onPressed: () {
           Navigator.of(context).pop();

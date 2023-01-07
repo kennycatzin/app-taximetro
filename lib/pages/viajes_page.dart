@@ -49,22 +49,22 @@ class _ViajesPageState extends State<ViajesPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Regresar al taxímetro?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {

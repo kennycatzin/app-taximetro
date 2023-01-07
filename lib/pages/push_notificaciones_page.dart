@@ -25,15 +25,15 @@ class PushNotificacionesPage extends StatelessWidget {
   }
 
   Widget _crearBoton(BuildContext context) {
-    return RaisedButton(
-      padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 15.0),
+    return ElevatedButton(
+      // padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 15.0),
       child: Container(
         child: Text('Regresar'),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      elevation: 0.0,
-      color: Colors.blueAccent,
-      textColor: Colors.white,
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      // elevation: 0.0,
+      // color: Colors.blueAccent,
+      // textColor: Colors.white,
       onPressed: () {
         Navigator.pushReplacementNamed(context, 'login');
       },

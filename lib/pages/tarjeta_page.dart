@@ -11,7 +11,7 @@ import 'package:mapa_app/services/viajes_service.dart';
 import 'package:mapa_app/global/enviroment.dart';
 import 'dart:convert';
 
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class TarjetaPage extends StatefulWidget {
   @override
@@ -90,7 +90,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
       // print(_result);
     } else {
       // set up the buttons
-      Widget cancelButton = FlatButton(
+      Widget cancelButton = TextButton(
         child: Text("Cerrar"),
         onPressed: () {},
       );
@@ -189,18 +189,18 @@ class _TarjetaPageState extends State<TarjetaPage> {
   }
 
   Widget _crearBoton() {
-    return RaisedButton(
-        padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
+    return ElevatedButton(
+        // padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 17.0),
         child: Container(
           child: Text(
             !enviado ? 'Enviar' : 'Esperando confirmación \n de pago',
             textAlign: TextAlign.center,
           ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 0.0,
-        color: Colors.redAccent,
-        textColor: Colors.white,
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        // elevation: 0.0,
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         onPressed: () => !enviado
             ? _send(
                 "Para continuar con el pago en línea, ingrese al siguiente link: " +
@@ -269,22 +269,22 @@ class _TarjetaPageState extends State<TarjetaPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Regresar al módulo de pago?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {
@@ -306,46 +306,46 @@ class _TarjetaPageState extends State<TarjetaPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Enviar link de pago al cliente?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   // Abrir modal
-                  CupertinoScaffold.showCupertinoModalBottomSheet(
-                    expand: true,
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => Stack(
-                      children: <Widget>[
-                        Positioned(
-                          height: 40,
-                          left: 40,
-                          right: 40,
-                          bottom: 20,
-                          child: MaterialButton(
-                            onPressed: () => {
-                              Navigator.pushReplacementNamed(
-                                context,
-                                'tarjeta',
-                                arguments: {"id_viaje": id_viaje, "tipo": 0},
-                              )
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  );
+                  // CupertinoScaffold.showCupertinoModalBottomSheet(
+                  //   expand: true,
+                  //   context: context,
+                  //   backgroundColor: Colors.transparent,
+                  //   builder: (context) => Stack(
+                  //     children: <Widget>[
+                  //       Positioned(
+                  //         height: 40,
+                  //         left: 40,
+                  //         right: 40,
+                  //         bottom: 20,
+                  //         child: MaterialButton(
+                  //           onPressed: () => {
+                  //             Navigator.pushReplacementNamed(
+                  //               context,
+                  //               'tarjeta',
+                  //               arguments: {"id_viaje": id_viaje, "tipo": 0},
+                  //             )
+                  //           },
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // );
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {

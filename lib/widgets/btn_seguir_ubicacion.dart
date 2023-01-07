@@ -32,20 +32,20 @@ class BtnSeguirUbicacion extends StatelessWidget {
 
   void _alertaConfirmacionInicio(BuildContext context) {
     // set up the buttons
-    Widget cancelButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.red,
-      textColor: Colors.white,
+    Widget cancelButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.red,
+      // textColor: Colors.white,
       label: Text('No'),
       icon: Icon(Icons.cancel),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.green,
-      textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.green,
+      // textColor: Colors.white,
       label: Text('Si'),
       icon: Icon(Icons.check_circle),
       onPressed: () {

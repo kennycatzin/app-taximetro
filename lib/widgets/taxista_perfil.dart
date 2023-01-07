@@ -100,10 +100,14 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
   void guardarUbicacion(BuildContext context) {
     // set up the buttons
     final destino = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
-    Widget cancelButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.redAccent,
-      textColor: Colors.white,
+    Widget cancelButton = ElevatedButton.icon(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+      ),
+
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.redAccent,
+      // textColor: Colors.white,
       label: Text('No'),
       icon: Icon(Icons.cancel),
       onPressed: () {
@@ -111,10 +115,14 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
       },
     );
 
-    Widget continueButton = RaisedButton.icon(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Colors.green,
-      textColor: Colors.white,
+    Widget continueButton = ElevatedButton.icon(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      // color: Colors.green,
+      // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.green),
+      ),
+
       label: Text('Si'),
       icon: Icon(Icons.check_circle),
       onPressed: () async {

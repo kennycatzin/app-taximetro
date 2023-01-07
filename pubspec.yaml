@@ -41,7 +41,7 @@ dependencies:
   intl: ^0.16.1
   wakelock: ^0.5.6
   rxdart: ^0.24.1
-  modal_bottom_sheet: ^1.0.0+1
+  # modal_bottom_sheet: ^1.0.0+1
   provider: ^5.0.0
   socket_io_client: ^1.0.1
   url_launcher: ^6.0.12

@@ -38,22 +38,28 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) => new AlertDialog(
             title: new Text('¿Desea salir de la aplicación?'),
             actions: <Widget>[
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.redAccent,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.redAccent,
+                // textColor: Colors.white,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+                ),
                 label: Text('No'),
                 icon: Icon(Icons.cancel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
-              new RaisedButton.icon(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.green,
-                textColor: Colors.white,
+              new ElevatedButton.icon(
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0)),
+                // color: Colors.green,
+                // textColor: Colors.white,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.green),
+                ),
                 label: Text('Si'),
                 icon: Icon(Icons.check_circle),
                 onPressed: () {
@@ -181,15 +187,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _crearBoton() {
-    return RaisedButton(
-        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+    return ElevatedButton(
+        // padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         child: Container(
           child: Text('Ingresar'),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 0.0,
-        color: Colors.redAccent,
-        textColor: Colors.white,
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        // elevation: 0.0,
+        // color: Colors.redAccent,
+        // textColor: Colors.white,
         onPressed: _login);
   }
 
