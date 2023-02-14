@@ -3,6 +3,8 @@ part of 'tarifa_bloc.dart';
 @immutable
 class TarifaState {
   final double tarifaMinima;
+  final double tarifaMinimaCentral;
+  final double tarifaMinimaOriginal;
   final double banderazo;
   final int intervaloTiempo;
   final int intervaloDistancia;
@@ -11,6 +13,8 @@ class TarifaState {
 
   TarifaState(
       {this.tarifaMinima,
+      this.tarifaMinimaCentral,
+      this.tarifaMinimaOriginal,
       this.banderazo,
       this.intervaloTiempo,
       this.intervaloDistancia,
@@ -19,6 +23,8 @@ class TarifaState {
 
   TarifaState copyWith(
           {double tarifaMinima,
+          double tarifaMinimaCentral,
+          double tarifaMinimaOriginal,
           double banderazo,
           int intervaloTiempo,
           int intervaloDistancia,
@@ -26,6 +32,9 @@ class TarifaState {
           List<dynamic> horarios}) =>
       TarifaState(
           tarifaMinima: tarifaMinima ?? this.tarifaMinima,
+          tarifaMinimaCentral: tarifaMinimaCentral ?? this.tarifaMinimaCentral,
+          tarifaMinimaOriginal:
+              tarifaMinimaOriginal ?? this.tarifaMinimaOriginal,
           banderazo: banderazo ?? this.banderazo,
           intervaloTiempo: intervaloTiempo ?? this.intervaloTiempo,
           intervaloDistancia: intervaloDistancia ?? this.intervaloDistancia,

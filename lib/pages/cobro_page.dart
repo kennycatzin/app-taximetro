@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
+import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/global/enviroment.dart';
@@ -311,6 +312,8 @@ class _CobroPageState extends State<CobroPage> {
     final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
+    final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
+    final tarifaState = BlocProvider.of<TarifaBloc>(context).state;
     Map info = await viajeProvider.guardarViaje(
         taxiBloc.state.km,
         taxiBloc.state.horaInicio,
@@ -321,6 +324,9 @@ class _CobroPageState extends State<CobroPage> {
     print(info);
     Navigator.pop(context);
     if (info['ok'] == true) {
+      // TODO: Tomar el precio de la central
+      tarifaBloc.add(OnSetCentralPrice(
+          tarifaState.tarifaMinimaOriginal, tarifaState.tarifaMinimaOriginal));
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMapaCrea());
       if (tipo == 1) {

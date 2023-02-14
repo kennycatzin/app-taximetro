@@ -12,6 +12,7 @@ import 'package:mapa_app/pages/acceso_gps_page.dart';
 
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
+import 'package:mapa_app/pages/captura_supervisor_page.dart';
 import 'package:mapa_app/pages/carga_page.dart';
 import 'package:mapa_app/pages/cobro_page.dart';
 import 'package:mapa_app/pages/comprobante_page.dart';
@@ -109,7 +110,8 @@ class _MyAppState extends State<MyApp> {
             'tarjeta': (_) => TarjetaPage(),
             'pagado': (_) => PagadoPage(),
             'viaje_manual': (_) => ViajeManualPage(),
-            'comprobante': (_) => Comprobante()
+            'comprobante': (_) => Comprobante(),
+            'captura_supervisor': (_) => CapturaSupervisorPage(),
           },
         ));
   }

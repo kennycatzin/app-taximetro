@@ -13,6 +13,7 @@ class UsuarioState {
   final int id_status;
   final String centro_trabajo;
   final int id_centro_trabajo;
+  final String tipo_usuario;
 
   UsuarioState(
       {this.conectado = false,
@@ -25,7 +26,8 @@ class UsuarioState {
       this.nombre,
       this.id_status,
       this.centro_trabajo,
-      this.id_centro_trabajo});
+      this.id_centro_trabajo,
+      this.tipo_usuario});
 
   UsuarioState copyWith(
           {bool conectado,
@@ -38,7 +40,8 @@ class UsuarioState {
           String nombre,
           int id_status,
           String centro_trabajo,
-          int id_centro_trabajo}) =>
+          int id_centro_trabajo,
+          String tipo_usuario}) =>
       UsuarioState(
           conectado: conectado ?? this.conectado,
           id_usuario: id_usuario ?? this.id_usuario,
@@ -50,5 +53,6 @@ class UsuarioState {
           nombre: nombre ?? this.nombre,
           id_status: id_status ?? this.id_status,
           centro_trabajo: centro_trabajo ?? this.centro_trabajo,
-          id_centro_trabajo: id_centro_trabajo ?? this.id_centro_trabajo);
+          id_centro_trabajo: id_centro_trabajo ?? this.id_centro_trabajo,
+          tipo_usuario: tipo_usuario ?? this.tipo_usuario);
 }

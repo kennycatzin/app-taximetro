@@ -249,8 +249,12 @@ class _LoginPageState extends State<LoginPage> {
       final socketService = Provider.of<SocketService>(context, listen: false);
       final miMapa = BlocProvider.of<MapaBloc>(context);
       // socketService.connect();
+      context
+          .read<MapaBloc>()
+          .add(OnTipoMapa(info['data']['operador']["id_centro_trabajo"]));
 
-      miMapa.add(OnTipoMapa(info['data']['operador']["id_centro_trabajo"]));
+      //miMapa.add(OnTipoMapa(info['data']['operador']["id_centro_trabajo"]));
+
       mapaBloc.add(OnLogin(
           true,
           info['data']['operador']["id"],
@@ -262,16 +266,23 @@ class _LoginPageState extends State<LoginPage> {
           info['data']['operador']["nombre"],
           info['data']['operador']["id_status"],
           info['data']['operador']["centro_trabajo"],
-          info['data']['operador']["id_centro_trabajo"]));
+          info['data']['operador']["id_centro_trabajo"],
+          info['data']['operador']["tipo_usuario"]));
 
       tarifaBloc.add(OnAsignarPrecios(
           info['data']['tarifas']["tarifa_minima"].toDouble(),
+          info['data']['tarifas']["tarifa_minima_central"].toDouble(),
           info['data']['tarifas']["banderazo"].toDouble(),
           info['data']['tarifas']["intervalo_tiempo"],
           info['data']['tarifas']["intervalo_distancia"],
           info['data']['tarifas']["tarifa_tiempo"].toDouble(),
           info['data']['tarifas']["horarios"].toList()));
-      Navigator.pushReplacementNamed(context, 'loading');
+
+      if (info['data']['operador']["tipo_usuario"] == "SUPERVISOR") {
+        Navigator.pushReplacementNamed(context, 'captura_supervisor');
+      } else {
+        Navigator.pushReplacementNamed(context, 'loading');
+      }
     } else if (info['ok'] == 'false') {
       mostrarAlerta(context, info['mensaje']);
     } else if (info['ok'] == "pago") {

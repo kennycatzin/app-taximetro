@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 // import 'package:flutter_sms/flutter_sms.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
@@ -78,11 +77,11 @@ class _TarjetaPageState extends State<TarjetaPage> {
     if (this.numero.text == this.confirmaNumero.text) {
       enviado = true;
       print("mi numero es: " + this.numero.text);
-      String _result = await sendSMS(message: message, recipients: recipents)
-          .catchError((onError) {
-        // enviado = false;
-        print(onError);
-      });
+      // String _result = await sendSMS(message: message, recipients: recipents)
+      //     .catchError((onError) {
+      //   // enviado = false;
+      //   print(onError);
+      // });
       mostrarLoading(context);
       _verificar();
       // crear funcion que verifique que se ha pagado mediante un clock

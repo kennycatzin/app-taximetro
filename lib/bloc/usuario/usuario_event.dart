@@ -15,6 +15,7 @@ class OnLogin extends UsuarioEvent {
   final int id_status;
   final String centro_trabajo;
   final int id_centro_trabajo;
+  final String tipo_usuario;
 
   OnLogin(
       this.conectado,
@@ -27,7 +28,8 @@ class OnLogin extends UsuarioEvent {
       this.nombre,
       this.id_status,
       this.centro_trabajo,
-      this.id_centro_trabajo);
+      this.id_centro_trabajo,
+      this.tipo_usuario);
 }
 
 class OnConectado extends UsuarioEvent {

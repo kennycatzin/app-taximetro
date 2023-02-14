@@ -149,6 +149,9 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         // color: Colors.redAccent,
         // textColor: Colors.white,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         label: Text('Rechazar'),
         icon: Icon(Icons.cancel),
         onPressed: () => (boton == true)
@@ -205,6 +208,9 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         // color: Colors.redAccent,
         // textColor: Colors.white,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         label: Text('Cerrar'),
         icon: Icon(Icons.cancel),
         onPressed: () => mensajeVisto(context, data["mensaje"]["id_mensaje"]));

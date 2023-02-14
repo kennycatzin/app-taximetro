@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
+import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
+import 'package:mapa_app/pages/captura_supervisor_page.dart';
 import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -27,15 +31,16 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      if (await Geolocator.isLocationServiceEnabled()) {
-        Navigator.pushReplacement(
-            context, navegarMapaFadeIn(context, MapaPage()));
-      }
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) async {
+  //   if (state == AppLifecycleState.resumed) {
+  //     if (await Geolocator.isLocationServiceEnabled()) {
+
+  //       Navigator.pushReplacement(
+  //           context, navegarMapaFadeIn(context, MapaPage()));
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +71,13 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     final permisoGPS = await Permission.location.isGranted;
     // GPS está activo
     final gpsActivo = await Geolocator.isLocationServiceEnabled();
+    final usuarioState = BlocProvider.of<UsuarioBloc>(context).state;
 
+    if (usuarioState.tipo_usuario == "SUPERVISOR") {
+      Navigator.pushReplacement(
+          context, navegarMapaFadeIn(context, CapturaSupervisorPage()));
+      return '';
+    }
     if (permisoGPS && gpsActivo) {
       Navigator.pushReplacement(
           context, navegarMapaFadeIn(context, MapaPage()));

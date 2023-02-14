@@ -15,16 +15,24 @@ class TarifaBloc extends Bloc<TarifaEvent, TarifaState> {
   ) async* {
     if (event is OnAsignarPrecios) {
       yield* this._onAsignarPrecios(event);
+    } else if (event is OnSetCentralPrice) {
+      yield* this._onSetCentralPrice(event);
     }
   }
 
   Stream<TarifaState> _onAsignarPrecios(OnAsignarPrecios event) async* {
     yield state.copyWith(
         tarifaMinima: event.tarifaMinima,
+        tarifaMinimaCentral: event.tarifaMinimaCentral,
         banderazo: event.banderazo,
         intervaloTiempo: event.intervaloTiempo,
         intervaloDistancia: event.intervaloDistancia,
         tarifaTiempo: event.tarifaTiempo,
         horarios: event.horarios);
+  }
+
+  Stream<TarifaState> _onSetCentralPrice(OnSetCentralPrice event) async* {
+    yield state.copyWith(tarifaMinima: event.tarifaCentral);
+    yield state.copyWith(tarifaMinimaOriginal: event.tarifaOriginal);
   }
 }

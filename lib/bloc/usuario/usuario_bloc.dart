@@ -32,6 +32,7 @@ class UsuarioBloc extends Bloc<UsuarioEvent, UsuarioState> {
         numEconomico: event.numEconomico,
         id_status: event.id_status,
         id_centro_trabajo: event.id_centro_trabajo,
-        centro_trabajo: event.centro_trabajo);
+        centro_trabajo: event.centro_trabajo,
+        tipo_usuario: event.tipo_usuario);
   }
 }

@@ -8,7 +8,7 @@ import 'package:mapa_app/global/enviroment.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/viajes_service.dart';
 import 'dart:convert';
-import 'package:flutter_sms/flutter_sms.dart';
+// import 'package:flutter_sms/flutter_sms.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Comprobante extends StatefulWidget {

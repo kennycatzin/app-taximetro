@@ -51,6 +51,9 @@ class BtnUbicacion extends StatelessWidget {
         //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         // color: Colors.redAccent,
         // textColor: Colors.white,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         label: Text('Rechazar'),
         icon: Icon(Icons.cancel),
         onPressed: () => (boton == true)
@@ -62,6 +65,9 @@ class BtnUbicacion extends StatelessWidget {
       // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       // color: Colors.green,
       // textColor: Colors.white,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.green),
+      ),
       label: Text('Aceptar'),
       icon: Icon(Icons.check_circle),
       onPressed: () => (boton == true) ? aceptar(context, data) : null,
@@ -107,6 +113,9 @@ class BtnUbicacion extends StatelessWidget {
         //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         // color: Colors.redAccent,
         // textColor: Colors.white,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+        ),
         label: Text('Cerrar'),
         icon: Icon(Icons.cancel),
         onPressed: () => mensajeVisto(context, data["mensaje"]["id_mensaje"]));
@@ -151,6 +160,12 @@ class BtnUbicacion extends StatelessWidget {
     final viajeProvider = new MensajesService();
     await viajeProvider.aceptarViajeMensaje(mensaje["mensaje"]["id_viaje"]);
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
+    final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
+    final tarifaState = BlocProvider.of<TarifaBloc>(context).state;
+    // TODO: Tomar el precio de la central
+    tarifaBloc.add(OnSetCentralPrice(
+        tarifaState.tarifaMinimaCentral, tarifaState.tarifaMinima));
+
     mensajeBloc.add(OnTapMensaje(
       mensaje["mensaje"]["id_mensaje"],
       mensaje["mensaje"]["titulo"],
