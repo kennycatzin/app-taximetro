@@ -10,11 +10,10 @@ import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/mensaje_service.dart';
-import 'package:mapa_app/services/preference_usuario.dart';
 import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/widgets/menu_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'package:mapa_app/widgets/widgets.dart';
 
@@ -27,76 +26,66 @@ class MapaPage extends StatefulWidget {
 
 class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
   bool boton = true;
-  SocketService service;
-  final _prefs = new PreferenciasUsuario();
+  late SocketService service;
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<MiUbicacionBloc>(context).iniciarSeguimiento();
+    context.read<MiUbicacionBloc>().iniciarSeguimiento();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
     service = Provider.of<SocketService>(context, listen: false);
-    Wakelock.enable();
+    WakelockPlus.enable();
     verificarMensajes(context);
-  }
-
-  void _escucharMensaje(dynamic payload) {
-    print(payload);
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
     return Scaffold(
-        drawer: MenuWidget(),
-        body: Stack(
-          children: [
-            BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-                builder: (context, state) => crearMapa(state)),
-            Positioned(
-              top: 10,
-              child: Row(
-                children: [
-                  SearchBar(),
-                ],
-              ),
-            ),
-            // MarcadorManual(),
-            TaxistaPerfil(),
-            BtnMiViaje()
-          ],
+      drawer: MenuWidget(),
+      body: Stack(
+        children: [
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+              builder: (context, state) => crearMapa(state)),
+          Positioned(
+            top: 10,
+            child: DestinationSearchBar(),
+          ),
+          MarcadorManual(),
+          TaxistaPerfil(),
+          BtnMiViaje(),
+        ],
+      ),
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(top: 300, left: 170),
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [BtnUbicacion(), BtnSeguirUbicacion(), BtnMiRuta()],
+          ),
         ),
-        floatingActionButton: BtnsHelpers());
+      ),
+    );
   }
 
   Widget crearMapa(MiUbicacionState state) {
     if (!state.existeUbicacion) return Center(child: Text('Ubicando...'));
+    final ubicacion = state.ubicacion;
+    if (ubicacion == null) return Center(child: Text('Ubicando...'));
 
-    final mapaBloc = BlocProvider.of<MapaBloc>(context);
-    final taximetroBloc = BlocProvider.of<TaximetroBloc>(context);
-    final taxistaBloc = BlocProvider.of<UsuarioBloc>(context).state;
+    final mapaBloc = context.read<MapaBloc>();
+    final taximetroBloc = context.read<TaximetroBloc>();
     if (!taximetroBloc.state.startIsPressed) {
-      final nuevoMarcador = {
-        "nombre": taxistaBloc.nombre,
-        "lat": state.ubicacion.latitude,
-        "lng": state.ubicacion.longitude,
-        "id": taxistaBloc.id_usuario.toString()
-      };
       // service.emit('marcador-borrar', taxistaBloc.id_usuario);
       // service.emit('marcador-nuevo', nuevoMarcador);
     }
 
-    mapaBloc.add(OnNuevaUbicacion(state.ubicacion));
+    mapaBloc.add(OnNuevaUbicacion(ubicacion));
 
-    final cameraPosition =
-        new CameraPosition(target: state.ubicacion, zoom: 15);
+    final cameraPosition = CameraPosition(target: ubicacion, zoom: 15);
     return BlocBuilder<MapaBloc, MapaState>(
       builder: (context, _) {
         return GoogleMap(
@@ -109,8 +98,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
           polylines: mapaBloc.state.polylines.values.toSet(),
           markers: mapaBloc.state.markers.values.toSet(),
           onCameraMove: (cameraPosition) {
-            // cameraPosition.target = LatLng central del mapa
-            final usuarioBloc = BlocProvider.of<UsuarioBloc>(context).state;
+            final usuarioBloc = context.read<UsuarioBloc>().state;
             if (usuarioBloc.conectado) {
               // service.emit('marcador-mover', {
               //   "nombre": usuarioBloc.nombre,
@@ -127,28 +115,21 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
   }
 
   void verificarMensajes(BuildContext context) async {
-    final mensajesService = new MensajesService();
+    final mensajesService = MensajesService();
     Map info = await mensajesService.listaNuevoMensaje();
-    print(info);
     if (info["ok"] == false) {
       return;
+    }
+
+    if (info['mensaje']['tipo'] == "CC") {
+      _alertaConfirmaViaje(context, info);
     } else {
-      print("entrando a revisar");
-      if (info['mensaje']['tipo'] == "CC") {
-        _alertaConfirmaViaje(context, info);
-      } else {
-        _alertaMensajeNuevo(context, info);
-      }
+      _alertaMensajeNuevo(context, info);
     }
   }
 
   void _alertaConfirmaViaje(BuildContext context, Map data) {
-    // set up the buttons
     Widget cancelButton = ElevatedButton.icon(
-        // shape:
-        //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        // color: Colors.redAccent,
-        // textColor: Colors.white,
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(Colors.redAccent),
         ),
@@ -160,15 +141,11 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
             : null);
 
     Widget continueButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.green,
-      // textColor: Colors.white,
       label: Text('Aceptar'),
       icon: Icon(Icons.check_circle),
       onPressed: () => (boton == true) ? aceptar(context, data) : null,
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Center(child: Text("¿Desea aceptar viaje?")),
       content: Container(
@@ -177,10 +154,8 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
           child: ListBody(
             children: <Widget>[
               Text(data['mensaje']['titulo'],
-                  style: new TextStyle(fontSize: 20.0)),
-              Text(
-                data['mensaje']['mensaje'],
-              ),
+                  style: TextStyle(fontSize: 20.0)),
+              Text(data['mensaje']['mensaje']),
             ],
           ),
         ),
@@ -190,7 +165,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         cancelButton,
       ],
     );
-    // show the dialog
+
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -201,13 +176,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
   }
 
   void _alertaMensajeNuevo(BuildContext context, Map data) {
-    // set up the buttons
-
     Widget continueButton = ElevatedButton.icon(
-        // shape:
-        //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        // color: Colors.redAccent,
-        // textColor: Colors.white,
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(Colors.redAccent),
         ),
@@ -215,7 +184,6 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         icon: Icon(Icons.cancel),
         onPressed: () => mensajeVisto(context, data["mensaje"]["id_mensaje"]));
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Center(child: Text(data['mensaje']['titulo'])),
       content: Container(
@@ -224,19 +192,15 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
           child: ListBody(
             children: <Widget>[
               Text(data['mensaje']['name'],
-                  style: new TextStyle(fontSize: 20.0)),
-              Text(
-                data['mensaje']['mensaje'],
-              ),
+                  style: TextStyle(fontSize: 20.0)),
+              Text(data['mensaje']['mensaje']),
             ],
           ),
         ),
       ),
-      actions: [
-        continueButton,
-      ],
+      actions: [continueButton],
     );
-    // show the dialog
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -250,9 +214,9 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
     mostrarLoading(context);
     boton = false;
 
-    final viajeProvider = new MensajesService();
+    final viajeProvider = MensajesService();
     await viajeProvider.aceptarViajeMensaje(mensaje["mensaje"]["id_viaje"]);
-    final mensajeBloc = BlocProvider.of<MensajeBloc>(context);
+    final mensajeBloc = context.read<MensajeBloc>();
     mensajeBloc.add(OnTapMensaje(
       mensaje["mensaje"]["id_mensaje"],
       mensaje["mensaje"]["titulo"],
@@ -269,7 +233,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
   void rechazar(BuildContext context, int id_mensaje, int id_viaje) async {
     mostrarLoading(context);
-    final viajeProvider = new MensajesService();
+    final viajeProvider = MensajesService();
     await viajeProvider.mensajeVisto(id_mensaje);
     await viajeProvider.rechazarViajeMensaje(id_viaje);
     Navigator.of(context).pop();
@@ -278,10 +242,9 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
   void mensajeVisto(BuildContext context, int id_mensaje) async {
     mostrarLoading(context);
-
     boton = false;
 
-    final viajeProvider = new MensajesService();
+    final viajeProvider = MensajesService();
     await viajeProvider.mensajeVisto(id_mensaje);
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -289,21 +252,12 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    print('=== entrando a dispose === ');
-
+    context.read<MiUbicacionBloc>().cancelarSeguimiento();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    print('=== entrando a dispose === ');
+    WakelockPlus.disable();
     super.dispose();
-    Wakelock.disable();
   }
-
-  // @override
-  // void deactivate() {
-  //   print('=== entrando a dispose === ');
-  //   service.emit('marcador-borrar', 1);
-  //   super.deactivate();
-  // }
 }

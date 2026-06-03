@@ -1,10 +1,14 @@
 part of 'helpers.dart';
 
 class CotizandoHelper {
-  double kilometraje;
-  double tiempo;
-  double tarifa;
-  CotizandoHelper({this.kilometraje, this.tiempo, this.tarifa});
+  final double kilometraje;
+  final double tiempo;
+  final double tarifa;
+
+  CotizandoHelper(
+      {required this.kilometraje,
+      required this.tiempo,
+      required this.tarifa});
 
   double calculaPrecio() {
     double kilometros = kilometraje / 1000;

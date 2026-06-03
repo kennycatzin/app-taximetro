@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
-import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/user_service.dart';
-import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -188,18 +186,16 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _crearBoton() {
     return ElevatedButton(
-        // padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.redAccent),
-        ),
-        child: Container(
-          child: Text('Ingresar'),
-        ),
-        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        // elevation: 0.0,
-        // color: Colors.redAccent,
-        // textColor: Colors.white,
-        onPressed: _login);
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+        elevation: 0.0,
+        backgroundColor: Colors.redAccent,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: _login,
+      child: Text('Ingresar'),
+    );
   }
 
   Widget _crearEmail() {
@@ -246,8 +242,6 @@ class _LoginPageState extends State<LoginPage> {
     if (info['ok'] == 'true') {
       final mapaBloc = BlocProvider.of<UsuarioBloc>(context);
       final tarifaBloc = BlocProvider.of<TarifaBloc>(context);
-      final socketService = Provider.of<SocketService>(context, listen: false);
-      final miMapa = BlocProvider.of<MapaBloc>(context);
       // socketService.connect();
       context
           .read<MapaBloc>()

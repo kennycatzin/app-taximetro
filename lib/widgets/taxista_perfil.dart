@@ -92,8 +92,6 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
   }
 
   void cambioStatus(status, UsuarioBloc usuarioBloc) {
-    final socketService = Provider.of<SocketService>(context, listen: false);
-    final ubicacionBloc = BlocProvider.of<MiUbicacionBloc>(context).state;
     print("hola beb");
   }
 
@@ -126,9 +124,13 @@ class _TaxistaPerfilState extends State<TaxistaPerfil> {
       label: Text('Si'),
       icon: Icon(Icons.check_circle),
       onPressed: () async {
+        if (destino == null) {
+          Navigator.of(context).pop();
+          return;
+        }
         Navigator.of(context).pop();
         mostrarLoading(context);
-        Map info = await viajeProvider.guardarUbicacion(
+        await viajeProvider.guardarUbicacion(
             destino.latitude.toString(), destino.longitude.toString());
         print("guardando ubiaccion");
         print(destino.latitude);

@@ -8,7 +8,7 @@ class PushNotificacionesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final arg = ModalRoute.of(context).settings.arguments;
+    final arg = ModalRoute.of(context)?.settings.arguments?.toString() ?? '';
 
     return Scaffold(
       appBar: AppBar(

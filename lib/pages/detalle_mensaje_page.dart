@@ -29,7 +29,6 @@ class _DetalleMensajeState extends State<DetalleMensaje> {
   Widget build(BuildContext context) {
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context).state;
     // final size = MediaQuery.of(context).size;
-    final mensajeService = new MensajesService();
     mensajeService.mensajeVisto(mensajeBloc.id_mensaje);
 
     return Scaffold(
@@ -87,7 +86,7 @@ class _DetalleMensajeState extends State<DetalleMensaje> {
             ),
           ),
           leading: CircleAvatar(
-            child: Text((mensaje.tipo)),
+            child: Text(mensaje.tipo),
             // usuario.nombre.substring(0, 2)
             backgroundColor: Colors.red[600],
           ),

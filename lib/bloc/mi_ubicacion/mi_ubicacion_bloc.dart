@@ -11,19 +11,19 @@ part 'mi_ubicacion_state.dart';
 class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
   MiUbicacionBloc() : super(MiUbicacionState());
 
-  // Geolocator
-  final _geolocator = new Geolocator();
-  StreamSubscription<Position> _positionSubscription;
+  StreamSubscription<Position>? _positionSubscription;
 
   void iniciarSeguimiento() {
-    // final locationOptions = LocationOptions(
-    //   accuracy: LocationAccuracy.high,
-    //   distanceFilter: 10
-    // );
+    const locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
 
-    _positionSubscription =
-        Geolocator.getPositionStream().listen((Position position) {
-      final nuevaUbicacion = new LatLng(position.latitude, position.longitude);
+    _positionSubscription?.cancel();
+    _positionSubscription = Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).listen((Position position) {
+      final nuevaUbicacion = LatLng(position.latitude, position.longitude);
       add(OnUbicacionCambio(nuevaUbicacion));
     });
   }

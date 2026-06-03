@@ -7,8 +7,6 @@ import 'package:mapa_app/services/preference_usuario.dart';
 
 class ViajesService {
   final _prefs = new PreferenciasUsuario();
-  final _local = 'http://localhost:8888/mapas-api/public';
-  final _prod = 'https://mapas-server.herokuapp.com';
   List<Datum> viajes = [];
 
   // final _prod = 'ruta-server';
@@ -30,7 +28,6 @@ class ViajesService {
   }
 
   Future<bool> verificarEstatus(int id_viaje) async {
-    final userId = await _prefs.usuarioID;
     bool pagado = false;
     final miUrl =
         '${Enviroment.apiUrlDev}/get-estatus-viaje/' + id_viaje.toString();

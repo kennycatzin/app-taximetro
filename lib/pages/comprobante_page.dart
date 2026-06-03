@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
-import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
-import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/global/enviroment.dart';
-import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/viajes_service.dart';
 import 'dart:convert';
 // import 'package:flutter_sms/flutter_sms.dart';
@@ -24,7 +21,7 @@ class _Comprobante extends State<Comprobante> {
   bool enviado = false;
   bool parar = false;
   final viajeProvider = new ViajesService();
-  int tipo;
+  int tipo = 0;
 
   @override
   void initState() {
@@ -40,6 +37,7 @@ class _Comprobante extends State<Comprobante> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
+      onWillPop: () async => true,
       child: Scaffold(
           appBar: AppBar(
             title: Text('Viaje por tarifa'),
@@ -61,12 +59,8 @@ class _Comprobante extends State<Comprobante> {
     final size = MediaQuery.of(context).size;
     final mensajeBloc = BlocProvider.of<MensajeBloc>(context).state;
     print(mensajeBloc.telefono);
-    (mensajeBloc.telefono != null)
-        ? (this.conf_telefono.text = mensajeBloc.telefono)
-        : '';
-    (mensajeBloc.telefono != null)
-        ? (this.telefono.text = mensajeBloc.telefono)
-        : '';
+    this.conf_telefono.text = mensajeBloc.telefono;
+    this.telefono.text = mensajeBloc.telefono;
 
     // abrir modal
     return SingleChildScrollView(
@@ -197,9 +191,6 @@ class _Comprobante extends State<Comprobante> {
 
   void pagar() {
     enviado = true;
-    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
-    final miTarifa = BlocProvider.of<TarifaBloc>(context).state;
-
     // if (this.precio.text == "") {
     //   this.precio.text = "0.0";
     // }

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
-import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/services/supervisor_service.dart';
-import 'package:mapa_app/services/viajes_service.dart';
 import 'dart:convert';
 
 class CapturaSupervisorPage extends StatefulWidget {
@@ -13,7 +9,6 @@ class CapturaSupervisorPage extends StatefulWidget {
   _CapturaSupervisorPageState createState() => _CapturaSupervisorPageState();
 }
 
-@override
 class _CapturaSupervisorPageState extends State<CapturaSupervisorPage> {
   final supervisorService = new SupervisorService();
   final placasCtrl = TextEditingController();
@@ -41,6 +36,7 @@ class _CapturaSupervisorPageState extends State<CapturaSupervisorPage> {
     ]);
 
     return WillPopScope(
+      onWillPop: () async => true,
       child: Scaffold(
           appBar: AppBar(
             title: Text('Rutas nocturnas'),
@@ -83,6 +79,8 @@ class _CapturaSupervisorPageState extends State<CapturaSupervisorPage> {
                 _crearOperador(),
                 SizedBox(height: 30.0),
                 _crearPlacas(),
+                SizedBox(height: 30.0),
+                _crearFecha(),
                 SizedBox(height: 30.0),
                 _crearRuta(),
                 SizedBox(height: 30.0),

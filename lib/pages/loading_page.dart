@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/bloc/usuario/usuario_bloc.dart';
 import 'package:mapa_app/pages/captura_supervisor_page.dart';
-import 'package:mapa_app/pages/comprobante_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:mapa_app/helpers/helpers.dart';
 
-import 'package:mapa_app/pages/acceso_gps_page.dart';
 import 'package:mapa_app/pages/mapa_page.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -31,16 +28,15 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) async {
-  //   if (state == AppLifecycleState.resumed) {
-  //     if (await Geolocator.isLocationServiceEnabled()) {
-
-  //       Navigator.pushReplacement(
-  //           context, navegarMapaFadeIn(context, MapaPage()));
-  //     }
-  //   }
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      if (await Geolocator.isLocationServiceEnabled()) {
+        Navigator.pushReplacement(
+            context, navegarMapaFadeIn(context, MapaPage()));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +45,11 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
       DeviceOrientation.landscapeLeft,
     ]);
     return Scaffold(
-      body: FutureBuilder(
+      body: FutureBuilder<String>(
         future: this.checkGpsYLocation(context),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
-            print('==== mis valores =====');
-            print(snapshot.data);
-            return Center(child: Text(snapshot.data));
+            return Center(child: Text(snapshot.data ?? ''));
           } else {
             print('==== mis conectadooooooo =====');
             print(snapshot.data);
@@ -66,7 +60,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     );
   }
 
-  Future checkGpsYLocation(BuildContext context) async {
+  Future<String> checkGpsYLocation(BuildContext context) async {
     // PermisoGPS
     final permisoGPS = await Permission.location.isGranted;
     // GPS está activo

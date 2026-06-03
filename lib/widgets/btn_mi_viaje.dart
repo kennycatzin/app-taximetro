@@ -1,34 +1,23 @@
 part of 'widgets.dart';
 
 class BtnMiViaje extends StatefulWidget {
-  const BtnMiViaje({Key key}) : super(key: key);
+  const BtnMiViaje({Key? key}) : super(key: key);
 
   @override
   _BtnMiViajeState createState() => _BtnMiViajeState();
 }
 
 class _BtnMiViajeState extends State<BtnMiViaje> {
-  Timer miTimer;
+  Timer? miTimer;
   bool parartaximetro = true;
-  bool iniciaViaje;
+  bool iniciaViaje = false;
   bool accion = false;
   bool enEspera = false;
   bool viajeFinalizado = false;
   int contador = 0;
-  DateTime horaActual;
+  DateTime? horaActual;
   String accionChofer = "Esperar";
   String cabeceraChofer = "¿Cobrar tiempo de espera?";
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // miTimer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,29 +47,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         ));
   }
 
-  Widget _crearBoton(BuildContext context, TaximetroState state) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-        margin:
-            EdgeInsets.only(top: size.width * 0.39, left: size.height * .17),
-        child: MaterialButton(
-          color: Colors.blue,
-          textColor: Colors.white,
-          child: Icon(Icons.online_prediction),
-          padding: EdgeInsets.all(20),
-          shape: CircleBorder(),
-          onPressed: viajeFinalizado ? null : () => accionBoton(state),
-        ));
-  }
-
   void accionBoton(TaximetroState state) {
     final miUsuario = BlocProvider.of<UsuarioBloc>(context);
     if (!miUsuario.state.conectado) {
-      return null;
+      return;
     }
     if (parartaximetro) {
       _alertaConfirmacionInicio(context, state);
-      print(accion);
       if (accion) {
         _iniciarDetenerViaje(context, state);
       }
@@ -94,11 +67,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
     final miTarifa = BlocProvider.of<TarifaBloc>(context).state;
-    final miUsuario = BlocProvider.of<UsuarioBloc>(context).state;
     final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
-    final socketService = Provider.of<SocketService>(context, listen: false);
-    DateTime hora = DateTime.now();
-    String horaReal = '${hora.hour}:${hora.minute}:${hora.second}';
+    if (inicio == null) {
+      return;
+    }
+
+    final hora = DateTime.now();
+    final horaReal = '${hora.hour}:${hora.minute}:${hora.second}';
     mapaBloc.add(OnSeguirUbicacion());
 
     if (!state.startIsPressed) {
@@ -110,7 +85,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       parartaximetro = false;
     } else {
       viajeFinalizado = true;
-      print('=== Voy a quitar markers ===');
       busquedaBloc.add(OnDesActivarMarcadorManual());
       mapaBloc.add(OnCrearMarcadorFinal(inicio));
       mapaBloc.add(OnQuitarMarcadores());
@@ -122,8 +96,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
 
     _cotizar(context, parartaximetro, 10);
     if (state.startIsPressed) {
-      print('== Debo ir a la pantalla pago ====');
-      await _verificaPrecios(context);
+      _verificaPrecios(context);
       enEspera = false;
       accionChofer = "Esperar";
       cabeceraChofer = "¿Cobrar tiempo de espera?";
@@ -131,7 +104,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
             // socketService.emit('marcador-borrar', miUsuario.id_usuario),
             BlocProvider.of<MiUbicacionBloc>(context).cancelarSeguimiento(),
             Navigator.pushReplacementNamed(context, 'cobro')
-            //_mapController.showMarkerInfoWindow(MarkerId('final'))
           });
     }
   }
@@ -141,36 +113,32 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     List<dynamic> detalle;
     double tarifa = 0;
     var bandera = 0;
-    int tomado = 1;
+    var tomado = 1;
 
     objeto = tarifaState.horarios;
-    DateTime now = DateTime.now();
-    var contador = 0;
-    // final formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
+    final now = DateTime.now();
     for (var i = 0; i <= objeto.length - 1; i++) {
-      var horaInicial = objeto[i]["hora_inicial"];
-      var horaFinal = objeto[i]["hora_final"];
-      var arr = horaInicial.split(':');
-      var arr2 = horaFinal.split(':');
+      final horaInicial = objeto[i]["hora_inicial"];
+      final horaFinal = objeto[i]["hora_final"];
+      final arr = horaInicial.split(':');
+      final arr2 = horaFinal.split(':');
 
       if (i > 0) {
         tomado = 1;
       }
       final startTime = DateTime(now.year, now.month, now.day,
           int.parse(arr[0]), int.parse(arr[1]), int.parse(arr[2]));
-      final endTime = DateTime(now.year, now.month, now.day + 1,
+      final endTime = DateTime(now.year, now.month, now.day + tomado,
           int.parse(arr2[0]), int.parse(arr2[1]), int.parse(arr2[2]));
 
       final currentTime = DateTime.now();
 
       if (currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
-        print("entrando a la cueva $i");
         detalle = objeto[i]["detalle_horario"];
         for (var j = 0; j <= detalle.length - 1; j++) {
           if (bandera == 0) {
             if (km >= detalle[j]["km_inicial"] &&
                 km <= detalle[j]["km_final"]) {
-              print("entro en ${detalle[j]["precio"].toDouble()}");
               tarifa = detalle[j]["precio"].toDouble();
               bandera = 1;
             }
@@ -181,15 +149,13 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     return tarifa;
   }
 
-  void _cotizar(BuildContext context, bool parar, int intervalo_tiempo) async {
+  void _cotizar(BuildContext context, bool parar, int intervaloTiempo) async {
     if (!parar) {
-      miTimer =
-          new Timer.periodic(Duration(seconds: intervalo_tiempo), (timer) {
-        print(DateTime.now());
+      miTimer = Timer.periodic(Duration(seconds: intervaloTiempo), (timer) {
         _verificaPrecios(context);
       });
     } else {
-      miTimer.cancel();
+      miTimer?.cancel();
     }
   }
 
@@ -197,8 +163,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     double kilometros = kilometraje / 1000;
     kilometros = (kilometros * 100).toDouble();
     kilometros = kilometros / 100;
-    String totalReal = '';
-    totalReal = kilometros.toStringAsFixed(3);
+    final totalReal = kilometros.toStringAsFixed(3);
     return double.parse(totalReal);
   }
 
@@ -206,18 +171,20 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     try {
       final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
       final tarifaState = BlocProvider.of<TarifaBloc>(context).state;
+      final destino = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+      final inicio = BlocProvider.of<TaximetroBloc>(context).state.inicio;
+      if (inicio == null || destino == null) {
+        return;
+      }
 
       if (!enEspera) {
         contador++;
-        final destino =
-            BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
-        final inicio = BlocProvider.of<TaximetroBloc>(context).state.inicio;
-        double distancia = await calcularDistancia(inicio, destino);
-        final auxDistancia = await convertKM(distancia);
+        final distancia = calcularDistancia(inicio, destino);
+        final auxDistancia = convertKM(distancia);
         final miDistancia = taxiBloc.state.km + auxDistancia;
-        final miTarifa = await calcularTarifa(tarifaState, miDistancia);
+        final miTarifa = calcularTarifa(tarifaState, miDistancia);
 
-        double duracion = 24000;
+        const duracion = 24000.0;
         taxiBloc.add(OnCorreTaximetro(
             distancia,
             duracion,
@@ -229,8 +196,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
             tarifaState.tarifaTiempo,
             tarifaState.banderazo));
       } else {
-        print(
-            "=== mi tarifa ${tarifaState.tarifaTiempo}  ==== mi intervalo ${tarifaState.intervaloTiempo}, ==== mi programado ${10.toString()}");
         taxiBloc.add(OnEspera(
             tarifaState.tarifaTiempo,
             tarifaState.intervaloTiempo,
@@ -255,7 +220,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
             sin(long / 2) *
             sin(long / 2);
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    final d = radioTierra * c; // Distance in km
+    final d = radioTierra * c;
     distancia = d * 1000;
     return distancia;
   }
@@ -265,11 +230,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   }
 
   void _alertaConfirmacionInicio(BuildContext context, TaximetroState state) {
-    // set up the buttons
     Widget cancelButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.redAccent,
-      // textColor: Colors.white,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.redAccent),
       ),
@@ -283,28 +244,20 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     );
 
     Widget continueButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.green,
-      // textColor: Colors.white,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.green),
       ),
-
       label: Text('Si'),
       icon: Icon(Icons.check_circle),
       onPressed: () {
         iniciaViaje = true;
         parartaximetro = false;
         accion = true;
-
-        print('===== inicio viaje $accion====');
         Navigator.of(context).pop();
-
         _iniciarDetenerViaje(context, state);
       },
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Center(child: Text("¿Desea iniciar viaje?")),
       actions: [
@@ -312,7 +265,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         cancelButton,
       ],
     );
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -325,22 +277,16 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     if (!enEspera) {
       accionChofer = "Si";
       cabeceraChofer = "¿Continuar con el viaje?";
-
       enEspera = true;
     } else {
       accionChofer = "Si";
       cabeceraChofer = "¿Cobrar tiempo de espera?";
-
       enEspera = false;
     }
   }
 
   void _alertaConfirmacionDetener(BuildContext context, TaximetroState state) {
-    // set up the buttons
     Widget cancelButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.red,
-      // textColor: Colors.white,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.red),
       ),
@@ -353,9 +299,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     );
 
     Widget esperarButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.green,
-      // textColor: Colors.white,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.green),
       ),
@@ -369,9 +312,6 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     );
 
     Widget continueButton = ElevatedButton.icon(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      // color: Colors.blue,
-      // textColor: Colors.white,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.blue),
       ),
@@ -386,13 +326,10 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       },
     );
 
-    // set up the AlertDialog
-    // Cobrar tiempo de espera
     AlertDialog alert = AlertDialog(
       title: Text(cabeceraChofer),
       actions: [esperarButton, cancelButton, continueButton],
     );
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

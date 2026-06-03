@@ -14,6 +14,10 @@ Future<BitmapDescriptor> getMarkerInicioIcon(
   final image = await picture.toImage(size.width.toInt(), size.height.toInt());
   final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
+  if (byteData == null) {
+    return BitmapDescriptor.defaultMarker;
+  }
+
   return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
 }
 
@@ -29,6 +33,10 @@ Future<BitmapDescriptor> getMarkerDestinoIcon(
   final picture = recorder.endRecording();
   final image = await picture.toImage(size.width.toInt(), size.height.toInt());
   final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+  if (byteData == null) {
+    return BitmapDescriptor.defaultMarker;
+  }
 
   return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
 }

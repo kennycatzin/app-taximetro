@@ -1,61 +1,43 @@
 part of 'widgets.dart';
 
-class SearchBar extends StatelessWidget {
+class DestinationSearchBar extends StatelessWidget {
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    // : implement build
-    return Container(
-      margin: EdgeInsets.only(top: 34.0),
-      padding: EdgeInsets.symmetric(horizontal: 30),
-      width: 150,
-      child: CircleAvatar(
-        backgroundColor: Colors.white,
-        maxRadius: 25,
-        child: IconButton(
-          icon: Icon(Icons.menu, color: Colors.redAccent),
-          onPressed: () {
-            // mapaBloc.add( OnMarcarRecorrido() );
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-      ),
+  Widget build(BuildContext context) {
+    return BlocBuilder<BusquedaBloc, BusquedaState>(
+      builder: (context, state) {
+        if (state.seleccionManual) {
+          return Container();
+        }
+        return FadeInDownBig(child: buildSearchBar(context));
+      },
     );
-
-    //BlocBuilder<BusquedaBloc, BusquedaState>(
-    //   builder: (context, state) {
-    //     if (state.seleccionManual) {
-    //       return Container();
-    //     } else {
-    //       return FadeInDownBig(child: buildSearchBar(context));
-    //     }
-    //   },
-    // );
   }
 
   Widget buildSearchBar(BuildContext context) {
-    final wifht = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Container(
         margin: EdgeInsets.only(top: 10.0),
         padding: EdgeInsets.symmetric(horizontal: 30),
-        width: wifht * .6,
+        width: width * .6,
         child: GestureDetector(
           onTap: () async {
-            final proximidad =
-                BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
-            final historial =
-                BlocProvider.of<BusquedaBloc>(context).state.historial;
+            final proximidad = context.read<MiUbicacionBloc>().state.ubicacion;
+            if (proximidad == null) {
+              return;
+            }
+            final historial = context.read<BusquedaBloc>().state.historial;
             final resultado = await showSearch(
                 context: context,
                 delegate: SearchDestination(proximidad, historial));
 
-            this.retornoBusquea(context, resultado);
+            if (resultado != null) {
+              retornoBusquea(context, resultado);
+            }
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            width: wifht * .5,
+            width: width * .5,
             height: 40,
             child: Text(
               '¿Dónde quieres ir?',
@@ -63,9 +45,7 @@ class SearchBar extends StatelessWidget {
             ),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                  100,
-                ),
+                borderRadius: BorderRadius.circular(100),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                       color: Colors.black12,
@@ -79,45 +59,45 @@ class SearchBar extends StatelessWidget {
   }
 
   void retornoBusquea(BuildContext context, SearchResult result) async {
-    print(result.cancelo);
-    print(result.manual);
     if (result.cancelo) {
       return;
     }
     if (result.manual) {
-      BlocProvider.of<BusquedaBloc>(context).add(OnActivarMarcadorManual());
+      context.read<BusquedaBloc>().add(OnActivarMarcadorManual());
       return;
     }
+
     calculandoAlerta(context);
-    // Calcular la ruta en base al valor
-    final trafficService = new TrafficService();
-    final mapaBloc = BlocProvider.of<MapaBloc>(context);
-    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
-    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+    final trafficService = TrafficService();
+    final mapaBloc = context.read<MapaBloc>();
+    final taxiBloc = context.read<TaximetroBloc>();
+    final inicio = context.read<MiUbicacionBloc>().state.ubicacion;
     final destino = result.position;
+
+    if (inicio == null || destino == null) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     final drivingResponse =
         await trafficService.getCoordsInicioYFin(inicio, destino);
+
+    if (drivingResponse.routes.isEmpty) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     final geometry = drivingResponse.routes[0].geometry;
     final duracion = drivingResponse.routes[0].duration;
     final distancia = drivingResponse.routes[0].distance;
     final nombreDestino = result.nombreDestino;
-
-    final points = Poly.Polyline.Decode(encodedString: geometry, precision: 6);
-    final List<LatLng> rutaCoordenadas = points.decodedCoords
-        .map((point) => LatLng(point[0], point[1]))
-        .toList();
-
-    // TO DO
+    final rutaCoordenadas = decodePolyline(geometry, precision: 6);
 
     mapaBloc.add(OnCrearRutaInicioDestino(
         rutaCoordenadas, distancia, duracion, nombreDestino));
     taxiBloc.add(OnCotizarPrecio(distancia.toString(), duracion.toString()));
 
     Navigator.of(context).pop();
-    // agregar al historial
-    final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
-    busquedaBloc.add(OnAgregarHistorial(result));
+    context.read<BusquedaBloc>().add(OnAgregarHistorial(result));
   }
 }

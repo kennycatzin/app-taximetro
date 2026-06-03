@@ -1,3 +1,2 @@
 linter:
   rules:
-    close_sink: false

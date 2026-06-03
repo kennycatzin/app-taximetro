@@ -18,7 +18,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   MapaBloc() : super(new MapaState());
 
   // Controlador del mapa
-  GoogleMapController _mapController;
+  GoogleMapController? _mapController;
 
   // Polylines
   Polyline _miRuta = new Polyline(
@@ -30,18 +30,15 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       color: Colors.redAccent);
 
   void initMapa(GoogleMapController controller) async {
-    if (state.tipo == 1) {
-      if (!state.mapaListo) {
-        this._mapController = controller;
-        await this._mapController.setMapStyle(jsonEncode(uberMapTheme));
-        add(OnMapaListo());
+    if (!state.mapaListo) {
+      this._mapController = controller;
+      if (state.tipo == 2) {
+        await this._mapController?.setMapStyle(jsonEncode(santaanaMapTheme));
+      } else {
+        await this._mapController?.setMapStyle(jsonEncode(uberMapTheme));
       }
-    } else if (state.tipo == 2) {
-      if (!state.mapaListo) {
-        this._mapController = controller;
-        await this._mapController.setMapStyle(jsonEncode(santaanaMapTheme));
-        add(OnMapaListo());
-      }
+
+      add(OnMapaListo());
     }
   }
 
@@ -88,7 +85,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     final points = [...this._miRuta.points, event.ubicacion];
     this._miRuta = this._miRuta.copyWith(pointsParam: points);
 
-    final currentPolylines = state.polylines;
+    final currentPolylines = {...state.polylines};
     currentPolylines['mi_ruta'] = this._miRuta;
 
     yield state.copyWith(polylines: currentPolylines);
@@ -100,7 +97,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     } else {
       this._miRuta = this._miRuta.copyWith(colorParam: Colors.transparent);
     }
-    final currentPolylines = state.polylines;
+    final currentPolylines = {...state.polylines};
     currentPolylines['mi_ruta'] = this._miRuta;
 
     yield state.copyWith(
@@ -110,7 +107,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   Stream<MapaState> _onQuitarPoliline(OnQuitarPoliline event) async* {
     this._miRuta = new Polyline(
         polylineId: PolylineId('mi_ruta'), width: 4, color: Colors.transparent);
-    final currentPolylines = new Map<String, Polyline>();
+    final currentPolylines = <String, Polyline>{};
     currentPolylines['mi_ruta'] = this._miRuta;
 
     yield state.copyWith(polylines: currentPolylines);
@@ -128,7 +125,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     this._miRutaDestino =
         this._miRutaDestino.copyWith(pointsParam: event.rutaCoordenadas);
 
-    final currentPolylines = state.polylines;
+    final currentPolylines = {...state.polylines};
     currentPolylines['mi_ruta_destino'] = this._miRutaDestino;
 
     // Marcadores
@@ -216,7 +213,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   }
 
   Stream<MapaState> _onCrearMarcadorFinal(OnCrearMarcadorFinal event) async* {
-    final currentPolylines = state.polylines;
+    final currentPolylines = {...state.polylines};
     currentPolylines['mi_ruta_destino'] = this._miRutaDestino;
 
     // Marcadores

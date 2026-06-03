@@ -3,7 +3,7 @@ part of 'usuario_bloc.dart';
 @immutable
 class UsuarioState {
   final bool conectado;
-  final int id_usuario;
+    final int id_usuario;
   final bool login;
   final String imagen;
   final String centro_imagen;
@@ -17,31 +17,31 @@ class UsuarioState {
 
   UsuarioState(
       {this.conectado = false,
-      this.id_usuario,
+      this.id_usuario = 0,
       this.login = false,
-      this.imagen,
-      this.centro_imagen,
-      this.numEconomico,
-      this.tituloSindical,
-      this.nombre,
-      this.id_status,
-      this.centro_trabajo,
-      this.id_centro_trabajo,
-      this.tipo_usuario});
+      this.imagen = '',
+      this.centro_imagen = '',
+      this.numEconomico = '',
+      this.tituloSindical = '',
+      this.nombre = '',
+      this.id_status = 0,
+      this.centro_trabajo = '',
+      this.id_centro_trabajo = 0,
+      this.tipo_usuario = ''});
 
   UsuarioState copyWith(
-          {bool conectado,
-          int id_usuario,
-          bool login,
-          String imagen,
-          String centro_imagen,
-          String numEconomico,
-          String tituloSindical,
-          String nombre,
-          int id_status,
-          String centro_trabajo,
-          int id_centro_trabajo,
-          String tipo_usuario}) =>
+          {bool? conectado,
+          int? id_usuario,
+          bool? login,
+          String? imagen,
+          String? centro_imagen,
+          String? numEconomico,
+          String? tituloSindical,
+          String? nombre,
+          int? id_status,
+          String? centro_trabajo,
+          int? id_centro_trabajo,
+          String? tipo_usuario}) =>
       UsuarioState(
           conectado: conectado ?? this.conectado,
           id_usuario: id_usuario ?? this.id_usuario,

@@ -6,7 +6,6 @@ class PagadoPage extends StatefulWidget {
   _PagadoPageState createState() => _PagadoPageState();
 }
 
-@override
 class _PagadoPageState extends State<PagadoPage> {
   @override
   void initState() {

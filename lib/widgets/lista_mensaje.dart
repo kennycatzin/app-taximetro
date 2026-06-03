@@ -26,7 +26,7 @@ class _Mensaje extends StatelessWidget {
   final Mensaje mensaje;
   final int index;
 
-  const _Mensaje({@required this.mensaje, @required this.index});
+  const _Mensaje({required this.mensaje, required this.index});
 
   @override
   Widget build(BuildContext context) {

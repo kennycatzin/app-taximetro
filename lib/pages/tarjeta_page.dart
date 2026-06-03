@@ -17,16 +17,15 @@ class TarjetaPage extends StatefulWidget {
   _TarjetaPageState createState() => _TarjetaPageState();
 }
 
-@override
 class _TarjetaPageState extends State<TarjetaPage> {
   final numero = TextEditingController();
   final confirmaNumero = TextEditingController();
   bool enviado = false;
   bool parar = false;
-  Timer miTimer;
+  Timer? miTimer;
   final viajeProvider = new ViajesService();
-  int id_viaje;
-  int tipo;
+  int id_viaje = 0;
+  int tipo = 0;
 
   @override
   void initState() {
@@ -54,7 +53,8 @@ class _TarjetaPageState extends State<TarjetaPage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    final args = (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
+        <String, dynamic>{};
     this.id_viaje = int.parse(args["id_viaje"]);
 
     return WillPopScope(
@@ -120,7 +120,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
       });
     } else {
       print("termineeeeeee");
-      miTimer.cancel();
+      miTimer?.cancel();
 
       // Navigator.of(context).pop();
       //  Navigator.pushNamed(context, 'viajes');
@@ -132,9 +132,9 @@ class _TarjetaPageState extends State<TarjetaPage> {
       final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
       taxiBloc.add(OnIniciarValores());
       print("matar proceso");
-      miTimer.cancel();
+      miTimer?.cancel();
       this.parar = true;
-      await Navigator.of(context).pop();
+      Navigator.of(context).pop();
       Navigator.pushReplacementNamed(context, 'pagado');
     } else {
       this.parar = false;
@@ -288,7 +288,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
                 icon: Icon(Icons.check_circle),
                 onPressed: () {
                   if (enviado) {
-                    miTimer.cancel();
+                    miTimer?.cancel();
                   }
                   Navigator.pushNamed(context, 'cobro');
                 },

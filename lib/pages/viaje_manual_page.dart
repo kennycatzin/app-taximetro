@@ -11,15 +11,14 @@ class ViajeManualPage extends StatefulWidget {
   _ViajeManualPageState createState() => _ViajeManualPageState();
 }
 
-@override
 class _ViajeManualPageState extends State<ViajeManualPage> {
   final precio = TextEditingController();
   final distancia = TextEditingController();
   bool enviado = false;
   bool parar = false;
   final viajeProvider = new ViajesService();
-  int id_viaje;
-  int tipo;
+  int id_viaje = 0;
+  int tipo = 0;
 
   @override
   void initState() {
@@ -46,6 +45,7 @@ class _ViajeManualPageState extends State<ViajeManualPage> {
     this.id_viaje = 20;
 
     return WillPopScope(
+      onWillPop: () async => true,
       child: Scaffold(
           appBar: AppBar(
             title: Text('Viaje por tarifa'),

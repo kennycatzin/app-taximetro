@@ -12,25 +12,25 @@ class MensajeState {
   final String viajeID;
 
   MensajeState({
-    this.id_mensaje,
-    this.titulo,
-    this.mensaje,
-    this.tipo,
-    this.name,
-    this.telefono,
-    this.correo,
-    this.viajeID,
+    this.id_mensaje = 0,
+    this.titulo = '',
+    this.mensaje = '',
+    this.tipo = '',
+    this.name = '',
+    this.telefono = '',
+    this.correo = '',
+    this.viajeID = '',
   });
 
   MensajeState copyWith(
-          {int id_mensaje,
-          String titulo,
-          String mensaje,
-          String tipo,
-          String name,
-          String telefono,
-          String correo,
-          String viajeID}) =>
+        {int? id_mensaje,
+        String? titulo,
+        String? mensaje,
+        String? tipo,
+        String? name,
+        String? telefono,
+        String? correo,
+        String? viajeID}) =>
       MensajeState(
           id_mensaje: id_mensaje ?? this.id_mensaje,
           titulo: titulo ?? this.titulo,

@@ -104,33 +104,33 @@ class _CronometroPageState extends State<CronometroPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
-                  child: Container(
-                    child: Text('Stop'),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 0.0,
+                    backgroundColor: Colors.lightBlue,
+                    foregroundColor: Colors.white,
                   ),
-                  // shape: RoundedRectangleBorder(
-                  //     borderRadius: BorderRadius.circular(5.0)),
-                  // elevation: 0.0,
-                  //  padding:
-                  //     EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-                  // color: Colors.lightBlue,
-                  // textColor: Colors.white,
                   onPressed: stopIsPressed ? null : stopstopwatch,
+                  child: Text('Stop'),
                 ),
                 SizedBox(
                   width: 150.0,
                 ),
                 ElevatedButton(
-                  child: Container(
-                    child: Text('Reset'),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    elevation: 0.0,
+                    backgroundColor: Colors.lightBlue,
+                    foregroundColor: Colors.white,
                   ),
-                  // shape: RoundedRectangleBorder(
-                  //     borderRadius: BorderRadius.circular(5.0)),
-                  // elevation: 0.0,
-                  //  padding:
-                  //     EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-                  // color: Colors.lightBlue,
-                  // textColor: Colors.white,
                   onPressed: resetIsPressed ? null : resetstopwatch,
+                  child: Text('Reset'),
                 ),
               ],
             ),
@@ -138,16 +138,16 @@ class _CronometroPageState extends State<CronometroPage> {
               height: 50.0,
             ),
             ElevatedButton(
-              // padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-              child: Container(
-                child: Text('Start'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                elevation: 0.0,
+                backgroundColor: Colors.lightBlue,
+                foregroundColor: Colors.white,
               ),
-              // shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(5.0)),
-              // elevation: 0.0,
-              // color: Colors.lightBlue,
-              // textColor: Colors.white,
               onPressed: startIsPressed ? startStopWatch : null,
+              child: Text('Start'),
             ),
           ],
         ),

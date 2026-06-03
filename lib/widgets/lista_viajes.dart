@@ -114,7 +114,7 @@ class _Viaje extends StatelessWidget {
   final Datum viaje;
   final int index;
 
-  const _Viaje({@required this.viaje, @required this.index});
+  const _Viaje({required this.viaje, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +141,7 @@ class _TarjetaTopBar extends StatelessWidget {
   final Datum viaje;
   final int index;
 
-  const _TarjetaTopBar({this.viaje, this.index});
+  const _TarjetaTopBar({required this.viaje, required this.index});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -162,7 +162,7 @@ class _TarjetaTopBar extends StatelessWidget {
 class _TarjetaTitulo extends StatelessWidget {
   final Datum viaje;
 
-  const _TarjetaTitulo({this.viaje});
+  const _TarjetaTitulo({required this.viaje});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -184,42 +184,17 @@ class _TarjetaTitulo extends StatelessWidget {
   }
 }
 
-class _TarjetaTotales extends StatelessWidget {
-  final Datum viaje;
-
-  const _TarjetaTotales({this.viaje});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.attach_money,
-              color: Colors.black87,
-              size: 30,
-            ),
-            Text(
-              '90',
-              style: TextStyle(color: Colors.black87, fontSize: 30),
-            )
-          ],
-        ));
-  }
-}
-
 class _TarjetaBody extends StatelessWidget {
   final Datum viaje;
 
-  const _TarjetaBody({this.viaje});
+  const _TarjetaBody({required this.viaje});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Text(
-          (viaje.km != null) ? '${viaje.km} KM' : '0 KM',
+          '${viaje.km} KM',
           style: TextStyle(fontSize: 19),
         ));
   }
@@ -228,7 +203,7 @@ class _TarjetaBody extends StatelessWidget {
 class _TarjetaHora extends StatelessWidget {
   final Datum viaje;
 
-  const _TarjetaHora({this.viaje});
+  const _TarjetaHora({required this.viaje});
 
   @override
   Widget build(BuildContext context) {
@@ -237,14 +212,10 @@ class _TarjetaHora extends StatelessWidget {
       children: [
         Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text((viaje.horaInicio != null)
-                ? 'Hora inicio:  ${viaje.horaInicio}'
-                : '--.--.--')),
+            child: Text('Hora inicio:  ${viaje.horaInicio}')),
         Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text((viaje.horaTermino != null)
-                ? 'Hora término:  ${viaje.horaTermino}'
-                : '--.--.--'))
+            child: Text('Hora término:  ${viaje.horaTermino}'))
       ],
     );
   }
@@ -253,36 +224,30 @@ class _TarjetaHora extends StatelessWidget {
 class _TarjetaBotones extends StatelessWidget {
   final Datum viaje;
 
-  const _TarjetaBotones({this.viaje});
+  const _TarjetaBotones({required this.viaje});
   @override
   Widget build(BuildContext context) {
+    Widget boton = SizedBox.shrink();
+
+    if (viaje.tipo_viaje == 1) {
+      boton = ElevatedButton.icon(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+          ),
+          label: Text('Efectivo'),
+          icon: Icon(Icons.money),
+          onPressed: () => {});
+    } else if (viaje.tipo_viaje == 2) {
+      boton = ElevatedButton.icon(
+        label: Text('Tarjeta'),
+        icon: Icon(Icons.card_membership_outlined),
+        onPressed: () => {},
+      );
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        (this.viaje.tipo_viaje == 1)
-            ? ElevatedButton.icon(
-                // shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(10.0)),
-                // color: Colors.redAccent,
-                // textColor: Colors.white,
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.redAccent),
-                ),
-                label: Text('Efectivo'),
-                icon: Icon(Icons.money),
-                onPressed: () => {})
-            : (this.viaje.tipo_viaje == 2)
-                ? ElevatedButton.icon(
-                    // shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(10.0)),
-                    // color: Colors.blueAccent,
-                    // textColor: Colors.white,
-                    label: Text('Tarjeta'),
-                    icon: Icon(Icons.card_membership_outlined),
-                    onPressed: () => {},
-                  )
-                : null
-      ],
+      children: <Widget>[boton],
     );
   }
 }

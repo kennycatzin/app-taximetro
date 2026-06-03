@@ -28,10 +28,6 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
       startTimer();
 
       var sec = swatch.elapsed.inSeconds;
-      // var min = swatch.elapsed.inMinutes;
-      // var hora = swatch.elapsed.inHours;
-
-      // var total = (sec / 60) + min + (hora * 60);
       print("entro $sec");
       if ((sec / contador) == 30) {
         print("aqui consulta los precios ");
@@ -196,14 +192,11 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
   Stream<TaximetroState> _onCorreTaximetro(OnCorreTaximetro event) async* {
     CotizandoHelper cotizaController = new CotizandoHelper(
         kilometraje: event.km, tiempo: event.duracion, tarifa: event.tarifa);
-    double minutos;
     double kilometros = 0;
     double pagoReal = state.pago;
-    double tarifaTiempo = 0;
     double totalViaje = 0;
 
     if (!event.enEspera) {
-      minutos = cotizaController.calculaTiempoEnMinutos();
       kilometros = cotizaController.calculaDistancia();
       totalViaje = cotizaController.calculaPrecio();
       print("mi principio es :: ======== ${state.pago}");
@@ -239,7 +232,8 @@ class TaximetroBloc extends Bloc<TaximetroEvent, TaximetroState> {
   double calculaPrecioFinal(double banderazo) {
     double miTotal = 0;
     for (var i = 0; i <= _puntosRuta.length - 1; i++) {
-      miTotal += (_puntosRuta[i]["tarifa"] * _puntosRuta[i]["distancia"]);
+      miTotal +=
+          (_puntosRuta[i]["tarifa"] ?? 0.0) * (_puntosRuta[i]["distancia"] ?? 0.0);
     }
     miTotal = miTotal + banderazo;
     print("calculo mi totalote ======= $miTotal");

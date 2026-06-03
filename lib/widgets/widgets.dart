@@ -2,14 +2,11 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_app/bloc/busqueda/busqueda_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
-import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
 
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:mapa_app/bloc/tarifa/tarifa_bloc.dart';
@@ -19,12 +16,8 @@ import 'package:mapa_app/helpers/helpers.dart';
 import 'package:mapa_app/helpers/utils.dart';
 import 'package:mapa_app/models/search_result.dart';
 import 'package:mapa_app/search/search_destination.dart';
-import 'package:mapa_app/services/mensaje_service.dart';
-import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/services/traffic_service.dart';
 import 'package:mapa_app/services/user_service.dart';
-
-import 'package:polyline/polyline.dart' as Poly;
 import 'dart:async';
 
 import 'package:provider/provider.dart';

@@ -3,7 +3,7 @@ import 'package:mapa_app/bloc/login/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
 //broadcast sirve para escuchar mas de una instancia
-class LoginBloc with Validators {
+class LoginBloc extends Validators {
   final _emailController = BehaviorSubject<String>();
   final _passwordController = BehaviorSubject<String>();
 
@@ -26,7 +26,7 @@ class LoginBloc with Validators {
   String get password => _passwordController.value;
 
   dispose() {
-    _emailController?.close();
-    _passwordController?.close();
+    _emailController.close();
+    _passwordController.close();
   }
 }

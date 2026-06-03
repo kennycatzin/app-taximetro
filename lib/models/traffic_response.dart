@@ -1,157 +1,61 @@
-// To parse this JSON data, do
-//
-//     final drivingResponse = drivingResponseFromJson(jsonString);
-
 import 'dart:convert';
 
-DrivingResponse drivingResponseFromJson(String str) =>
-    DrivingResponse.fromJson(json.decode(str));
+DrivingResponse drivingResponseFromJson(dynamic data) {
+  final jsonMap = data is String
+      ? json.decode(data) as Map<String, dynamic>
+      : Map<String, dynamic>.from(data as Map);
+  return DrivingResponse.fromJson(jsonMap);
+}
 
 String drivingResponseToJson(DrivingResponse data) =>
     json.encode(data.toJson());
 
 class DrivingResponse {
-  DrivingResponse({
-    this.routes,
-    this.waypoints,
-    this.code,
-    this.uuid,
+  const DrivingResponse({
+    this.routes = const [],
+    this.code = '',
+    this.uuid = '',
   });
 
-  List<Route> routes;
-  List<Waypoint> waypoints;
-  String code;
-  String uuid;
+  final List<Route> routes;
+  final String code;
+  final String uuid;
 
-  factory DrivingResponse.fromJson(Map<String, dynamic> json) =>
-      DrivingResponse(
-        routes: List<Route>.from(json["routes"].map((x) => Route.fromJson(x))),
-        waypoints: List<Waypoint>.from(
-            json["waypoints"].map((x) => Waypoint.fromJson(x))),
-        code: json["code"],
-        uuid: json["uuid"],
+  factory DrivingResponse.fromJson(Map<String, dynamic> json) => DrivingResponse(
+        routes: (json['routes'] as List<dynamic>? ?? const [])
+            .map((item) => Route.fromJson(Map<String, dynamic>.from(item as Map)))
+            .toList(),
+        code: json['code'] as String? ?? '',
+        uuid: json['uuid'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
-        "routes": List<dynamic>.from(routes.map((x) => x.toJson())),
-        "waypoints": List<dynamic>.from(waypoints.map((x) => x.toJson())),
-        "code": code,
-        "uuid": uuid,
+        'routes': routes.map((item) => item.toJson()).toList(),
+        'code': code,
+        'uuid': uuid,
       };
 }
 
 class Route {
-  Route({
-    this.weightName,
-    this.weight,
-    this.duration,
-    this.distance,
-    this.legs,
-    this.geometry,
+  const Route({
+    this.duration = 0,
+    this.distance = 0,
+    this.geometry = '',
   });
 
-  String weightName;
-  double weight;
-  double duration;
-  double distance;
-  List<Leg> legs;
-  String geometry;
+  final double duration;
+  final double distance;
+  final String geometry;
 
   factory Route.fromJson(Map<String, dynamic> json) => Route(
-        weightName: json["weight_name"],
-        weight: json["weight"].toDouble(),
-        duration: json["duration"].toDouble(),
-        distance: json["distance"].toDouble(),
-        legs: List<Leg>.from(json["legs"].map((x) => Leg.fromJson(x))),
-        geometry: json["geometry"],
+        duration: (json['duration'] as num?)?.toDouble() ?? 0,
+        distance: (json['distance'] as num?)?.toDouble() ?? 0,
+        geometry: json['geometry'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
-        "weight_name": weightName,
-        "weight": weight,
-        "duration": duration,
-        "distance": distance,
-        "legs": List<dynamic>.from(legs.map((x) => x.toJson())),
-        "geometry": geometry,
-      };
-}
-
-class Leg {
-  Leg({
-    this.steps,
-    this.admins,
-    this.duration,
-    this.distance,
-    this.weight,
-    this.summary,
-  });
-
-  List<dynamic> steps;
-  List<Admin> admins;
-  double duration;
-  double distance;
-  double weight;
-  String summary;
-
-  factory Leg.fromJson(Map<String, dynamic> json) => Leg(
-        steps: List<dynamic>.from(json["steps"].map((x) => x)),
-        admins: List<Admin>.from(json["admins"].map((x) => Admin.fromJson(x))),
-        duration: json["duration"].toDouble(),
-        distance: json["distance"].toDouble(),
-        weight: json["weight"].toDouble(),
-        summary: json["summary"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "steps": List<dynamic>.from(steps.map((x) => x)),
-        "admins": List<dynamic>.from(admins.map((x) => x.toJson())),
-        "duration": duration,
-        "distance": distance,
-        "weight": weight,
-        "summary": summary,
-      };
-}
-
-class Admin {
-  Admin({
-    this.iso31661Alpha3,
-    this.iso31661,
-  });
-
-  String iso31661Alpha3;
-  String iso31661;
-
-  factory Admin.fromJson(Map<String, dynamic> json) => Admin(
-        iso31661Alpha3: json["iso_3166_1_alpha3"],
-        iso31661: json["iso_3166_1"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "iso_3166_1_alpha3": iso31661Alpha3,
-        "iso_3166_1": iso31661,
-      };
-}
-
-class Waypoint {
-  Waypoint({
-    this.distance,
-    this.name,
-    this.location,
-  });
-
-  double distance;
-  String name;
-  List<double> location;
-
-  factory Waypoint.fromJson(Map<String, dynamic> json) => Waypoint(
-        distance: json["distance"].toDouble(),
-        name: json["name"],
-        location: List<double>.from(json["location"].map((x) => x.toDouble())),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "distance": distance,
-        "name": name,
-        "location": List<dynamic>.from(location.map((x) => x)),
+        'duration': duration,
+        'distance': distance,
+        'geometry': geometry,
       };
 }

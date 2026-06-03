@@ -1,51 +1,38 @@
 PODS:
   - Flutter (1.0.0)
-  - "geolocator (5.3.2+2)":
+  - Google-Maps-iOS-Utils (5.0.0):
+    - GoogleMaps (~> 8.0)
+  - google_maps_flutter_ios (0.0.1):
     - Flutter
-  - google_maps_flutter (0.0.1):
-    - Flutter
-    - GoogleMaps (< 3.10)
-  - GoogleMaps (2.7.0):
-    - GoogleMaps/Maps (= 2.7.0)
-  - GoogleMaps/Base (2.7.0)
-  - GoogleMaps/Maps (2.7.0):
+    - Google-Maps-iOS-Utils (< 7.0, >= 5.0)
+    - GoogleMaps (< 11.0, >= 8.4)
+  - GoogleMaps (8.4.0):
+    - GoogleMaps/Maps (= 8.4.0)
+  - GoogleMaps/Base (8.4.0)
+  - GoogleMaps/Maps (8.4.0):
     - GoogleMaps/Base
-  - "location_permissions (3.0.0+1)":
-    - Flutter
-  - "permission_handler (5.0.1+1)":
-    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - geolocator (from `.symlinks/plugins/geolocator/ios`)
-  - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
-  - location_permissions (from `.symlinks/plugins/location_permissions/ios`)
-  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
 
 SPEC REPOS:
   trunk:
+    - Google-Maps-iOS-Utils
     - GoogleMaps
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  geolocator:
-    :path: ".symlinks/plugins/geolocator/ios"
-  google_maps_flutter:
-    :path: ".symlinks/plugins/google_maps_flutter/ios"
-  location_permissions:
-    :path: ".symlinks/plugins/location_permissions/ios"
-  permission_handler:
-    :path: ".symlinks/plugins/permission_handler/ios"
+  google_maps_flutter_ios:
+    :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  geolocator: f7622e0e7e2a24718285b73916d60c4a54b9f5b6
-  google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
-  GoogleMaps: f79af95cb24d869457b1f961c93d3ce8b2f3b848
-  location_permissions: 7e0f9aa0f60deb8ff93ddf0e2a164c7e8197bc94
-  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
+  google_maps_flutter_ios: 17552876e72723da1d41accc22f03b5f7afbde69
+  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
 
-PODFILE CHECKSUM: 1a13b8e47bab98a94091c31903a776bd52125c57
+PODFILE CHECKSUM: 6ac4b5033cc466a5d6ec065be4beb79128e30851
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.16.2

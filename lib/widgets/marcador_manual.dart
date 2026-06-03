@@ -3,14 +3,13 @@ part of 'widgets.dart';
 class MarcadorManual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final taximetroState = BlocProvider.of<TaximetroBloc>(context).state;
+    final taximetroState = context.read<TaximetroBloc>().state;
     return BlocBuilder<BusquedaBloc, BusquedaState>(
       builder: (context, state) {
         if (state.seleccionManual && !taximetroState.startIsPressed) {
-          return Container();
-        } else {
-          return Container();
+          return _BuildMarcadorManual();
         }
+        return Container();
       },
     );
   }
@@ -19,7 +18,7 @@ class MarcadorManual extends StatelessWidget {
 class _BuildMarcadorManual extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final widht = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
 
     return Stack(
       children: [
@@ -36,9 +35,7 @@ class _BuildMarcadorManual extends StatelessWidget {
                   color: Colors.black87,
                 ),
                 onPressed: () {
-                  //  hacer algo chidori
-                  BlocProvider.of<BusquedaBloc>(context)
-                      .add(OnDesActivarMarcadorManual());
+                  context.read<BusquedaBloc>().add(OnDesActivarMarcadorManual());
                 },
               ),
             ),
@@ -57,13 +54,12 @@ class _BuildMarcadorManual extends StatelessWidget {
             ),
           ),
         ),
-        // Boton confirmar destino
         Positioned(
           bottom: 70,
-          left: widht * .37,
+          left: width * .37,
           child: FadeIn(
             child: MaterialButton(
-              minWidth: widht - 500,
+              minWidth: width - 500,
               child: Text(
                 'Confirmar destino',
                 style: TextStyle(color: Colors.white),
@@ -73,7 +69,7 @@ class _BuildMarcadorManual extends StatelessWidget {
               elevation: 0,
               splashColor: Colors.transparent,
               onPressed: () {
-                this.calcularDestino(context);
+                calcularDestino(context);
               },
             ),
           ),
@@ -84,36 +80,38 @@ class _BuildMarcadorManual extends StatelessWidget {
 
   void calcularDestino(BuildContext context) async {
     calculandoAlerta(context);
-    final mapaBloc = BlocProvider.of<MapaBloc>(context);
-    final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
-    final trafficService = new TrafficService();
-    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
+    final mapaBloc = context.read<MapaBloc>();
+    final taxiBloc = context.read<TaximetroBloc>();
+    final trafficService = TrafficService();
+    final inicio = context.read<MiUbicacionBloc>().state.ubicacion;
     final destino = mapaBloc.state.ubicacionCentral;
 
-    // Obtener informacion del destino
+    if (inicio == null || destino == null) {
+      Navigator.of(context).pop();
+      return;
+    }
+
     final reverseQueryResponse =
         await trafficService.getCoordenadasInfo(destino);
-
     final traffincResponse =
         await trafficService.getCoordsInicioYFin(inicio, destino);
+
+    if (traffincResponse.routes.isEmpty ||
+        reverseQueryResponse.features.isEmpty) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     final geometry = traffincResponse.routes[0].geometry;
     final duracion = traffincResponse.routes[0].duration;
     final distancia = traffincResponse.routes[0].distance;
     final nombreDestino = reverseQueryResponse.features[0].placeNameEs;
-    // Decodificar los puntos del geometry
+    final rutaCoords = decodePolyline(geometry, precision: 6);
 
-    final points = Poly.Polyline.Decode(encodedString: geometry, precision: 6)
-        .decodedCoords;
-    final List<LatLng> rutaCoords =
-        points.map((point) => LatLng(point[0], point[1])).toList();
-
-    mapaBloc.add(OnCrearRutaInicioDestino(
-        rutaCoords, distancia, duracion, nombreDestino));
+    mapaBloc.add(
+        OnCrearRutaInicioDestino(rutaCoords, distancia, duracion, nombreDestino));
     taxiBloc.add(OnCotizarPrecio(distancia.toString(), duracion.toString()));
     Navigator.of(context).pop();
-    BlocProvider.of<BusquedaBloc>(context).add(OnDesActivarMarcadorManual());
-
-    // tarea quitar el confirmar destino, marcador y el boton para regresar
+    context.read<BusquedaBloc>().add(OnDesActivarMarcadorManual());
   }
 }

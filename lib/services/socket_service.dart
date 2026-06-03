@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mapa_app/global/enviroment.dart';
-import 'package:mapa_app/services/preference_usuario.dart';
 
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -8,27 +7,13 @@ enum ServerStatus { Online, Offline, Connecting }
 
 class SocketService with ChangeNotifier {
   ServerStatus _serverStatus = ServerStatus.Connecting;
-  Socket _socket;
+  late Socket _socket;
 
   ServerStatus get serverStatus => this._serverStatus;
 
   Socket get socket => this._socket;
   Function get emit => this._socket.emit;
-  final _prefs = new PreferenciasUsuario();
   SocketService() {}
-
-  void _initConfig() async {
-    // this._socket = await IO.io('http://10.0.2.2:8080', {
-    //   'transports': ['websocket'],
-    //   'autoConnect': true,
-    //   'forceNew': true
-    // });
-    // await this._socket.on('connecting', (_) {
-    //   this._serverStatus = ServerStatus.Online;
-    //   notifyListeners();
-    // });
-    // print('no se si conecteeeee....');
-  }
 
   void connect() {
     print('conectare....');

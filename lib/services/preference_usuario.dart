@@ -10,14 +10,14 @@ class PreferenciasUsuario {
 
   PreferenciasUsuario._internal();
 
-  SharedPreferences _prefs;
+  late SharedPreferences _prefs;
 
-  initPrefs() async {
+  Future<void> initPrefs() async {
     this._prefs = await SharedPreferences.getInstance();
   }
 
   // GET y SET del Genero
-  get usuarioID {
+  int get usuarioID {
     return _prefs.getInt('usuarioID') ?? 0;
   }
 
@@ -35,7 +35,7 @@ class PreferenciasUsuario {
   // }
 
   // GET y SET del token
-  get token {
+  String get token {
     return _prefs.getString('token') ?? '';
   }
 
@@ -44,7 +44,7 @@ class PreferenciasUsuario {
   }
 
   // GET y SET de la última página
-  get ultimaPagina {
+  String get ultimaPagina {
     return _prefs.getString('ultimaPagina') ?? 'login';
   }
 
@@ -52,7 +52,7 @@ class PreferenciasUsuario {
     _prefs.setString('ultimaPagina', value);
   }
 
-  get tokenPushNotify {
+  String get tokenPushNotify {
     return _prefs.getString('tokenPushNotify') ?? '';
   }
 

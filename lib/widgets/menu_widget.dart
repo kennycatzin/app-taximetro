@@ -3,14 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/taximetro/taximetro_bloc.dart';
 import 'package:mapa_app/global/globales.dart';
-import 'package:mapa_app/services/socket_service.dart';
 import 'package:mapa_app/services/user_service.dart';
-import 'package:provider/provider.dart';
 
 class MenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final socketService = Provider.of<SocketService>(context);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

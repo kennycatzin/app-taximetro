@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -27,44 +27,34 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.5
-  geolocator: ^9.0.2
-  permission_handler: ^10.2.0
-  flutter_bloc: ^7.0.0
-  google_maps_flutter: ^2.2.3
-  dio: ^4.0.6
-  http: ^0.13.0
-  animate_do: ^1.7.2
-  polyline: ^1.0.2
-  # firebase_messaging: ^10.0.7
+  cupertino_icons: ^1.0.8
+  geolocator: ^13.0.4
+  permission_handler: ^11.3.1
+  flutter_bloc: ^7.3.3
+  google_maps_flutter: ^2.12.3
+  dio: ^5.9.0
+  http: ^1.6.0
+  animate_do: ^4.2.0
   shared_preferences: ^2.0.8
-  intl: ^0.16.1
-  wakelock: ^0.6.2
+  wakelock_plus: ^1.6.1
   rxdart: ^0.27.7
-  # modal_bottom_sheet: ^1.0.0+1
   provider: ^6.0.5
   socket_io_client: ^1.0.1
   url_launcher: ^6.0.12
-  # flutter_sms: ^2.3.3
-  # flutter_sms: ^2.2.0
-
-  
-  
-
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_launcher_icons: "^0.8.0"
+  flutter_launcher_icons: ^0.14.4
 
 module:
-    androidX: true  
+  androidX: true
 
 flutter_icons:
-  image_path: "assets/icon.png" 
+  image_path: "assets/icon.png"
   android: true
-  ios: true  
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

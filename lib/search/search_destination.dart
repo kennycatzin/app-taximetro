@@ -70,7 +70,7 @@ class SearchDestination extends SearchDelegate<SearchResult> {
   }
 
   Widget _construirResultadosSugerencias() {
-    if (this.query == 0) {
+    if (this.query.isEmpty) {
       return Container();
     }
     this._trafficService.getSugerenciasPorQuery(this.query, this.proximidad);
@@ -80,7 +80,7 @@ class SearchDestination extends SearchDelegate<SearchResult> {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
-        final lugares = snapshot.data.features;
+        final lugares = snapshot.data?.features ?? const <Feature>[];
         if (lugares.length == 0) {
           return ListTile(
             title: Text('No hay resultados con $query'),
@@ -94,6 +94,9 @@ class SearchDestination extends SearchDelegate<SearchResult> {
                 title: Text(lugar.textEs),
                 subtitle: Text(lugar.placeNameEs),
                 onTap: () {
+                  if (lugar.center.length < 2) {
+                    return;
+                  }
                   this.close(
                       context,
                       SearchResult(

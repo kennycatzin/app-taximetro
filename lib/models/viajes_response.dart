@@ -11,13 +11,14 @@ String viajesResponseToJson(ViajesResponse data) => json.encode(data.toJson());
 
 class ViajesResponse {
   ViajesResponse({
-    this.data,
+    this.data = const [],
   });
 
-  List<Datum> data;
+  final List<Datum> data;
 
   factory ViajesResponse.fromJson(Map<String, dynamic> json) => ViajesResponse(
-      data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))));
+      data: List<Datum>.from(
+          (json["data"] ?? []).map((x) => Datum.fromJson(x))));
 
   Map<String, dynamic> toJson() => {
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
@@ -26,43 +27,45 @@ class ViajesResponse {
 
 class Datum {
   Datum({
-    this.idViaje,
-    this.km,
-    this.horaInicio,
-    this.horaTermino,
-    this.precio,
-    this.idChofer,
-    this.tipo_viaje,
-    this.usuarioCreacion,
-    this.usuarioModificacion,
-    this.fechaCreacion,
-    this.fechaModificacion,
-  });
+    this.idViaje = 0,
+    this.km = 0,
+    this.horaInicio = '',
+    this.horaTermino = '',
+    this.precio = 0,
+    this.idChofer = 0,
+    this.tipo_viaje = 0,
+    this.usuarioCreacion = 0,
+    this.usuarioModificacion = 0,
+    DateTime? fechaCreacion,
+    DateTime? fechaModificacion,
+  })  : fechaCreacion = fechaCreacion ?? DateTime.fromMillisecondsSinceEpoch(0),
+        fechaModificacion =
+            fechaModificacion ?? DateTime.fromMillisecondsSinceEpoch(0);
 
-  int idViaje;
-  double km;
-  String horaInicio;
-  String horaTermino;
-  double precio;
-  int idChofer;
-  int tipo_viaje;
-  int usuarioCreacion;
-  int usuarioModificacion;
-  DateTime fechaCreacion;
-  DateTime fechaModificacion;
+  final int idViaje;
+  final double km;
+  final String horaInicio;
+  final String horaTermino;
+  final double precio;
+  final int idChofer;
+  final int tipo_viaje;
+  final int usuarioCreacion;
+  final int usuarioModificacion;
+  final DateTime fechaCreacion;
+  final DateTime fechaModificacion;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        idViaje: json["id_viaje"],
-        km: json["km"].toDouble(),
-        horaInicio: json["hora_inicio"],
-        horaTermino: json["hora_termino"],
-        precio: json["precio"].toDouble(),
-        idChofer: json["id_chofer"],
-        tipo_viaje: json["tipo_viaje"].toInt(),
-        usuarioCreacion: json["usuario_creacion"],
-        usuarioModificacion: json["usuario_modificacion"],
-        fechaCreacion: DateTime.parse(json["fecha_creacion"]),
-        fechaModificacion: DateTime.parse(json["fecha_modificacion"]),
+        idViaje: json["id_viaje"] ?? 0,
+        km: (json["km"] as num?)?.toDouble() ?? 0,
+        horaInicio: json["hora_inicio"] ?? '',
+        horaTermino: json["hora_termino"] ?? '',
+        precio: (json["precio"] as num?)?.toDouble() ?? 0,
+        idChofer: json["id_chofer"] ?? 0,
+        tipo_viaje: json["tipo_viaje"] ?? 0,
+        usuarioCreacion: json["usuario_creacion"] ?? 0,
+        usuarioModificacion: json["usuario_modificacion"] ?? 0,
+        fechaCreacion: DateTime.tryParse(json["fecha_creacion"] ?? ''),
+        fechaModificacion: DateTime.tryParse(json["fecha_modificacion"] ?? ''),
       );
 
   Map<String, dynamic> toJson() => {

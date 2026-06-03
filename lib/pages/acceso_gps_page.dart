@@ -49,8 +49,7 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
               onPressed: () async {
                 popup = true;
                 final status = await Permission.location.request();
-                await this.accesoGPS(status);
-
+                await accesoGPS(status);
                 popup = false;
               })
         ],
@@ -58,17 +57,18 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
     );
   }
 
-  Future accesoGPS(PermissionStatus status) async {
+  Future<void> accesoGPS(PermissionStatus status) async {
     switch (status) {
       case PermissionStatus.granted:
         await Navigator.pushReplacementNamed(context, 'loading');
         break;
-
-      // case PermissionStatus.unknow:
       case PermissionStatus.denied:
       case PermissionStatus.restricted:
+      case PermissionStatus.limited:
+      case PermissionStatus.provisional:
       case PermissionStatus.permanentlyDenied:
         openAppSettings();
+        break;
     }
   }
 }

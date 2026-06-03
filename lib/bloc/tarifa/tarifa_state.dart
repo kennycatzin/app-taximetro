@@ -12,24 +12,24 @@ class TarifaState {
   final List<dynamic> horarios;
 
   TarifaState(
-      {this.tarifaMinima,
-      this.tarifaMinimaCentral,
-      this.tarifaMinimaOriginal,
-      this.banderazo,
-      this.intervaloTiempo,
-      this.intervaloDistancia,
-      this.tarifaTiempo,
-      this.horarios});
+      {this.tarifaMinima = 0,
+      this.tarifaMinimaCentral = 0,
+      this.tarifaMinimaOriginal = 0,
+      this.banderazo = 0,
+      this.intervaloTiempo = 0,
+      this.intervaloDistancia = 0,
+      this.tarifaTiempo = 0,
+      this.horarios = const []});
 
   TarifaState copyWith(
-          {double tarifaMinima,
-          double tarifaMinimaCentral,
-          double tarifaMinimaOriginal,
-          double banderazo,
-          int intervaloTiempo,
-          int intervaloDistancia,
-          double tarifaTiempo,
-          List<dynamic> horarios}) =>
+          {double? tarifaMinima,
+          double? tarifaMinimaCentral,
+          double? tarifaMinimaOriginal,
+          double? banderazo,
+          int? intervaloTiempo,
+          int? intervaloDistancia,
+          double? tarifaTiempo,
+          List<dynamic>? horarios}) =>
       TarifaState(
           tarifaMinima: tarifaMinima ?? this.tarifaMinima,
           tarifaMinimaCentral: tarifaMinimaCentral ?? this.tarifaMinimaCentral,
