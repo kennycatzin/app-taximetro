@@ -237,6 +237,10 @@ class _LoginPageState extends State<LoginPage> {
     mostrarLoading(context);
     Map info = await usuarioProvider.login(
         this.emailCtrl.text.toString(), this.passCtrl.text.toString());
+    if (!mounted) {
+      return;
+    }
+
     Navigator.pop(context);
 
     if (info['ok'] == 'true') {

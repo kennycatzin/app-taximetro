@@ -8,23 +8,18 @@ class BtnSeguirUbicacion extends StatelessWidget {
   }
 
   Widget _crearBoton(BuildContext context, MapaState state) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      child: CircleAvatar(
-        backgroundColor: Colors.white,
-        maxRadius: 25,
-        child: IconButton(
-          icon: Icon(
-              // state.seguirUbicacion
-              //   ? Icons.directions_run
-              //   : Icons.accessibility_new,
-              Icons.exit_to_app_outlined,
-              color: Colors.black87),
-          onPressed: () {
-            // mapaBloc.add(OnSeguirUbicacion());
-            _alertaConfirmacionInicio(context);
-          },
-        ),
+    return Material(
+      color: Colors.white,
+      elevation: 4,
+      shadowColor: Colors.black12,
+      shape: CircleBorder(),
+      child: IconButton(
+        tooltip: 'Salir',
+        padding: EdgeInsets.all(14),
+        icon: Icon(Icons.exit_to_app_outlined, color: Colors.black87),
+        onPressed: () {
+          _alertaConfirmacionInicio(context);
+        },
       ),
     );
   }

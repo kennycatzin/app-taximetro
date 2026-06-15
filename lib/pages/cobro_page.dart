@@ -278,6 +278,10 @@ class _CobroPageState extends State<CobroPage> {
         taxiBloc.state.pago,
         1,
         taxiBloc.state.pagoTiempo);
+    if (!mounted) {
+      return;
+    }
+
     if (info['ok'] == true) {
       mapaBloc.add(OnQuitarPoliline());
       mapaBloc.add(OnMapaCrea());
@@ -321,6 +325,10 @@ class _CobroPageState extends State<CobroPage> {
         taxiBloc.state.pago,
         tipo,
         taxiBloc.state.pagoTiempo);
+    if (!mounted) {
+      return;
+    }
+
     print(info);
     Navigator.pop(context);
     if (info['ok'] == true) {

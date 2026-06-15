@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart' show Colors, Offset;
 import 'package:mapa_app/helpers/helpers.dart';
-import 'package:mapa_app/themes/santaana_map_theme.dart';
-import 'package:mapa_app/themes/uber_map_theme.dart';
 import 'package:meta/meta.dart';
 
 // import 'package:mapa_app/themes/uber_map_theme.dart';
@@ -32,11 +29,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   void initMapa(GoogleMapController controller) async {
     if (!state.mapaListo) {
       this._mapController = controller;
-      if (state.tipo == 2) {
-        await this._mapController?.setMapStyle(jsonEncode(santaanaMapTheme));
-      } else {
-        await this._mapController?.setMapStyle(jsonEncode(uberMapTheme));
-      }
+      await this._mapController?.setMapStyle(null);
 
       add(OnMapaListo());
     }

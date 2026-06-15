@@ -1,14 +1,19 @@
 part of 'widgets.dart';
 
 class BtnMiViaje extends StatefulWidget {
-  const BtnMiViaje({Key? key}) : super(key: key);
+  const BtnMiViaje({Key? key, required this.isLandscape}) : super(key: key);
+
+  final bool isLandscape;
 
   @override
   _BtnMiViajeState createState() => _BtnMiViajeState();
 }
 
 class _BtnMiViajeState extends State<BtnMiViaje> {
+  static const double _dragThreshold = 0.82;
+
   Timer? miTimer;
+  Timer? _finalizarViajeTimer;
   bool parartaximetro = true;
   bool iniciaViaje = false;
   bool accion = false;
@@ -18,6 +23,8 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   DateTime? horaActual;
   String accionChofer = "Esperar";
   String cabeceraChofer = "¿Cobrar tiempo de espera?";
+  double? _dragProgress;
+  bool _isDragging = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,25 +33,192 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
   }
 
   Widget _btnIniciar(BuildContext context, TaximetroState state) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-        margin:
-            EdgeInsets.only(top: size.width * 0.39, left: size.height * .17),
-        child: MaterialButton(
-          color: (!enEspera) ? Colors.redAccent : Colors.green,
-          textColor: Colors.white,
-          child: Icon(
-            (state.startIsPressed)
-                ? (!enEspera)
-                    ? Icons.pause
-                    : Icons.timer
-                : Icons.play_arrow,
-            size: 50,
-          ),
-          padding: EdgeInsets.all(16),
-          shape: CircleBorder(),
-          onPressed: viajeFinalizado ? null : () => accionBoton(state),
-        ));
+    final logicalProgress = state.startIsPressed ? 1.0 : 0.0;
+    final trackHeight = widget.isLandscape ? 52.0 : 54.0;
+    final thumbSize = widget.isLandscape ? 42.0 : 42.0;
+    final accentColor = state.startIsPressed
+        ? (enEspera ? Colors.green : Colors.blueGrey.shade900)
+        : Colors.redAccent;
+    final title = state.startIsPressed ? 'Viaje activo' : 'Iniciar viaje';
+    final subtitle = state.startIsPressed
+        ? (widget.isLandscape
+            ? 'Desliza para opciones'
+            : 'Desliza a la izquierda para opciones')
+        : (widget.isLandscape
+            ? 'Desliza para comenzar'
+            : 'Desliza a la derecha para comenzar');
+
+    return Opacity(
+      opacity: viajeFinalizado ? 0.65 : 1,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth.isFinite
+              ? constraints.maxWidth
+              : MediaQuery.of(context).size.width - 32;
+          final travelWidth = max(0.0, width - thumbSize - 12);
+          final currentProgress = _isDragging
+              ? (_dragProgress ?? logicalProgress)
+              : logicalProgress;
+          final thumbLeft = 6 + (travelWidth * currentProgress);
+
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragStart: viajeFinalizado
+                ? null
+                : (_) {
+                    setState(() {
+                      _isDragging = true;
+                      _dragProgress = logicalProgress;
+                    });
+                  },
+            onHorizontalDragUpdate: viajeFinalizado
+                ? null
+                : (details) {
+                    if (travelWidth == 0) {
+                      return;
+                    }
+                    setState(() {
+                      _dragProgress = ((_dragProgress ?? logicalProgress) +
+                              (details.primaryDelta ?? 0) / travelWidth)
+                          .clamp(0.0, 1.0);
+                    });
+                  },
+            onHorizontalDragEnd: viajeFinalizado
+                ? null
+                : (_) {
+                    final progress = _dragProgress ?? logicalProgress;
+                    final shouldTrigger = !state.startIsPressed
+                        ? progress >= _dragThreshold
+                        : progress <= (1 - _dragThreshold);
+
+                    setState(() {
+                      _isDragging = false;
+                      _dragProgress = null;
+                    });
+
+                    if (shouldTrigger) {
+                      accionBoton(state);
+                    }
+                  },
+            child: Material(
+              color: Colors.white.withOpacity(0.95),
+              elevation: 18,
+              shadowColor: Colors.black26,
+              borderRadius: BorderRadius.circular(trackHeight / 2),
+              child: SizedBox(
+                width: double.infinity,
+                height: trackHeight,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 220),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(trackHeight / 2),
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              accentColor.withOpacity(0.90),
+                              accentColor,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: state.startIsPressed ? 20 : thumbSize + 22,
+                          right: state.startIsPressed ? thumbSize + 22 : 20,
+                        ),
+                        child: Row(
+                          children: [
+                            if (state.startIsPressed) ...[
+                              Icon(Icons.chevron_left_rounded,
+                                  color: Colors.white70),
+                              SizedBox(width: 2),
+                              Icon(Icons.chevron_left_rounded,
+                                  color: Colors.white54),
+                            ],
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: state.startIsPressed
+                                    ? CrossAxisAlignment.start
+                                    : CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: widget.isLandscape ? 15 : 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: widget.isLandscape ? 10 : 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (!state.startIsPressed) ...[
+                              Icon(Icons.chevron_right_rounded,
+                                  color: Colors.white70),
+                              SizedBox(width: 2),
+                              Icon(Icons.chevron_right_rounded,
+                                  color: Colors.white54),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: Duration(milliseconds: _isDragging ? 0 : 220),
+                      curve: Curves.easeOut,
+                      left: thumbLeft,
+                      top: 6,
+                      child: Container(
+                        width: thumbSize,
+                        height: thumbSize,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          state.startIsPressed
+                              ? (!enEspera ? Icons.pause : Icons.timer)
+                              : Icons.play_arrow,
+                          size: widget.isLandscape ? 24 : 22,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void accionBoton(TaximetroState state) {
@@ -67,6 +241,7 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
     final busquedaBloc = BlocProvider.of<BusquedaBloc>(context);
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
     final miTarifa = BlocProvider.of<TarifaBloc>(context).state;
+    final miUbicacionBloc = BlocProvider.of<MiUbicacionBloc>(context);
     final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
     if (inicio == null) {
       return;
@@ -100,11 +275,15 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
       enEspera = false;
       accionChofer = "Esperar";
       cabeceraChofer = "¿Cobrar tiempo de espera?";
-      Future.delayed(Duration(milliseconds: 2000)).then((value) => {
-            // socketService.emit('marcador-borrar', miUsuario.id_usuario),
-            BlocProvider.of<MiUbicacionBloc>(context).cancelarSeguimiento(),
-            Navigator.pushReplacementNamed(context, 'cobro')
-          });
+      _finalizarViajeTimer?.cancel();
+      _finalizarViajeTimer = Timer(Duration(milliseconds: 2000), () {
+        if (!mounted) {
+          return;
+        }
+
+        miUbicacionBloc.cancelarSeguimiento();
+        Navigator.pushReplacementNamed(context, 'cobro');
+      });
     }
   }
 
@@ -336,5 +515,12 @@ class _BtnMiViajeState extends State<BtnMiViaje> {
         return alert;
       },
     );
+  }
+
+  @override
+  void dispose() {
+    miTimer?.cancel();
+    _finalizarViajeTimer?.cancel();
+    super.dispose();
   }
 }

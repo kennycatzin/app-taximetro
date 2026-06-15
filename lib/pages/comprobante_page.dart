@@ -153,6 +153,10 @@ class _Comprobante extends State<Comprobante> {
       var uri = 'sms:' + numero + '?body=' + message;
 
       await launch(uri);
+      if (!mounted) {
+        return;
+      }
+
       Navigator.pushReplacementNamed(context, 'loading');
 
       // String _result = await sendSMS(message: message, recipients: recipents)

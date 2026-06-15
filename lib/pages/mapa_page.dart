@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'package:mapa_app/bloc/busqueda/busqueda_bloc.dart';
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/mensaje/mensaje_bloc.dart';
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
@@ -25,56 +26,180 @@ class MapaPage extends StatefulWidget {
 }
 
 class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
+  static const List<DeviceOrientation> _allOrientations = <DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ];
+  static const LatLng _defaultMapCenter = LatLng(21.011144, -89.613515);
+
   bool boton = true;
+  bool _showQuickActions = false;
+  bool _didCenterRequestedLocation = false;
   late SocketService service;
+  late MiUbicacionBloc _miUbicacionBloc;
 
   @override
   void initState() {
     super.initState();
-    context.read<MiUbicacionBloc>().iniciarSeguimiento();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
+    _miUbicacionBloc = context.read<MiUbicacionBloc>();
+    _miUbicacionBloc.iniciarSeguimiento();
+    SystemChrome.setPreferredOrientations(_allOrientations);
     service = Provider.of<SocketService>(context, listen: false);
     WakelockPlus.enable();
-    verificarMensajes(context);
+    verificarMensajes();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: MenuWidget(),
-      body: Stack(
-        children: [
-          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-              builder: (context, state) => crearMapa(state)),
-          Positioned(
-            top: 10,
-            child: DestinationSearchBar(),
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        final isLandscape = orientation == Orientation.landscape;
+        final seleccionManual =
+            context.select((BusquedaBloc bloc) => bloc.state.seleccionManual);
+        final viajeIniciado =
+            context.select((TaximetroBloc bloc) => bloc.state.startIsPressed);
+        final ocultarOverlays = seleccionManual && !viajeIniciado;
+        final panelBottom = isLandscape ? 18.0 : 16.0;
+
+        return Scaffold(
+          drawer: MenuWidget(),
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+                    builder: (context, state) => crearMapa(state)),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: isLandscape
+                            ? [
+                                Colors.black.withOpacity(0.10),
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.08),
+                              ]
+                            : [
+                                Colors.black.withOpacity(0.12),
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.14),
+                              ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (!ocultarOverlays)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: panelBottom,
+                  child: SafeArea(
+                    top: false,
+                    child: Align(
+                      alignment: isLandscape
+                          ? Alignment.bottomRight
+                          : Alignment.bottomCenter,
+                      child: TaxistaPerfil(isLandscape: isLandscape),
+                    ),
+                  ),
+                ),
+              Positioned.fill(
+                child: MarcadorManual(isLandscape: isLandscape),
+              ),
+              if (!ocultarOverlays)
+                Positioned(
+                  top: 0,
+                  left: 16,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Material(
+                          color: Colors.white.withOpacity(0.96),
+                          elevation: 12,
+                          borderRadius: BorderRadius.circular(22),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(22),
+                            onTap: () {
+                              setState(() {
+                                _showQuickActions = !_showQuickActions;
+                              });
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              child: Icon(
+                                _showQuickActions
+                                    ? Icons.close_rounded
+                                    : Icons.menu_rounded,
+                                color: Colors.black87,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        AnimatedSwitcher(
+                          duration: Duration(milliseconds: 220),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SizeTransition(
+                                sizeFactor: animation,
+                                axisAlignment: -1,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: !_showQuickActions
+                              ? SizedBox.shrink(
+                                  key: ValueKey('quick-actions-closed'))
+                              : Material(
+                                  key: ValueKey('quick-actions-open'),
+                                  color: Colors.white.withOpacity(0.94),
+                                  elevation: 14,
+                                  borderRadius: BorderRadius.circular(32),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 10,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        BtnUbicacion(),
+                                        SizedBox(height: 12),
+                                        BtnSeguirUbicacion(),
+                                        SizedBox(height: 12),
+                                        BtnMiRuta(),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
-          MarcadorManual(),
-          TaxistaPerfil(),
-          BtnMiViaje(),
-        ],
-      ),
-      floatingActionButton: Container(
-        margin: EdgeInsets.only(top: 300, left: 170),
-        child: Align(
-          alignment: Alignment.bottomLeft,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [BtnUbicacion(), BtnSeguirUbicacion(), BtnMiRuta()],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget crearMapa(MiUbicacionState state) {
-    if (!state.existeUbicacion) return Center(child: Text('Ubicando...'));
-    final ubicacion = state.ubicacion;
-    if (ubicacion == null) return Center(child: Text('Ubicando...'));
+    final hasLocation = state.existeUbicacion && state.ubicacion != null;
+    final ubicacion = hasLocation ? state.ubicacion! : _defaultMapCenter;
 
     final mapaBloc = context.read<MapaBloc>();
     final taximetroBloc = context.read<TaximetroBloc>();
@@ -83,16 +208,25 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
       // service.emit('marcador-nuevo', nuevoMarcador);
     }
 
-    mapaBloc.add(OnNuevaUbicacion(ubicacion));
+    if (hasLocation) {
+      mapaBloc.add(OnNuevaUbicacion(ubicacion));
+    }
 
-    final cameraPosition = CameraPosition(target: ubicacion, zoom: 15);
+    final cameraPosition = CameraPosition(
+      target: ubicacion,
+      zoom: hasLocation ? 15 : 16,
+    );
     return BlocBuilder<MapaBloc, MapaState>(
-      builder: (context, _) {
+      builder: (context, mapaState) {
+        _centerMapOnRequestedLocationOnce(mapaBloc, mapaState);
+
         return GoogleMap(
           initialCameraPosition: cameraPosition,
+          mapType: MapType.normal,
+          buildingsEnabled: true,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
-          zoomGesturesEnabled: false,
+          zoomGesturesEnabled: true,
           zoomControlsEnabled: false,
           onMapCreated: mapaBloc.initMapa,
           polylines: mapaBloc.state.polylines.values.toSet(),
@@ -114,9 +248,31 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
     );
   }
 
-  void verificarMensajes(BuildContext context) async {
+  void _centerMapOnRequestedLocationOnce(
+    MapaBloc mapaBloc,
+    MapaState mapaState,
+  ) {
+    if (_didCenterRequestedLocation || !mapaState.mapaListo) {
+      return;
+    }
+
+    _didCenterRequestedLocation = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      mapaBloc.moverCamara(_defaultMapCenter);
+    });
+  }
+
+  void verificarMensajes() async {
     final mensajesService = MensajesService();
     Map info = await mensajesService.listaNuevoMensaje();
+    if (!mounted) {
+      return;
+    }
+
     if (info["ok"] == false) {
       return;
     }
@@ -153,8 +309,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         child: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text(data['mensaje']['titulo'],
-                  style: TextStyle(fontSize: 20.0)),
+              Text(data['mensaje']['titulo'], style: TextStyle(fontSize: 20.0)),
               Text(data['mensaje']['mensaje']),
             ],
           ),
@@ -191,8 +346,7 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
         child: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text(data['mensaje']['name'],
-                  style: TextStyle(fontSize: 20.0)),
+              Text(data['mensaje']['name'], style: TextStyle(fontSize: 20.0)),
               Text(data['mensaje']['mensaje']),
             ],
           ),
@@ -216,6 +370,10 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
     final viajeProvider = MensajesService();
     await viajeProvider.aceptarViajeMensaje(mensaje["mensaje"]["id_viaje"]);
+    if (!mounted) {
+      return;
+    }
+
     final mensajeBloc = context.read<MensajeBloc>();
     mensajeBloc.add(OnTapMensaje(
       mensaje["mensaje"]["id_mensaje"],
@@ -236,6 +394,10 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
     final viajeProvider = MensajesService();
     await viajeProvider.mensajeVisto(id_mensaje);
     await viajeProvider.rechazarViajeMensaje(id_viaje);
+    if (!mounted) {
+      return;
+    }
+
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }
@@ -246,17 +408,18 @@ class _MapaPageState extends State<MapaPage> with TickerProviderStateMixin {
 
     final viajeProvider = MensajesService();
     await viajeProvider.mensajeVisto(id_mensaje);
+    if (!mounted) {
+      return;
+    }
+
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }
 
   @override
   void dispose() {
-    context.read<MiUbicacionBloc>().cancelarSeguimiento();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    _miUbicacionBloc.cancelarSeguimiento();
+    SystemChrome.setPreferredOrientations(_allOrientations);
     WakelockPlus.disable();
     super.dispose();
   }

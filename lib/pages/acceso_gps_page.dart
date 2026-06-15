@@ -25,7 +25,12 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed && !popup) {
-      if (await Permission.location.isGranted) {
+      final permisoConcedido = await Permission.location.isGranted;
+      if (!mounted) {
+        return;
+      }
+
+      if (permisoConcedido) {
         Navigator.pushReplacementNamed(context, 'loading');
       }
     }
@@ -50,6 +55,9 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
                 popup = true;
                 final status = await Permission.location.request();
                 await accesoGPS(status);
+                if (!mounted) {
+                  return;
+                }
                 popup = false;
               })
         ],
@@ -60,7 +68,10 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
   Future<void> accesoGPS(PermissionStatus status) async {
     switch (status) {
       case PermissionStatus.granted:
-        await Navigator.pushReplacementNamed(context, 'loading');
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacementNamed(context, 'loading');
         break;
       case PermissionStatus.denied:
       case PermissionStatus.restricted:

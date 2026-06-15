@@ -22,6 +22,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
   final confirmaNumero = TextEditingController();
   bool enviado = false;
   bool parar = false;
+  bool _checkingStatus = false;
   Timer? miTimer;
   final viajeProvider = new ViajesService();
   int id_viaje = 0;
@@ -39,7 +40,7 @@ class _TarjetaPageState extends State<TarjetaPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    miTimer?.cancel();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -53,8 +54,9 @@ class _TarjetaPageState extends State<TarjetaPage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    final args = (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
-        <String, dynamic>{};
+    final args =
+        (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
+            <String, dynamic>{};
     this.id_viaje = int.parse(args["id_viaje"]);
 
     return WillPopScope(
@@ -128,16 +130,28 @@ class _TarjetaPageState extends State<TarjetaPage> {
   }
 
   void _getEstatus() async {
-    if (await viajeProvider.verificarEstatus(this.id_viaje)) {
-      final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
-      taxiBloc.add(OnIniciarValores());
-      print("matar proceso");
-      miTimer?.cancel();
-      this.parar = true;
-      Navigator.of(context).pop();
-      Navigator.pushReplacementNamed(context, 'pagado');
-    } else {
-      this.parar = false;
+    if (_checkingStatus) {
+      return;
+    }
+
+    _checkingStatus = true;
+    try {
+      if (await viajeProvider.verificarEstatus(this.id_viaje)) {
+        if (!mounted) {
+          return;
+        }
+        final taxiBloc = BlocProvider.of<TaximetroBloc>(context);
+        taxiBloc.add(OnIniciarValores());
+        print("matar proceso");
+        miTimer?.cancel();
+        this.parar = true;
+        Navigator.of(context).pop();
+        Navigator.pushReplacementNamed(context, 'pagado');
+      } else {
+        this.parar = false;
+      }
+    } finally {
+      _checkingStatus = false;
     }
   }
 

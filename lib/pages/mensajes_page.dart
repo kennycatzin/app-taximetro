@@ -10,9 +10,13 @@ class MensajesPage extends StatefulWidget {
 }
 
 class _MensajesPageState extends State<MensajesPage> {
+  final mensajesService = new MensajesService();
+  late final Future<List<Mensaje>> _mensajesFuture;
+
   @override
   void initState() {
     super.initState();
+    _mensajesFuture = mensajesService.listaMensajes();
   }
 
   @override
@@ -24,8 +28,6 @@ class _MensajesPageState extends State<MensajesPage> {
     ]);
     super.dispose();
   }
-
-  final mensajesService = new MensajesService();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _MensajesPageState extends State<MensajesPage> {
 
   Widget _swipedTarjetas() {
     return FutureBuilder<List<Mensaje>>(
-        future: mensajesService.listaMensajes(),
+        future: _mensajesFuture,
         builder: (BuildContext context, AsyncSnapshot<List<Mensaje>> snapshot) {
           if (snapshot.hasData) {
             return ListaMensaje(snapshot.data ?? const []);

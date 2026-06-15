@@ -1,13 +1,17 @@
 part of 'widgets.dart';
 
 class MarcadorManual extends StatelessWidget {
+  const MarcadorManual({Key? key, required this.isLandscape}) : super(key: key);
+
+  final bool isLandscape;
+
   @override
   Widget build(BuildContext context) {
     final taximetroState = context.read<TaximetroBloc>().state;
     return BlocBuilder<BusquedaBloc, BusquedaState>(
       builder: (context, state) {
         if (state.seleccionManual && !taximetroState.startIsPressed) {
-          return _BuildMarcadorManual();
+          return _BuildMarcadorManual(isLandscape: isLandscape);
         }
         return Container();
       },
@@ -16,65 +20,84 @@ class MarcadorManual extends StatelessWidget {
 }
 
 class _BuildMarcadorManual extends StatelessWidget {
+  const _BuildMarcadorManual({Key? key, required this.isLandscape})
+      : super(key: key);
+
+  final bool isLandscape;
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final buttonWidth = min(width * (isLandscape ? 0.34 : 0.78), 340.0);
 
-    return Stack(
-      children: [
-        Positioned(
-          top: 70,
-          left: 20,
-          child: FadeInLeft(
-            child: CircleAvatar(
-              maxRadius: 25,
-              backgroundColor: Colors.white,
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black87,
+    return SafeArea(
+      child: Stack(
+        children: [
+          Positioned(
+            top: 12,
+            left: 12,
+            child: FadeInLeft(
+              child: Material(
+                color: Colors.white.withOpacity(0.96),
+                shape: CircleBorder(),
+                elevation: 8,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.black87,
+                  ),
+                  onPressed: () {
+                    context
+                        .read<BusquedaBloc>()
+                        .add(OnDesActivarMarcadorManual());
+                  },
                 ),
-                onPressed: () {
-                  context.read<BusquedaBloc>().add(OnDesActivarMarcadorManual());
-                },
               ),
             ),
           ),
-        ),
-        Center(
-          child: Transform.translate(
-            offset: Offset(0.0, -12.0),
-            child: BounceInDown(
-              duration: Duration(milliseconds: 850),
-              from: 200,
-              child: Icon(
-                Icons.location_on,
-                size: 50,
+          Center(
+            child: Transform.translate(
+              offset: Offset(0.0, -12.0),
+              child: BounceInDown(
+                duration: Duration(milliseconds: 850),
+                from: 200,
+                child: Icon(
+                  Icons.location_on,
+                  size: 54,
+                ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 70,
-          left: width * .37,
-          child: FadeIn(
-            child: MaterialButton(
-              minWidth: width - 500,
-              child: Text(
-                'Confirmar destino',
-                style: TextStyle(color: Colors.white),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: isLandscape ? 36 : 144,
+            child: FadeIn(
+              child: Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: buttonWidth,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      'Confirmar destino',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
+                    color: Colors.black,
+                    shape: StadiumBorder(),
+                    elevation: 4,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      calcularDestino(context);
+                    },
+                  ),
+                ),
               ),
-              color: Colors.black,
-              shape: StadiumBorder(),
-              elevation: 0,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                calcularDestino(context);
-              },
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 
@@ -96,6 +119,10 @@ class _BuildMarcadorManual extends StatelessWidget {
     final traffincResponse =
         await trafficService.getCoordsInicioYFin(inicio, destino);
 
+    if (!context.mounted) {
+      return;
+    }
+
     if (traffincResponse.routes.isEmpty ||
         reverseQueryResponse.features.isEmpty) {
       Navigator.of(context).pop();
@@ -108,8 +135,8 @@ class _BuildMarcadorManual extends StatelessWidget {
     final nombreDestino = reverseQueryResponse.features[0].placeNameEs;
     final rutaCoords = decodePolyline(geometry, precision: 6);
 
-    mapaBloc.add(
-        OnCrearRutaInicioDestino(rutaCoords, distancia, duracion, nombreDestino));
+    mapaBloc.add(OnCrearRutaInicioDestino(
+        rutaCoords, distancia, duracion, nombreDestino));
     taxiBloc.add(OnCotizarPrecio(distancia.toString(), duracion.toString()));
     Navigator.of(context).pop();
     context.read<BusquedaBloc>().add(OnDesActivarMarcadorManual());

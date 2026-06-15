@@ -1,6 +1,11 @@
 part of 'widgets.dart';
 
 class DestinationSearchBar extends StatelessWidget {
+  const DestinationSearchBar({Key? key, required this.isLandscape})
+      : super(key: key);
+
+  final bool isLandscape;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BusquedaBloc, BusquedaState>(
@@ -15,43 +20,64 @@ class DestinationSearchBar extends StatelessWidget {
 
   Widget buildSearchBar(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final maxWidth = min(width - 24, isLandscape ? 520.0 : width);
+
     return SafeArea(
       child: Container(
         margin: EdgeInsets.only(top: 10.0),
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        width: width * .6,
-        child: GestureDetector(
-          onTap: () async {
-            final proximidad = context.read<MiUbicacionBloc>().state.ubicacion;
-            if (proximidad == null) {
-              return;
-            }
-            final historial = context.read<BusquedaBloc>().state.historial;
-            final resultado = await showSearch(
-                context: context,
-                delegate: SearchDestination(proximidad, historial));
+        child: Center(
+          child: SizedBox(
+            width: maxWidth,
+            child: GestureDetector(
+              onTap: () async {
+                final proximidad =
+                    context.read<MiUbicacionBloc>().state.ubicacion;
+                if (proximidad == null) {
+                  return;
+                }
+                final historial = context.read<BusquedaBloc>().state.historial;
+                final resultado = await showSearch(
+                    context: context,
+                    delegate: SearchDestination(proximidad, historial));
 
-            if (resultado != null) {
-              retornoBusquea(context, resultado);
-            }
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            width: width * .5,
-            height: 40,
-            child: Text(
-              '¿Dónde quieres ir?',
-              style: TextStyle(color: Colors.black87),
+                if (!context.mounted) {
+                  return;
+                }
+
+                if (resultado != null) {
+                  retornoBusquea(context, resultado);
+                }
+              },
+              child: Container(
+                height: 54,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.black54),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '¿Dónde quieres ir?',
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.black38),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.96),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 12,
+                          offset: Offset(0, 6))
+                    ]),
+              ),
             ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(100),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5,
-                      offset: Offset(0, 5))
-                ]),
           ),
         ),
       ),
@@ -81,6 +107,10 @@ class DestinationSearchBar extends StatelessWidget {
 
     final drivingResponse =
         await trafficService.getCoordsInicioYFin(inicio, destino);
+
+    if (!context.mounted) {
+      return;
+    }
 
     if (drivingResponse.routes.isEmpty) {
       Navigator.of(context).pop();

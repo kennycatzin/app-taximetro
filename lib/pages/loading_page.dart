@@ -16,10 +16,21 @@ class LoadingPage extends StatefulWidget {
 }
 
 class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
+  static const List<DeviceOrientation> _allOrientations = <DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ];
+
+  late final Future<String> _gpsCheckFuture;
+
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    SystemChrome.setPreferredOrientations(_allOrientations);
+    _gpsCheckFuture = checkGpsYLocation();
   }
 
   @override
@@ -31,7 +42,12 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      if (await Geolocator.isLocationServiceEnabled()) {
+      final gpsActivo = await Geolocator.isLocationServiceEnabled();
+      if (!mounted) {
+        return;
+      }
+
+      if (gpsActivo) {
         Navigator.pushReplacement(
             context, navegarMapaFadeIn(context, MapaPage()));
       }
@@ -40,13 +56,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
     return Scaffold(
       body: FutureBuilder<String>(
-        future: this.checkGpsYLocation(context),
+        future: _gpsCheckFuture,
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return Center(child: Text(snapshot.data ?? ''));
@@ -60,11 +72,15 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
     );
   }
 
-  Future<String> checkGpsYLocation(BuildContext context) async {
+  Future<String> checkGpsYLocation() async {
     // PermisoGPS
     final permisoGPS = await Permission.location.isGranted;
     // GPS está activo
     final gpsActivo = await Geolocator.isLocationServiceEnabled();
+    if (!mounted) {
+      return '';
+    }
+
     final usuarioState = BlocProvider.of<UsuarioBloc>(context).state;
 
     if (usuarioState.tipo_usuario == "SUPERVISOR") {

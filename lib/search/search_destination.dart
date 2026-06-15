@@ -35,7 +35,6 @@ class SearchDestination extends SearchDelegate<SearchResult> {
 
   @override
   Widget buildResults(BuildContext context) {
-    this._trafficService.getResultadorPorQuery(this.query, this.proximidad);
     return this._construirResultadosSugerencias();
   }
 

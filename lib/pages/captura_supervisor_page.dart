@@ -218,6 +218,10 @@ class _CapturaSupervisorPageState extends State<CapturaSupervisorPage> {
         this.fechaCtrl.text.toString(),
         this.rutaCtrl.text.toString(),
         this.notasCtrl.text.toString());
+    if (!mounted) {
+      return;
+    }
+
     Navigator.pop(context);
 
     if (info['ok'] == true) {
